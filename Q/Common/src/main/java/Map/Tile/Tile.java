@@ -1,5 +1,6 @@
 package Map.Tile;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.LookupOp;
@@ -25,6 +26,16 @@ public class Tile implements ITile {
   public Tile(Shape shape, TileColor color) {
     this.shape = shape;
     this.color = color;
+  }
+
+  /**
+   * Constructs a tile with the specified color and shape!
+   *
+   * @param color color of the tile
+   * @param shape shape of the tile
+   */
+  public Tile(TileColor color, Shape shape) {
+    this(shape,color);
   }
 
   @Override
@@ -57,7 +68,7 @@ public class Tile implements ITile {
   public JComponent render() {
     BufferedImageOp lookup = new LookupOp(new ColorMapperNonWhite(this.color.color), null);
     BufferedImage colorAdjustedImage = lookup.filter(this.shape.redImage, null);
-    return new JLabel(new ImageIcon(colorAdjustedImage));
+    return new JLabel(new ImageIcon(colorAdjustedImage.getScaledInstance(ITile.SIDE_LENGTH, ITile.SIDE_LENGTH, Image.SCALE_SMOOTH)));
   }
 
   @Override

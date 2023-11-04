@@ -2,18 +2,20 @@ package Map.Tile;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
 /**
  * An ITile is a tile that has a shape and a color that can be placed on the map.
  * NOTE: every ITile is immutable
  */
 public interface ITile extends Comparable<ITile> {
+
+  //Side length is in pixels
+  int SIDE_LENGTH = 40;
+
   /**
    * Get the shape of the tile.
    * @return Shape of the tile
@@ -83,5 +85,6 @@ public interface ITile extends Comparable<ITile> {
       this.color = color;
     }
   }
+
 
 }

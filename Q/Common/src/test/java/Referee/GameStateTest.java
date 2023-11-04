@@ -2,11 +2,8 @@ package Referee;
 
 import Map.Tile.ITile;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Map;
@@ -21,7 +18,6 @@ import Map.Tile.ITile.TileColor;
 import Map.Tile.ITile.Shape;
 import Map.Tile.Tile;
 import Map.IMap;
-import Player.IPlayer;
 import Referee.Visitor.ActionChecker;
 
 import static org.junit.Assert.assertEquals;
@@ -35,7 +31,7 @@ public class GameStateTest {
   private IAction exchange;
   private IAction pass;
   private IAction placeGreenStarx0yn1;
-  private IAction placePurpleCloverx1y0;
+  private IAction placeOrangeCirclex1y0;
 
   @Before
   public void init() {
@@ -49,9 +45,9 @@ public class GameStateTest {
 
     Map.Entry<Coord, ITile> placement2 =
             new AbstractMap.SimpleEntry<>(new Coord(1, 0),
-                    new Tile(Shape.Clover, TileColor.Purple));
+                    new Tile(Shape.Circle, TileColor.Orange));
     placeGreenStarx0yn1 = new PlaceAction(List.of(placement1));
-    placePurpleCloverx1y0 = new PlaceAction(List.of(placement2));
+    placeOrangeCirclex1y0 = new PlaceAction(List.of(placement2));
 
     igs2 = new GameState(new Random(1), List.of("bob", "blerner", "mattias"));
   }
@@ -79,9 +75,9 @@ public class GameStateTest {
 
   @org.junit.Test
   public void doActionPlace() {
-    igs.doAction(placePurpleCloverx1y0);
+    igs.doAction(placeOrangeCirclex1y0);
 
-    assertEquals(igs.getMap().getTile(new Coord(1, 0)), new Tile(Shape.Clover, TileColor.Purple));
+    assertEquals(igs.getMap().getTile(new Coord(1, 0)), new Tile(Shape.Circle, TileColor.Orange));
   }
 
   @org.junit.Test
@@ -108,7 +104,7 @@ public class GameStateTest {
     // purple clover valid with seed of 1
     assertEquals("Alice", igs.getActivePlayer().getName());
     igs.getActivePlayer().acceptTiles(List.of(new Tile(Shape.Clover, TileColor.Purple)));
-    assertTrue(igs.validAction(new ActionChecker(), placePurpleCloverx1y0));
+    assertTrue(igs.validAction(new ActionChecker(), placeOrangeCirclex1y0));
   }
 
   @org.junit.Test
@@ -143,8 +139,8 @@ public class GameStateTest {
     assertEquals(0, (int) initialScores.get("Alice"));
     assertEquals(0, (int) initialScores.get("Bob"));
     igs.getActivePlayer().acceptTiles(List.of(new Tile(Shape.Clover, TileColor.Purple)));
-    assertTrue(igs.validAction(new ActionChecker(), placePurpleCloverx1y0));
-    igs.doAction(placePurpleCloverx1y0);
+    assertTrue(igs.validAction(new ActionChecker(), placeOrangeCirclex1y0));
+    igs.doAction(placeOrangeCirclex1y0);
 
     Map<String, Integer> updatedScores = igs.getScores();
 

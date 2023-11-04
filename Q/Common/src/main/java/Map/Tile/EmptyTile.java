@@ -1,7 +1,7 @@
 package Map.Tile;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -47,7 +47,7 @@ public class EmptyTile implements ITile {
 
   @Override
   public JComponent render() {
-    return new JLabel(new ImageIcon(IMAGE));
+    return new JLabel(new ImageIcon(IMAGE.getScaledInstance(SIDE_LENGTH, SIDE_LENGTH, Image.SCALE_SMOOTH)));
   }
 
   @Override

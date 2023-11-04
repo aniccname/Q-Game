@@ -13,6 +13,7 @@ import Action.IAction;
 import Action.PassAction;
 import Action.PlaceAction;
 import Map.Tile.ITile;
+import Observer.IObserver;
 import Player.IPlayer;
 import Player.PlayerSafetyAdapter;
 import Referee.Visitor.ActionChecker;
@@ -33,7 +34,7 @@ public class Referee implements IReferee {
 	 *
 	 * @param players The players in the game. Assume the players are sorted by age already.
 	 */
-	public GameResult playGame(List<IPlayer> players) {
+	public GameResult playGame(List<IPlayer> players, List<IObserver> observers) {
 		ExecutorService executorService = Executors.newCachedThreadPool();
 
 		List<PlayerSafetyAdapter> playerSafetyAdapters =
@@ -48,7 +49,11 @@ public class Referee implements IReferee {
 						.collect(Collectors.toList())
 		);
 
-		return playGame(playerNames, gameState, executorService);
+		return playGame(playerNames, gameState, executorService, observers);
+	}
+
+	public GameResult playGame(List<IPlayer> players) {
+		return this.playGame(players, new ArrayList<>());
 	}
 
 	/**
@@ -57,7 +62,7 @@ public class Referee implements IReferee {
 	 * @param players The players in the game. Assume the players are sorted by age already.
 	 * @param gameState the game state to start the game with.
 	 */
-	public GameResult playGame(List<IPlayer> players, IGameState gameState) {
+	public GameResult playGame(List<IPlayer> players, IGameState gameState, List<IObserver> observers) {
 		ExecutorService executorService = Executors.newCachedThreadPool();
 
 		List<PlayerSafetyAdapter> playerSafetyAdapters =
@@ -66,24 +71,30 @@ public class Referee implements IReferee {
 		return playGame(
 				createPlayerNamesMap(playerSafetyAdapters),
 				gameState,
-				executorService
+				executorService,
+				observers
 		);
+	}
+
+	public GameResult playGame(List<IPlayer> players, IGameState gameState) {
+		return this.playGame(players, gameState, new ArrayList<>());
 	}
 
 	private GameResult playGame(
 			Map<String, PlayerSafetyAdapter> playerNames,
 			IGameState gameState,
-			ExecutorService executorService
+			ExecutorService executorService,
+			List<IObserver> observers
 	) {
 		assholes = new ArrayList<>();
 
 		announceSetup(gameState, playerNames);
-
+		observers.forEach(o -> o.receiveState(gameState.getMap()));
 		shouldGameEnd = false;
 
 		// while main loop that plays a game to completion
 		while (!shouldGameEnd) {
-			playRound(playerNames, gameState);
+			playRound(playerNames, gameState, observers);
 			shouldGameEnd |= gameState.getPlayerStates().isEmpty() || !placementThisRound;
 		}
 
@@ -92,11 +103,13 @@ public class Referee implements IReferee {
 		return new GameResult(winners, assholes);
 	}
 
-	private void playRound(Map<String, PlayerSafetyAdapter> playerNames, IGameState gameState) {
+	private void playRound(Map<String, PlayerSafetyAdapter> playerNames, IGameState gameState,
+												 List<IObserver> observers) {
 		placementThisRound = false;
 		do {
 			PlayerSafetyAdapter activePlayer = playerNames.get(gameState.getActivePlayer().getName());
 			takeTurn(gameState, activePlayer);
+			observers.forEach(o -> o.receiveState(gameState.getMap()));
 		} while (!gameState.isStartOfRound() && !shouldGameEnd);
 	}
 
