@@ -9,25 +9,24 @@ import com.google.gson.annotations.SerializedName;
 
 public class JPlayer {
 	private final int score;
+	private final String name;
 	@SerializedName("tile*")
 	private final JTile[] tiles;
 
-	public JPlayer(int score, JTile[] tiles) {
+	public JPlayer(int score, String name, JTile[] tiles) {
 		this.score = score;
+		this.name = name;
 		this.tiles = tiles;
 	}
 
 	public JPlayer(IPlayerState playerState) {
 		this.score = playerState.getScore();
+		this.name = playerState.getName();
 		this.tiles = playerState.getTiles().stream()
 				.map(JTile::new).toArray(JTile[]::new);
 	}
 
 	public PlayerState convert() {
-		return this.convert("Test Player");
-	}
-
-	public PlayerState convert(String name) {
 		PlayerState playerState = new PlayerState(name);
 		playerState.addScore(score);
 		playerState.acceptTiles(Arrays.stream(tiles).map(JTile::convert).collect(Collectors.toList()));

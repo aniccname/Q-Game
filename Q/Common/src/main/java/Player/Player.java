@@ -16,7 +16,7 @@ import Referee.IShareableInfo;
 public class Player implements IPlayer {
 	private final String name;
 	private final IStrategy strategy;
-	private List<ITile> tiles;
+	protected List<ITile> tiles;
 
 	/**
 	 * Creates a new player client with a name and given strategy that the player should play with.
