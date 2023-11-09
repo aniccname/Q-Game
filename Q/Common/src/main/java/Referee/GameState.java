@@ -33,8 +33,8 @@ import Referee.Visitor.PlacesEntireHand;
 public class GameState implements IGameState {
   public static final int FULL_HAND_TILE_COUNT = 6; // the max number of tiles a player can have
   private static final int MAX_EACH_TILE_COUNT = 30; // the max number of each tile in the game
-  public static final int Q_POINTS = 6; // the number of points a Q is worth
-  public static final int WHOLE_HAND_BONUS = 6; // the bonus for placing the entire hand
+  public static final int Q_POINTS = 8; // the number of points a Q is worth
+  public static final int WHOLE_HAND_BONUS = 4; // the bonus for placing the entire hand
 
   private final IMap map; // the game map
   private final List<ITile> refTiles; // the list of referee's tiles

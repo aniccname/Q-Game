@@ -33,10 +33,7 @@ public class EmptyTile implements ITile {
   }
 
   @Override
-  public boolean validNeighbor(ITile tile) {
-    if (null == tile) {
-      throw new IllegalArgumentException("Tile must not be null");
-    }
+  public boolean validNeighbors(ITile tile1, ITile tile2) {
     return true;
   }
 

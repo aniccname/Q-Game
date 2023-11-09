@@ -35,10 +35,10 @@ public class JState {
 				.map(JPlayer::new).collect(Collectors.toList());
 	}
 
-	public IGameState convert(List<String> names) {
+	public IGameState convert() {
 		List<IPlayerState> players = new ArrayList<>();
-		for (int i = 0; i < names.size(); i++) {
-			players.add(this.players.get(i).convert(names.get(i)));
+		for (JPlayer player : this.players) {
+			players.add(player.convert());
 		}
 
 		return new GameState(

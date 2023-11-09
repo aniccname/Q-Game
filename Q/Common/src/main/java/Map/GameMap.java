@@ -32,8 +32,7 @@ import com.google.gson.JsonObject;
  * enforces these rules on the board.
  */
 public class GameMap implements IMap {
-  private final Map<Coord, ITile> board;
-
+  protected final Map<Coord, ITile> board;
 
   /**
    * Creates a map given a mapping of coordinates to tiles.
@@ -103,19 +102,20 @@ public class GameMap implements IMap {
     if (null == tile) {
       throw new IllegalArgumentException("Tile must not be null");
     }
-    List<Map.Entry<Coord, ITile>> potentialNeighbors = board.entrySet().stream()
-            .filter((x) -> x.getValue().validNeighbor(tile)).collect(Collectors.toList());
 
-    Set<Coord> emptyNeighboringSpots = potentialNeighbors.stream()
-            .flatMap((x) -> Arrays.stream(x.getKey().getCardinalNeighbors()))
-            .filter((x) -> !board.containsKey(x))
-            .collect(Collectors.toSet());
-
-    Set<Coord> validSpots = emptyNeighboringSpots.stream()
+    return frontier(tile).stream()
             .filter((c) -> checkNeighboringTiles(c, tile))
             .collect(Collectors.toSet());
+  }
 
-    return validSpots;
+  protected Set<Coord> frontier(ITile tile) {
+    List<Map.Entry<Coord, ITile>> potentialNeighbors = board.entrySet().stream()
+        .filter((x) -> x.getValue().validNeighbors(tile, new EmptyTile())).collect(Collectors.toList());
+
+    return potentialNeighbors.stream()
+        .flatMap((x) -> Arrays.stream(x.getKey().getCardinalNeighbors()))
+        .filter((x) -> !board.containsKey(x))
+        .collect(Collectors.toSet());
   }
 
   /**
@@ -125,7 +125,7 @@ public class GameMap implements IMap {
    * @param tile tile to check
    * @return whether a tile would be valid at the given spot
    */
-  private boolean checkNeighboringTiles(Coord coord, ITile tile) {
+  protected boolean checkNeighboringTiles(Coord coord, ITile tile) {
     if (null == tile) {
       throw new IllegalArgumentException("Tile must not be null");
     }
@@ -134,12 +134,8 @@ public class GameMap implements IMap {
     }
     Coord[] neighbors = coord.getCardinalNeighbors();
 
-    return getTile(neighbors[Coord.UP]).validNeighbor(tile)
-        && getTile(neighbors[Coord.DOWN]).validNeighbor(tile)
-        && getTile(neighbors[Coord.UP]).validNeighbor(getTile(neighbors[Coord.DOWN]))
-        && getTile(neighbors[Coord.LEFT]).validNeighbor(tile)
-        && getTile(neighbors[Coord.RIGHT]).validNeighbor(tile)
-        && getTile(neighbors[Coord.LEFT]).validNeighbor(getTile(neighbors[Coord.RIGHT]));
+    return tile.validNeighbors(getTile(neighbors[Coord.UP]), getTile(neighbors[Coord.DOWN]))
+        && tile.validNeighbors(getTile(neighbors[Coord.LEFT]), getTile(neighbors[Coord.RIGHT]));
   }
 
   @Override

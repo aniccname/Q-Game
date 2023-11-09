@@ -22,7 +22,7 @@ public class EmptyTileTest {
 
   @Test
   public void validNeighbor() {
-    assertTrue(empty.validNeighbor(empty));
+    assertTrue(empty.validNeighbors(empty, empty));
   }
 
   @Test

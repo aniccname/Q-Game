@@ -46,13 +46,13 @@ public class TileTest {
 
   @Test
   public void validNeighbor() {
-    assertTrue(greenStar.validNeighbor(greenStar));
-    assertTrue(greenStar.validNeighbor(greenSquare));
-    assertTrue(greenStar.validNeighbor(redStar));
-    assertTrue(blueSquare.validNeighbor(blueStar));
-    assertTrue(blueStar.validNeighbor(redStar));
-    assertFalse(greenStar.validNeighbor(blueSquare));
-    assertFalse(blueSquare.validNeighbor(redStar));
+    assertTrue(greenStar.validNeighbors(greenStar, empty));
+    assertTrue(greenStar.validNeighbors(greenSquare, empty));
+    assertTrue(greenStar.validNeighbors(redStar, blueStar));
+    assertTrue(blueSquare.validNeighbors(blueStar, empty));
+    assertTrue(blueStar.validNeighbors(redStar, blueStar));
+    assertFalse(greenStar.validNeighbors(blueSquare, empty));
+    assertFalse(blueSquare.validNeighbors(empty, redStar));
   }
 
   @Test

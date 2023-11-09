@@ -89,7 +89,7 @@ public class Referee implements IReferee {
 		assholes = new ArrayList<>();
 
 		announceSetup(gameState, playerNames);
-		observers.forEach(o -> o.receiveState(gameState.getMap()));
+		updateObservers(observers, gameState);
 		shouldGameEnd = false;
 
 		// while main loop that plays a game to completion
@@ -106,11 +106,25 @@ public class Referee implements IReferee {
 	private void playRound(Map<String, PlayerSafetyAdapter> playerNames, IGameState gameState,
 												 List<IObserver> observers) {
 		placementThisRound = false;
-		do {
+
+		int numTurns = gameState.getPlayerStates().size();
+
+		for (int i = 0; i < numTurns && !shouldGameEnd; i++) {
 			PlayerSafetyAdapter activePlayer = playerNames.get(gameState.getActivePlayer().getName());
 			takeTurn(gameState, activePlayer);
-			observers.forEach(o -> o.receiveState(gameState.getMap()));
-		} while (!gameState.isStartOfRound() && !shouldGameEnd);
+			updateObservers(observers, gameState);
+		}
+	}
+
+	private void updateObservers(List<IObserver> observers, IGameState gameState) {
+		observers.forEach(o -> o.receiveState(
+				gameState.getMap(),
+				gameState.getPlayerStates().stream()
+						.collect(Collectors.toMap(
+								playerState -> playerState.getName(),
+								playerState -> playerState.getScore()
+						))
+		));
 	}
 
 	private List<PlayerSafetyAdapter> createPlayerSafetyAdapters(

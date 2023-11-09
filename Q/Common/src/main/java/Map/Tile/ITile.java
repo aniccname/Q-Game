@@ -34,7 +34,7 @@ public interface ITile extends Comparable<ITile> {
    * @param tile tile to check against this tile
    * @return boolean indicating if given tile could be a valid neighbor
    */
-  boolean validNeighbor(ITile tile);
+  boolean validNeighbors(ITile tile1, ITile tile2);
 
   /**
    * Indicates whether this tile is empty.

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,6 +19,7 @@ import Map.IMap;
 public class Observer extends JFrame implements IObserver {
 
   private final List<IMap> states;
+  private final List<Map<String, Integer>> scores;
   private final String tempDir;
   private int displayedStateIndex;
   private final JButton nextButton;
@@ -25,9 +27,11 @@ public class Observer extends JFrame implements IObserver {
   private final JButton saveButton;
   private JComponent activeState;
   private JScrollPane scrollActiveState;
+  private final JLabel scoreLabel;
 
   public Observer() {
     this.states = new ArrayList<>();
+    this.scores = new ArrayList<>();
     this.displayedStateIndex = -1;
     JPanel buttonPannel = new JPanel();
     buttonPannel.setLayout(new BoxLayout(buttonPannel, BoxLayout.X_AXIS));
@@ -47,11 +51,14 @@ public class Observer extends JFrame implements IObserver {
     this.pack();
     this.tempDir = "Tmp";
     new File(tempDir).mkdir();
+    this.scoreLabel = new JLabel();
+    this.add(this.scoreLabel, BorderLayout.PAGE_END);
   }
 
   @Override
-  public void receiveState(IMap state) {
+  public void receiveState(IMap state, Map<String, Integer> scores) {
     this.states.add(state);
+    this.scores.add(scores);
     if (this.displayedStateIndex == -1) {
       //this.displayedStateIndex = 0;
       this.saveButton.setEnabled(true);
@@ -95,7 +102,7 @@ public class Observer extends JFrame implements IObserver {
   /**
    * EFFECT: Updates this JFrame to display the currently rendered state.
    */
-  private void  displayCurrentState() {
+  private void displayCurrentState() {
     if (!(this.activeState == null)) {
       this.remove(this.scrollActiveState);
     }
@@ -105,6 +112,13 @@ public class Observer extends JFrame implements IObserver {
     this.activeState = this.states.get(displayedStateIndex).render();
     this.scrollActiveState = new JScrollPane(this.activeState);
     this.add(this.scrollActiveState, BorderLayout.CENTER);
+
+    this.scoreLabel.setText("Scores:\n" +
+        this.scores.get(this.displayedStateIndex).entrySet().stream()
+            .map(e -> e.getKey() + ": " + e.getValue()+"\n")
+            .reduce("", String::concat)
+    );
+
     this.pack();
   }
 

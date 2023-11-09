@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+java -jar ../Q/Common/xgames-with-observer/xgames-with-observer.jar "$@"

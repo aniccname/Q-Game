@@ -18,17 +18,8 @@ import java.util.Map;
  */
 public class DagStrategy extends AbstractStrategy {
 	@Override
-	protected Optional<Coord> findPlace(
-			IMap map, ITile tile, List<Coord> placements
-	) {
+	protected Optional<Coord> findPlace(IMap map, ITile tile) {
 		Set<Coord> possibleCoords = map.validSpots(tile);
-		return possibleCoords.stream().filter(
-				coord -> {
-					List<Coord> coords = new ArrayList<>(placements);
-					coords.add(coord);
-					return sameRowOrColumn(coords);
-				}
-				)
-				.sorted().findFirst();
+		return possibleCoords.stream().sorted().findFirst();
 	}
 }

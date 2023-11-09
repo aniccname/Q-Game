@@ -15,6 +15,7 @@ import Map.Coord;
 import Map.IMap;
 import Map.Tile.ITile;
 import Referee.IShareableInfo;
+import Referee.Visitor.ActionChecker;
 
 /**
  * A strategy that attempts to place tiles in lexographic order. If no tiles
@@ -45,19 +46,25 @@ public abstract class AbstractStrategy implements IStrategy {
 		List<Map.Entry<Coord, ITile>> placements = new ArrayList<>();
 		IMap map = gameInfo.getMap();
 
-		Optional<Map.Entry<Coord, ITile>> next =
-				nextPlacement(map, hand, new ArrayList<>());
+		Optional<Map.Entry<Coord, ITile>> next = nextPlacement(map, hand);
 		while (next.isPresent()) {
 			Map.Entry<Coord, ITile> placement = next.get();
+
+			var newCoords = placements.stream().map(Map.Entry::getKey).collect(Collectors.toList());
+			newCoords.add(placement.getKey());
+			if (!sameRowOrColumn(newCoords)) {
+				return placements;
+			}
+
 			placements.add(placement);
 			map.placeTileByOther(placement.getKey(), placement.getValue());
 			handCopy.remove(placement.getValue());
-			next = nextPlacement(map, handCopy, placements.stream().map(Map.Entry::getKey).collect(Collectors.toList()));
+			next = nextPlacement(map, handCopy);
 		}
 		return placements;
 	}
 
-	protected boolean sameRowOrColumn(List<Coord> coords) {
+	private boolean sameRowOrColumn(List<Coord> coords) {
 		long distinctXsCount = coords.stream().map(Coord::getX).distinct().count();
 		long distinctYsCount = coords.stream().map(Coord::getY).distinct().count();
 
@@ -71,10 +78,10 @@ public abstract class AbstractStrategy implements IStrategy {
 	 * @return the next placement to make, or empty if no placement can be made
 	 */
 	protected Optional<Map.Entry<Coord, ITile>> nextPlacement(
-			IMap map, List<ITile> hand, List<Coord> placements
+			IMap map, List<ITile> hand
 	) {
 		for (ITile tile : hand.stream().sorted().collect(Collectors.toList())) {
-			Optional<Coord> coord = findPlace(map, tile, placements);
+			Optional<Coord> coord = findPlace(map, tile);
 			if (coord.isPresent()) {
 				return Optional.of(new AbstractMap.SimpleEntry<>(coord.get(), tile));
 			}
@@ -88,7 +95,5 @@ public abstract class AbstractStrategy implements IStrategy {
 	 * @param tile the tile to place
 	 * @return the coordinate to place the tile at, or empty if no place is found
 	 */
-	protected abstract Optional<Coord> findPlace(
-			IMap map, ITile tile, List<Coord> placements
-	);
+	protected abstract Optional<Coord> findPlace(IMap map, ITile tile);
 }

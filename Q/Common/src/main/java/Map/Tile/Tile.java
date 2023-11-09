@@ -4,7 +4,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.LookupOp;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -49,14 +51,20 @@ public class Tile implements ITile {
   }
 
   @Override
-  public boolean validNeighbor(ITile tile) {
-    if (null == tile) {
-      throw new IllegalArgumentException("Tile must not be null.");
+  public boolean validNeighbors(ITile tile1, ITile tile2) {
+    Set<Shape> shapes = new HashSet<>();
+    Set<TileColor> colors = new HashSet<>();
+    shapes.add(this.shape);
+    colors.add(this.color);
+    if (!tile1.isEmpty()) {
+      shapes.add(tile1.getShape());
+      colors.add(tile1.getColor());
     }
-    if (tile.isEmpty()) {
-      return true;
+    if (!tile2.isEmpty()) {
+      shapes.add(tile2.getShape());
+      colors.add(tile2.getColor());
     }
-    return this.color == tile.getColor() || this.shape == tile.getShape();
+    return shapes.size() == 1 || colors.size() == 1;
   }
 
   @Override
