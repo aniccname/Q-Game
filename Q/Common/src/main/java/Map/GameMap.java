@@ -2,6 +2,7 @@ package Map;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -103,16 +104,13 @@ public class GameMap implements IMap {
       throw new IllegalArgumentException("Tile must not be null");
     }
 
-    return frontier(tile).stream()
+    return frontier().stream()
             .filter((c) -> checkNeighboringTiles(c, tile))
             .collect(Collectors.toSet());
   }
 
-  protected Set<Coord> frontier(ITile tile) {
-    List<Map.Entry<Coord, ITile>> potentialNeighbors = board.entrySet().stream()
-        .filter((x) -> x.getValue().validNeighbors(tile, new EmptyTile())).collect(Collectors.toList());
-
-    return potentialNeighbors.stream()
+  protected Set<Coord> frontier() {
+    return board.entrySet().stream()
         .flatMap((x) -> Arrays.stream(x.getKey().getCardinalNeighbors()))
         .filter((x) -> !board.containsKey(x))
         .collect(Collectors.toSet());

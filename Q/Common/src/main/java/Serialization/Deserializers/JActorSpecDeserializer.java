@@ -251,7 +251,7 @@ class CheatingPlayer extends Player {
 		public Optional<IAction> tryCheat(IShareableInfo publicState) {
 			var board = new GameMap(publicState.getMap().getMap()) {
 				public Set<Coord> invalidSpots(ITile tile) {
-					return frontier(tile).stream()
+					return frontier().stream()
 							.filter((c) -> !checkNeighboringTiles(c, tile))
 							.collect(Collectors.toSet());
 				}
