@@ -24,6 +24,16 @@ public class PlayerState implements IPlayerState {
     this.playerTiles = new ArrayList<>();
   }
 
+  /**
+   * Creates a copy of the given player state
+   * @param state the player state to copy
+   */
+  public PlayerState(IPlayerState state) {
+    this.name = state.getName();
+    this.playerTiles = new ArrayList<>(state.getTiles());
+    this.score = state.getScore();
+  }
+
   @Override
   public String getName() {
     return name;

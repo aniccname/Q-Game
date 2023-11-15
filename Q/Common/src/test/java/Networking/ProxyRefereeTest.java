@@ -43,12 +43,11 @@ public class ProxyRefereeTest {
   Socket proxySocket;
   ExecutorService executorService;
   IPlayer player;
-  int port;
+  int port = 7779;
   PrintStream sourceStream;
 
   @Before
   public void setup() throws IOException, ExecutionException, InterruptedException {
-    port = 7777;
     executorService = Executors.newSingleThreadExecutor();
     ServerSocket listener = new ServerSocket(port);
     Future<Socket> futureSource = executorService.submit(listener::accept);

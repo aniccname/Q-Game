@@ -60,6 +60,7 @@ public class PlayerSafetyAdapter {
 		try {
 			return Optional.ofNullable(future.get(timeoutInSeconds, TimeUnit.SECONDS));
 		} catch (Exception e) {
+			future.cancel(true);
 			return Optional.empty();
 		}
 	}

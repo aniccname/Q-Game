@@ -27,11 +27,10 @@ public class ClientTest {
   Client client;
   ExecutorService executorService;
 
-  int port;
+  int port = 7777;
 
   @Test
   public void testClient() throws IOException, ExecutionException, InterruptedException {
-    port = 7777;
     executorService = Executors.newSingleThreadExecutor();
     ServerSocket listener = new ServerSocket(port);
     Future<Socket> futureSource = executorService.submit(listener::accept);

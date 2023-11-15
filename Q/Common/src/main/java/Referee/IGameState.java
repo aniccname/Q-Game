@@ -81,4 +81,9 @@ public interface IGameState extends IShareableInfo {
    * @return the states of all players
    */
   List<IPlayerState> getPlayerStates();
+
+  /**
+   * Creates a copy of the game state.
+   */
+  IGameState copy();
 }

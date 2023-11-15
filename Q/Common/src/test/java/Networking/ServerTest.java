@@ -29,41 +29,44 @@ public class ServerTest {
 
   @Test
   public void noSignups() throws IOException {
-    assertEquals(new GameResult(List.of(), List.of()), testServer.run(7777));
+    assertEquals(new GameResult(List.of(), List.of()), testServer.run(7780));
   }
 
   @Test
   public void oneSignup() throws IOException, ExecutionException, InterruptedException {
+    int port = 7781;
     ExecutorService serverExecutor = Executors.newSingleThreadExecutor();
-    Future<GameResult> gameToRun = serverExecutor.submit(() -> testServer.run(7777));
-    connectPlayer("Lonely Larry");
+    Future<GameResult> gameToRun = serverExecutor.submit(() -> testServer.run(port));
+    connectPlayer("Lonely Larry", port);
     assertEquals(new GameResult(List.of(), List.of()), gameToRun.get());
   }
 
   @Test
   public void twoSignups() throws IOException, ExecutionException, InterruptedException {
+    int port = 7782;
     ExecutorService serverExecutor = Executors.newSingleThreadExecutor();
-    Future<GameResult> gameToRun = serverExecutor.submit(() -> testServer.run(7777));
-    connectPlayer("Alice");
-    connectPlayer("Bob");
+    Future<GameResult> gameToRun = serverExecutor.submit(() -> testServer.run(port));
+    connectPlayer("Alice", port);
+    connectPlayer("Bob", port);
     assertEquals(new GameResult(List.of("Alice", "Bob"), List.of()), gameToRun.get());
   }
 
   @Test
   public void fiveSignupts()
           throws IOException, ExecutionException, InterruptedException {
+    int port = 7783;
     ExecutorService serverExecutor = Executors.newSingleThreadExecutor();
-    Future<GameResult> gameToRun = serverExecutor.submit(() -> testServer.run(7777));
-    connectPlayer("Alice");
-    connectPlayer("Bob");
-    connectPlayer("Charlie");
-    connectPlayer("Daniel");
-    connectPlayer("Eric");
+    Future<GameResult> gameToRun = serverExecutor.submit(() -> testServer.run(port));
+    connectPlayer("Alice", port);
+    connectPlayer("Bob", port);
+    connectPlayer("Charlie", port);
+    connectPlayer("Daniel", port);
+    connectPlayer("Eric", port);
     assertEquals(new GameResult(List.of("Alice", "Bob", "Charlie", "Daniel"), List.of()), gameToRun.get());
   }
 
-  private void connectPlayer(String name) throws IOException {
-    try(Socket socket = new Socket("localhost", 7777)) {
+  private void connectPlayer(String name, int port) throws IOException {
+    try(Socket socket = new Socket("localhost", port)) {
       new PrintStream(socket.getOutputStream()).println("\"" + name + "\"");
     }
   }

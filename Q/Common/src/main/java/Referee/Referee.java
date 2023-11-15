@@ -26,7 +26,7 @@ import Referee.Visitor.PlacesEntireHand;
 public class Referee implements IReferee {
 	private boolean shouldGameEnd = false;
 	private boolean placementThisRound = false;
-	private static final int TIMEOUT_IN_SECONDS = 20;
+	private static final int TIMEOUT_IN_SECONDS = 5;
 	private List<String> assholes;
 
 	/**
@@ -117,14 +117,7 @@ public class Referee implements IReferee {
 	}
 
 	private void updateObservers(List<IObserver> observers, IGameState gameState) {
-		observers.forEach(o -> o.receiveState(
-				gameState.getMap(),
-				gameState.getPlayerStates().stream()
-						.collect(Collectors.toMap(
-								playerState -> playerState.getName(),
-								playerState -> playerState.getScore()
-						))
-		));
+		observers.forEach(o -> o.receiveState(gameState.copy()));
 	}
 
 	private List<PlayerSafetyAdapter> createPlayerSafetyAdapters(

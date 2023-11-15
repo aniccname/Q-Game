@@ -78,6 +78,19 @@ public class GameState implements IGameState {
   }
 
   /**
+   * Constructs a copy of the given game state.
+   * @param state the game state to copy
+   */
+  public GameState(GameState state) {
+    this(
+        state.map.copyMap(),
+        new ArrayList<>(state.refTiles),
+        state.getPlayerStates().stream()
+            .map(PlayerState::new).collect(Collectors.toList())
+        );
+  }
+
+  /**
    * Constructor for beginning a game from a starting position, where a map
    * already exists and players already have hands and scores
    *
@@ -242,5 +255,10 @@ public class GameState implements IGameState {
     order.kickPlayer(player);
     // the ref will accept the players tiles
     acceptRefTiles(player.getTiles());
+  }
+
+  @Override
+  public IGameState copy() {
+    return new GameState(this);
   }
 }

@@ -48,11 +48,10 @@ public class ProxyPlayerTest {
   Socket proxySocket;
   ExecutorService executorService;
 
-  int port;
+  int port = 7778;
 
   @Before
   public void setup() throws IOException, ExecutionException, InterruptedException {
-    port = 7777;
     executorService = Executors.newSingleThreadExecutor();
     ServerSocket listener = new ServerSocket(port);
     Future<Socket> futureSource = executorService.submit(listener::accept);

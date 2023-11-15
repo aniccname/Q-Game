@@ -61,12 +61,62 @@ public class JActorSpecDeserializer implements JsonDeserializer<Player> {
 		} else if (jsonArray.size() == 3) {
 			String exn = jsonArray.get(2).getAsString();
 			return new ExceptionPlayer(name, strategy, exn);
-		} else if (jsonArray.size() == 4) {
+		} else if (jsonArray.size() == 4 && "a cheat".equals(jsonArray.get(2).getAsString())) {
 			String cheat = jsonArray.get(3).getAsString();
 			return new CheatingPlayer(name, strategy, cheat);
+		} else if (jsonArray.size() == 4) {
+			String exn = jsonArray.get(2).getAsString();
+			int k = jsonArray.get(3).getAsInt();
+			return new InfinitePlayer(name, strategy, exn, k);
 		}
 
 		throw new RuntimeException("Bad JActorSpecA schema");
+	}
+}
+
+class InfinitePlayer extends Player {
+	private final String exn;
+	private int k;
+
+	InfinitePlayer(String name, IStrategy strategy, String exn, int k) {
+		super(name, strategy);
+		this.exn = exn;
+		this.k = k;
+	}
+
+	@Override
+	public void setup(IShareableInfo map, List<ITile> tiles) {
+		if ("setup".equals(exn)) baddie();
+		super.setup(map, tiles);
+	}
+
+	@Override
+	public IAction takeAction(IShareableInfo publicState) {
+		if ("take-turn".equals(exn)) baddie();
+		return super.takeAction(publicState);
+	}
+
+	@Override
+	public void newTiles(List<ITile> tiles) {
+		if ("new-tiles".equals(exn)) baddie();
+		super.newTiles(tiles);
+	}
+
+	@Override
+	public void win(boolean won) {
+		if ("win".equals(exn)) baddie();
+		super.win(won);
+	}
+
+	private void baddie() {
+		k--;
+		while(k == 0) {
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 }
 

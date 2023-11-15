@@ -135,17 +135,16 @@ public class GameStateTest {
 
   @org.junit.Test
   public void getScores() {
-    Map<String, Integer> initialScores = igs.getScores();
-    assertEquals(0, (int) initialScores.get("Alice"));
-    assertEquals(0, (int) initialScores.get("Bob"));
+    List<Integer> initialScores = igs.getScores();
+    assertEquals(0, initialScores.get(0).intValue());
+    assertEquals(0, initialScores.get(1).intValue());
     igs.getActivePlayer().acceptTiles(List.of(new Tile(Shape.Clover, TileColor.Purple)));
     assertTrue(igs.validAction(new ActionChecker(), placeOrangeCirclex1y0));
     igs.doAction(placeOrangeCirclex1y0);
 
-    Map<String, Integer> updatedScores = igs.getScores();
+    List<Integer> updatedScores = igs.getScores();
 
-    assertEquals(3, (int) updatedScores.get("Alice"));
-    assertEquals(0, (int) updatedScores.get("Bob"));
-
+    assertEquals(3, updatedScores.get(0).intValue());
+    assertEquals(0, updatedScores.get(1).intValue());
   }
 }

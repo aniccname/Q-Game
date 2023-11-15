@@ -53,7 +53,10 @@ public class RefereeTest {
 
 		new Referee().playGame(players, gamestate);
 
-		assertEquals(9, gamestate.getActivePlayer().getScore());
+		assertEquals(
+				3 + GameState.WHOLE_HAND_BONUS,
+				gamestate.getActivePlayer().getScore()
+		);
 	}
 
 	@Test
