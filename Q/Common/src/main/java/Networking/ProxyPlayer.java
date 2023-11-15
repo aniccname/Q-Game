@@ -4,10 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonStreamParser;
-import com.google.gson.stream.JsonReader;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -21,7 +19,6 @@ import Player.IPlayer;
 import Referee.IShareableInfo;
 import Serialization.Deserializers.JChoiceDeserializer;
 import Serialization.JPub;
-import Serialization.JState;
 import Serialization.JTile;
 
 /**

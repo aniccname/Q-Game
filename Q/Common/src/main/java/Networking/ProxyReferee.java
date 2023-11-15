@@ -17,10 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import Action.IAction;
-import Map.IMap;
 import Map.Tile.ITile;
 import Player.IPlayer;
-import Player.Player;
 import Referee.IShareableInfo;
 import Serialization.Deserializers.JPubDeserializer;
 import Serialization.JPub;

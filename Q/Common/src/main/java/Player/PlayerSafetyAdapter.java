@@ -8,7 +8,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import Action.IAction;
-import Map.IMap;
 import Map.Tile.ITile;
 import Referee.IShareableInfo;
 

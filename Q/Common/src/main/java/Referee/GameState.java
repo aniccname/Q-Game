@@ -3,7 +3,6 @@ package Referee;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -24,7 +23,6 @@ import Referee.Visitor.PlacesEntireHand;
  *
  * This interface is supposed to represent the interface between the referee-player how they
  * are able to communicate with each other.
- *
  * This specific implementation implements the IGameState interface and will use the
  * ActionExecutor, ActionChecker, and ActionScorer to perform, validate, and score actions
  * respectively.

@@ -3,7 +3,6 @@ package Networking;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonStreamParser;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import Player.IPlayer;
 import Player.Player;
 import Player.Strategy.DagStrategy;
 

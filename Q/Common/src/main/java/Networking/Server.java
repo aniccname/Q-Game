@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import Player.IPlayer;
 import Referee.GameResult;
-import Referee.Referee;
 
 /**
  * Represents a Server that <ul>
@@ -63,7 +62,7 @@ public class Server {
   public GameResult run(int port) throws IOException {
     ExecutorService threadPool = Executors.newCachedThreadPool();
     try (
-            ServerSocket listener = new ServerSocket(port);
+            ServerSocket listener = new ServerSocket(port)
     ) {
       List<IPlayer> players = new ArrayList<>(acceptSignups(listener, threadPool, maxPlayers));
       if (players.size() < minPlayers) {

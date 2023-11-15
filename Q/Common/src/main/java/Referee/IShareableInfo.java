@@ -1,10 +1,8 @@
 package Referee;
 
 import java.util.List;
-import java.util.Map;
 
 import Map.IMap;
-import Player.IPlayer;
 
 /**
  * Represents the shareable game state information that the player should be able to view.
