@@ -3,7 +3,6 @@ package Player;
 import java.util.List;
 
 import Action.IAction;
-import Map.IMap;
 import Map.Tile.ITile;
 import Referee.IShareableInfo;
 
@@ -23,7 +22,7 @@ public interface IPlayer {
    * @param map the initial map of the game.
    * @param tiles the initial tiles in the player's hand.
    */
-  void setup(IMap map, List<ITile> tiles);
+  void setup(IShareableInfo map, List<ITile> tiles);
 
   /**
    * Determines the action the player will take based on the current public

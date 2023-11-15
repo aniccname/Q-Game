@@ -163,7 +163,7 @@ public class Referee implements IReferee {
 		// lets setup the player client
 		for (IPlayerState playerState : gameState.getPlayerStates()) {
 			boolean playerBehaved = playerNames.get(playerState.getName())
-					.setup(gameState.getMap(), playerState.getTiles());
+					.setup(gameState, playerState.getTiles());
 			if (!playerBehaved) {
 				gameState.removePlayer(playerState);
 				assholes.add(playerState.getName());

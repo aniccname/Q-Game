@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import Map.IMap;
+import Player.IPlayer;
 
 /**
  * Represents the shareable game state information that the player should be able to view.
@@ -37,16 +38,22 @@ public interface IShareableInfo {
   List<String> showOrder();
 
   /**
-   * Returns a map of the player names to their scores.
+   * Returns the list of player scores in turn order.
    *
-   * @return map of names to scores
+   * @return list scores in turn order.
    */
-  Map<String, Integer> getScores();
+  List<Integer> getScores();
 
   /**
    * Returns whether the game is at the start of a round.
    * @return whether the game is at the start of a round
    */
   boolean isStartOfRound();
+
+  /**
+   * Returns the active player (the player whose turn it is)
+   * @return the player which has the current turn.
+   */
+  IPlayerState activePlayer();
 
 }

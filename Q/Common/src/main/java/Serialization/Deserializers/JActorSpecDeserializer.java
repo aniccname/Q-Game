@@ -5,7 +5,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -80,7 +79,7 @@ class ExceptionPlayer extends Player {
 	}
 
 	@Override
-	public void setup(IMap map, List<ITile> tiles) {
+	public void setup(IShareableInfo map, List<ITile> tiles) {
 		if ("setup".equals(exn)) throw new RuntimeException();
 		super.setup(map, tiles);
 	}

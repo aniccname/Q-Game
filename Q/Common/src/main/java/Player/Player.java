@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Action.IAction;
-import Map.IMap;
 import Map.Tile.ITile;
 import Player.Strategy.IStrategy;
 import Referee.IShareableInfo;
@@ -45,7 +44,7 @@ public class Player implements IPlayer {
 	 * @param map the initial map of the game.
 	 * @param tiles the initial tiles in the player's hand.
 	 */
-	public void setup(IMap map, List<ITile> tiles) {
+	public void setup(IShareableInfo map, List<ITile> tiles) {
 		this.tiles = new ArrayList<>(tiles);
 	}
 

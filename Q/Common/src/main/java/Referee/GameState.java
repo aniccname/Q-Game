@@ -155,6 +155,11 @@ public class GameState implements IGameState {
     return order.isStartOfRound();
   }
 
+  @Override
+  public IPlayerState activePlayer() {
+    return this.order.current();
+  }
+
   /**
    * Uses the referee (IActionChecker) to determine whether the action is valid.
    * Note: this method uses the visitor pattern to accept the referee into the action alongside
@@ -214,12 +219,9 @@ public class GameState implements IGameState {
   }
 
   @Override
-  public Map<String, Integer> getScores() {
+  public List<Integer> getScores() {
     return order.getPlayerStates().stream()
-        .collect(Collectors.toMap(
-            IPlayerState::getName,
-            IPlayerState::getScore)
-        );
+            .map(IPlayerState::getScore).collect(Collectors.toList());
   }
 
   @Override

@@ -31,7 +31,7 @@ public class PlayerSafetyAdapter {
 		return callWithTimeout(player::name);
 	}
 
-	public boolean setup(IMap map, List<ITile> tiles) {
+	public boolean setup(IShareableInfo map, List<ITile> tiles) {
 		return callWithTimeout(() -> {
 			player.setup(map, tiles);
 			return true;
