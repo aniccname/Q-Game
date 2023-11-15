@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-java -jar ../Q/Common/xbaddies/xbaddies.jar "$@"
+java -jar ../Q/Common/xbaddies/XBaddies.jar "$@"
