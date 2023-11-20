@@ -7,7 +7,12 @@
              },
              {
                 "score" : 0,
-                "name" : "Alberto",
-                "tile*" : [{"color" : "red", "shape" : "circle"}]
+                "name" : "Alice",
+                "tile*" : [{"color" : "red", "shape" : "square"}]
+             },
+             {
+               "score" : 0,
+               "name" : "Bob",
+               "tile*" : [{"color" :  "yellow", "shape" : "clover"}]
              }]}
-[["Hubert", "dag", "a cheat", "tile-not-owned"], ["Alberto", "dag"]]
+[["Hubert", "dag", "new-tiles", 1], ["Alice", "dag"], ["Bob", "dag"]]

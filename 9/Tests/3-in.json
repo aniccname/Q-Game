@@ -1,18 +1,18 @@
 {"map" : [[0, [0, {"color" : "yellow", "shape" : "circle"}]]],
-"tile*" : [{"color" : "purple", "shape" : "clover"}],
+"tile*" : [],
 "players" : [{
               "score" : 0, 
-              "name" : "Jebediah", 
-              "tile*" : [{"color" : "red", "shape" : "circle"}, {"color" : "purple", "shape" : "clover"}, {"color" : "green", "shape" : "square"}]
+              "name" : "AbsentAlbert",
+              "tile*" : [{"color" : "yellow", "shape" : "circle"}]
              },
              {
                 "score" : 0,
-                "name" : "Alberto",
-                "tile*" : [{"color" : "red", "shape" : "circle"}, {"color" : "red", "shape" : "circle"}, {"color" : "blue", "shape" : "8star"}]
+                "name" : "AbsentAlice",
+                "tile*" : [{"color" : "green", "shape" : "circle"}]
              }, 
              {
                 "score" : 0, 
-                "name" : "Barbera", 
-                "tile*" : [{"color" : "green", "shape" : "circle"}, {"color" : "green", "shape" : "square"}, {"color" : "blue", "shape" : "8star"}]
+                "name" : "AbsentAlex",
+                "tile*" : [{"color" : "green", "shape" : "circle"}]
                 }]}
-[["Jebediah", "dag", "a cheat", "no-fit"], ["Alberto", "dag"], ["Barbera" , "dag"]]
+[["AbsentAlbert", "dag", "setup", 1], ["AbsentAlice", "dag", "setup", 1], ["AbsentAlex" , "dag", "setup", "1"]]
