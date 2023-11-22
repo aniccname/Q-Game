@@ -1,0 +1,33 @@
+(testing /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/8/xgames-with-observer)
+(testing /course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/0-in.json /course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/0-out.json)
+(testing /course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/1-in.json /course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/1-out.json)
+---------------------------------
+(*** score 0)
+(*** on)
+'(#hasheq((map
+           .
+           ((0 (0 #hasheq((color . "blue") (shape . "diamond"))))
+            (1 (0 #hasheq((color . "orange") (shape . "diamond"))))))
+          (players
+           .
+           (#hasheq((name . "A")
+                    (score . 0)
+                    (tile* . (#hasheq((color . "green") (shape . "star")))))
+            #hasheq((name . "B")
+                    (score . 0)
+                    (tile*
+                     .
+                     (#hasheq((color . "purple") (shape . "diamond")))))))
+          (tile* . ()))
+  (("A" "dag") ("B" "ldasg" "a cheat" "non-adjacent-coordinate")))
+(*** expected)
+'((("A") ("B")))
+(*** but received)
+'(((plain fast with-newline plain-unicode) ((("B") ()))))
+
+
+(testing /course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/7-in.json /course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/7-out.json)
+(testing /course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/9-in.json /course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/9-out.json)
+((/course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/0-in.json /course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/0-out.json) (/course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/7-in.json /course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/7-out.json) (/course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/9-in.json /course/cs4500f23/ta/tedium-workdir/testfest-results/8/2/Tests/9-out.json))
+((passed 3) (total 4) (partial-score 3))
+
