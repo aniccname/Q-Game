@@ -38,7 +38,12 @@ For `Q/Client/client`, explain what happens when the client is started _before_ 
 - does it wait until the server is up (best solution)
 - does it shut down gracefully (acceptable now, but switch to the first option for 10)
 
+https://github.khoury.northeastern.edu/CS4500-F23/plucky-monkeys/blob/51095d98f64051fcab9c137126a885f07e4a66c9/Q/Common/src/main/java/Networking/Client.java#L21-L28 If the specified hostname and port is not a
+server, the program crashes. 
+
 For `Q/Server/server`, explain how the code implements the two waiting periods. 
+https://github.khoury.northeastern.edu/CS4500-F23/plucky-monkeys/blob/51095d98f64051fcab9c137126a885f07e4a66c9/Q/Common/src/main/java/Networking/Server.java#L57-L78
+The acceptSignups method is how we handle signups in one waiting period. We simply call it twice if after the first signup period we do not have the minimum amount of players. The once the maximum amount of players have signed up, the acceptSignups method closes the signup period and exits. 
 
 The ideal feedback for each of these three points is a GitHub
 perma-link to the range of lines in a specific file or a collection of
