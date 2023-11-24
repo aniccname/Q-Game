@@ -10,15 +10,28 @@ Indicate below each bullet which file/unit takes care of each task.
 
 For `Q/Server/player`,
 
-- explain how it implements the exact same interface as `Q/Player/player`
+- explain how it implements the exact same interface as `Q/Player/player`   
+https://github.khoury.northeastern.edu/CS4500-F23/plucky-monkeys/blob/51095d98f64051fcab9c137126a885f07e4a66c9/Q/Common/src/main/java/Networking/ProxyPlayer.java#L28 Our Proxy player implements a common interface
+with our AI player, the IPlayer interface.
 - explain how it receives the TCP connection that enables it to communicate with a client
+https://github.khoury.northeastern.edu/CS4500-F23/plucky-monkeys/blob/51095d98f64051fcab9c137126a885f07e4a66c9/Q/Common/src/main/java/Networking/ProxyPlayer.java#L29-L35. The proxy player stores the name of the
+player and a client that connects to the remote client.   
+https://github.khoury.northeastern.edu/CS4500-F23/plucky-monkeys/blob/51095d98f64051fcab9c137126a885f07e4a66c9/Q/Common/src/main/java/Networking/ProxyPlayer.java#L98-L107 For each method call, the invoke method 
+is called which sends the JSON message to the player and returns the player's response. 
 - point to unit tests that check whether it writes (proper) JSON to a mock output device
+https://github.khoury.northeastern.edu/CS4500-F23/plucky-monkeys/blob/51095d98f64051fcab9c137126a885f07e4a66c9/Q/Common/src/test/java/Networking/ProxyPlayerTest.java#L150-L162 One test for brevity's sake. The rest of the tests are in the same file. 
 
 For `Q/Client/referee`,
 
 - explain how it implements the same interface as `Q/Referee/referee`
+https://github.khoury.northeastern.edu/CS4500-F23/plucky-monkeys/blob/51095d98f64051fcab9c137126a885f07e4a66c9/Q/Common/src/main/java/Networking/ProxyReferee.java#L40 Both have the functionality to play a game. 
+Since the proxy referee and the Server side referee interact with a different number of players an interface is not used. 
 - explain how it receives the TCP connection that enables it to communicate with a server
+https://github.khoury.northeastern.edu/CS4500-F23/plucky-monkeys/blob/51095d98f64051fcab9c137126a885f07e4a66c9/Q/Common/src/main/java/Networking/ProxyReferee.java#L41-L42 The playGame method is passed in a socket
+connected to the server. An input and output stream are then generated from the socket for all reading and writing. 
 - point to unit tests that check whether it reads (possibly broken) JSON from a mock input device
+https://github.khoury.northeastern.edu/CS4500-F23/plucky-monkeys/blob/51095d98f64051fcab9c137126a885f07e4a66c9/Q/Common/src/test/java/Networking/ProxyRefereeTest.java#L135-L147 One test for brevity's sake. The 
+rest of the tests are in the same file. 
 
 For `Q/Client/client`, explain what happens when the client is started _before_ the server is up and running:
 
