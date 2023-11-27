@@ -1,0 +1,133 @@
+(testing /course/cs4500f23/ta/23SwDev/Code/9/xbaddies)
+(testing /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-0/0-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-0/0-out.json)
+jsexpr->player does not match JActorSpec schema [looping] 
+ ["badtiles","dag","take-turn",10]
+jsexpr->string : value does not satisfy string?
+  [["badtiles","dag","take-turn",10],["CrashingKyle","ldasg","take-turn"]]
+value does not match JActors schema:
+#f
+'(("badtiles" "dag" "take-turn" 10) ("CrashingKyle" "ldasg" "take-turn"))
+xbaddies: invalid JSON:  JActors: see above
+---------------------------------
+(*** score 0)
+(*** on)
+'(#hasheq((map . ((0 (0 #hasheq((color . "yellow") (shape . "star"))))))
+          (players
+           .
+           (#hasheq((name . "badtiles")
+                    (score . 0)
+                    (tile*
+                     .
+                     (#hasheq((color . "yellow") (shape . "circle"))
+                      #hasheq((color . "blue") (shape . "circle")))))
+            #hasheq((name . "CrashingKyle")
+                    (score . 10)
+                    (tile* . (#hasheq((color . "blue") (shape . "circle")))))))
+          (tile* . ()))
+  (("badtiles" "dag" "take-turn" 10) ("CrashingKyle" "ldasg" "take-turn")))
+(*** expected)
+'((("CrashingKyle") ()))
+(*** but received)
+'(((plain fast with-newline plain-unicode) ("xbaddies: things went wrong")))
+
+
+()
+((passed 0) (total 1) (partial-score 0))
+(testing /course/cs4500f23/ta/23SwDev/Code/9/xbaddies)
+(testing /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-1/1-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-1/1-out.json)
+((/course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-1/1-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-1/1-out.json))
+((passed 1) (total 1) (partial-score 1))
+(testing /course/cs4500f23/ta/23SwDev/Code/9/xbaddies)
+(testing /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-2/2-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-2/2-out.json)
+((/course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-2/2-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-2/2-out.json))
+((passed 1) (total 1) (partial-score 1))
+(testing /course/cs4500f23/ta/23SwDev/Code/9/xbaddies)
+(testing /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-3/3-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-3/3-out.json)
+jsexpr->player does not match JActorSpec schema [options beyond 'plain' don't match] 
+ ["AbsentAlex","dag","setup","1"]
+jsexpr->string : value does not satisfy string?
+  [["AbsentAlbert","dag","setup",1],["AbsentAlice","dag","setup",1],["AbsentAlex","dag","setup","1"]]
+value does not match JActors schema:
+#f
+'(("AbsentAlbert" "dag" "setup" 1)
+  ("AbsentAlice" "dag" "setup" 1)
+  ("AbsentAlex" "dag" "setup" "1"))
+xbaddies: invalid JSON:  JActors: see above
+---------------------------------
+(*** score 0)
+(*** on)
+'(#hasheq((map . ((0 (0 #hasheq((color . "yellow") (shape . "circle"))))))
+          (players
+           .
+           (#hasheq((name . "AbsentAlbert")
+                    (score . 0)
+                    (tile* . (#hasheq((color . "yellow") (shape . "circle")))))
+            #hasheq((name . "AbsentAlice")
+                    (score . 0)
+                    (tile* . (#hasheq((color . "green") (shape . "circle")))))
+            #hasheq((name . "AbsentAlex")
+                    (score . 0)
+                    (tile*
+                     .
+                     (#hasheq((color . "green") (shape . "circle")))))))
+          (tile* . ()))
+  (("AbsentAlbert" "dag" "setup" 1)
+   ("AbsentAlice" "dag" "setup" 1)
+   ("AbsentAlex" "dag" "setup" "1")))
+(*** expected)
+'((() ("AbsentAlbert" "AbsentAlice" "AbsentAlex")))
+(*** but received)
+'(((plain fast with-newline plain-unicode) ("xbaddies: things went wrong")))
+
+
+()
+((passed 0) (total 1) (partial-score 0))
+(testing /course/cs4500f23/ta/23SwDev/Code/9/xbaddies)
+(testing /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-4/4-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-4/4-out.json)
+---------------------------------
+(*** score 0)
+(*** on)
+'(#hasheq((map . ((0 (0 #hasheq((color . "yellow") (shape . "circle"))))))
+          (players
+           .
+           (#hasheq((name . "Hubert")
+                    (score . 0)
+                    (tile* . (#hasheq((color . "red") (shape . "circle")))))
+            #hasheq((name . "Alice")
+                    (score . 0)
+                    (tile* . (#hasheq((color . "red") (shape . "square")))))
+            #hasheq((name . "Bob")
+                    (score . 0)
+                    (tile*
+                     .
+                     (#hasheq((color . "yellow") (shape . "clover")))))))
+          (tile* . (#hasheq((color . "purple") (shape . "clover")))))
+  (("Hubert" "dag" "new-tiles" 1) ("Alice" "dag") ("Bob" "dag")))
+(*** expected)
+'((("Alice" "Bob") ("Hubert")))
+(*** but received)
+'(((plain fast with-newline plain-unicode) ((("Hubert") ()))))
+
+
+()
+((passed 0) (total 1) (partial-score 0))
+(testing /course/cs4500f23/ta/23SwDev/Code/9/xbaddies)
+(testing /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-5/5-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-5/5-out.json)
+((/course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-5/5-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-5/5-out.json))
+((passed 1) (total 1) (partial-score 1))
+(testing /course/cs4500f23/ta/23SwDev/Code/9/xbaddies)
+(testing /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-6/6-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-6/6-out.json)
+((/course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-6/6-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-6/6-out.json))
+((passed 1) (total 1) (partial-score 1))
+(testing /course/cs4500f23/ta/23SwDev/Code/9/xbaddies)
+(testing /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-7/7-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-7/7-out.json)
+((/course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-7/7-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-7/7-out.json))
+((passed 1) (total 1) (partial-score 1))
+(testing /course/cs4500f23/ta/23SwDev/Code/9/xbaddies)
+(testing /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-8/8-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-8/8-out.json)
+((/course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-8/8-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-8/8-out.json))
+((passed 1) (total 1) (partial-score 1))
+(testing /course/cs4500f23/ta/23SwDev/Code/9/xbaddies)
+(testing /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-9/9-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-9/9-out.json)
+((/course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-9/9-in.json /course/cs4500f23/ta/tedium-workdir/github/plucky-monkeys/9/Tests-9/9-out.json))
+((passed 1) (total 1) (partial-score 1))
