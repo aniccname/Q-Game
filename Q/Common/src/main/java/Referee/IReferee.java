@@ -2,6 +2,7 @@ package Referee;
 
 import java.util.List;
 
+import Config.RefereeConfig;
 import Player.IPlayer;
 
 /**
@@ -13,14 +14,5 @@ public interface IReferee {
 	 *
 	 * @param players The players in the game.
 	 */
-	GameResult playGame(List<IPlayer> players);
-
-
-	/**
-	 * Runs a game of Q to completion, starting at the given game state.
-	 *
-	 * @param players The players in the game.
-	 * @param gameState The game state to start at.
-	 */
-	GameResult playGame(List<IPlayer> players, IGameState gameState);
+	GameResult playGame(List<IPlayer> players, RefereeConfig refereeConfig);
 }

@@ -1,0 +1,19 @@
+{
+    "port": 43454,
+    "host": "localhost",
+    "wait": 5,
+    "quiet": true,
+    "players": [
+        [
+            "badtiles",
+            "dag",
+            "a cheat",
+            "bad-ask-for-tiles"
+        ],
+        [
+            "CrashingKyle",
+            "ldasg",
+            "take-turn"
+        ]
+    ]
+}

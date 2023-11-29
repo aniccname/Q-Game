@@ -1,5 +1,6 @@
 package Networking;
 
+import Config.ServerConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonStreamParser;
 
@@ -34,24 +35,24 @@ import Referee.GameResult;
 public class Server {
   private final IReferee referee;
   volatile boolean acceptingSignups = true;
-  private static final int waitForNameInSeconds = 3;
-  private final int waitBetweenSignupsInMilliseconds;
+  private  final ServerConfig serverConfig;
+  private final List<Socket> allConnections = new ArrayList<>();
 
   private static final int minPlayers = 2;
   private static final int maxPlayers = 4;
-  private static final int signupBlockDurationInSeconds = 1;
+  private static final int signupBlockDurationInSeconds = 1000;
 
   /**
    * Constructs a new Server with the given referee.
    * @param referee the referee that will run the game.
    */
-  public Server(IReferee referee, int waitBetweenSignupsInMilliseconds) {
+  public Server(IReferee referee, ServerConfig serverConfig) {
     this.referee = referee;
-    this.waitBetweenSignupsInMilliseconds = waitBetweenSignupsInMilliseconds;
+    this.serverConfig = serverConfig;
   }
 
   public Server(IReferee referee) {
-    this(referee, 20 * 1000);
+    this(referee, new ServerConfig.ServerConfigBuilder().build());
   }
 
   /**
@@ -61,18 +62,17 @@ public class Server {
    */
   public GameResult run(int port) throws IOException {
     ExecutorService threadPool = Executors.newCachedThreadPool();
-    try (
-            ServerSocket listener = new ServerSocket(port)
-    ) {
-      List<IPlayer> players = new ArrayList<>(acceptSignups(listener, threadPool, maxPlayers));
-      if (players.size() < minPlayers) {
+    try (ServerSocket listener = new ServerSocket(port)) {
+      List<IPlayer> players = new ArrayList<>();
+      for (int i = 0; i < serverConfig.numWaitingPeriods(); i++) {
         players.addAll(acceptSignups(listener, threadPool, maxPlayers - players.size()));
       }
       if (players.size() < minPlayers) {
         return new GameResult(List.of(), List.of());
       }
-      return referee.playGame(players);
+      return referee.playGame(players, serverConfig.refereeConfig());
     } finally {
+      closeAllConnections();
       threadPool.shutdown();
     }
   }
@@ -83,7 +83,7 @@ public class Server {
     listener.setSoTimeout(signupBlockDurationInSeconds);
     acceptingSignups = true;
     Timer waitTime = new Timer();
-    waitTime.schedule(new StopAcceptingSignups(), waitBetweenSignupsInMilliseconds);
+    waitTime.schedule(new StopAcceptingSignups(), serverConfig.waitingPeriodLengthInSeconds() * 1000L);
     List<IPlayer> players = new ArrayList<>();
     while (acceptingSignups && players.size() < maxSignups) {
       this.acceptOneSignup(listener, executorService).ifPresent(players::add);
@@ -96,6 +96,7 @@ public class Server {
     Socket prospectivePlayer;
     try {
       prospectivePlayer = listener.accept();
+      this.allConnections.add(prospectivePlayer);
     } catch (IOException e) {
       return Optional.empty();
     }
@@ -103,19 +104,28 @@ public class Server {
   }
 
   private IPlayer getPlayer(Socket player) throws IOException {
-    JsonStreamParser parser = new JsonStreamParser(new InputStreamReader(player.getInputStream()));
-    Gson gson = new Gson();
-    String name = gson.fromJson(parser.next(), String.class);
-    return new ProxyPlayer(player, name);
+    return new ProxyPlayer(player.getInputStream(), player.getOutputStream());
   }
 
   private Optional<IPlayer> getPlayerWithTimeout(Socket player, ExecutorService executorService) {
     Future<IPlayer> future = executorService.submit(() -> this.getPlayer(player));
     try {
-      return Optional.ofNullable(future.get(Server.waitForNameInSeconds, TimeUnit.SECONDS));
+      return Optional.ofNullable(future.get(serverConfig.waitForNameInSeconds(), TimeUnit.SECONDS));
     } catch (Exception e) {
       future.cancel(true);
       return Optional.empty();
+    }
+  }
+
+  private void closeAllConnections() {
+    for (Socket socket : allConnections) {
+      try {
+        socket.close();
+      } catch (IOException e) {
+        if (!serverConfig.quiet()) {
+          System.err.println("Unable to close connection: " + e);
+        }
+      }
     }
   }
 

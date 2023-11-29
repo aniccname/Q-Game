@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import Config.ScoringConfig;
 import Player.IPlayer;
 import Referee.GameState;
 import Referee.IGameState;
@@ -36,6 +37,10 @@ public class JState {
 	}
 
 	public IGameState convert() {
+		return convert(new ScoringConfig.ScoringConfigBuilder().build());
+	}
+
+	public IGameState convert(ScoringConfig scoringConfig) {
 		List<IPlayerState> players = new ArrayList<>();
 		for (JPlayer player : this.players) {
 			players.add(player.convert());
@@ -44,7 +49,8 @@ public class JState {
 		return new GameState(
 				new JMap(rows.toArray(new JRow[0])).convert(),
 				tiles.stream().map(JTile::convert).collect(java.util.stream.Collectors.toList()),
-				players
+				players,
+				scoringConfig
 		);
 	}
 

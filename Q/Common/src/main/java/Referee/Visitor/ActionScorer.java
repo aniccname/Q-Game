@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import Action.ExchangeAction;
 import Action.PassAction;
 import Action.PlaceAction;
+import Config.ScoringConfig;
 import Map.Coord;
 import Map.IMap;
 import Map.Tile.ITile;
@@ -17,19 +18,16 @@ import Referee.IGameState;
  * An ActionScorer is able to give actions a score based on what action was taken.
  */
 public class ActionScorer implements IVisitor<IMap, Integer> {
-	private final int qPoints;
-	private final int wholeHandBonus;
+	private final ScoringConfig scoringConfig;
 	private final boolean placedEntireHand;
 
 	/**
 	 * @param placedEntireHand whether the player placed their entire hand
-	 * @param qPoints the number of points a Q is worth
-	 * @param wholeHandBonus the bonus for placing the entire hand
+	 * @param scoringConfig the scoring configuration to use
 	 */
-	public ActionScorer(boolean placedEntireHand, int qPoints, int wholeHandBonus) {
+	public ActionScorer(boolean placedEntireHand, ScoringConfig scoringConfig) {
 		this.placedEntireHand = placedEntireHand;
-		this.qPoints = qPoints;
-		this.wholeHandBonus = wholeHandBonus;
+		this.scoringConfig = scoringConfig;
 	}
 
 	/**
@@ -91,7 +89,7 @@ public class ActionScorer implements IVisitor<IMap, Integer> {
 	 */
 	private int pointsFromQ(IMap map, PlaceAction action) {
 		return (int) sequences(map, action).stream()
-				.filter(sequence -> sequence.isQ(map)).count() * qPoints;
+				.filter(sequence -> sequence.isQ(map)).count() * scoringConfig.qPoints();
 	}
 
 	/**
@@ -99,7 +97,7 @@ public class ActionScorer implements IVisitor<IMap, Integer> {
 	 */
 	private int pointsFromPlacingEntireHand(PlaceAction action) {
 		if (placedEntireHand) {
-			return wholeHandBonus;
+			return scoringConfig.wholeHandBonus();
 		} else {
 			return 0;
 		}

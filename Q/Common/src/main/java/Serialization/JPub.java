@@ -1,5 +1,6 @@
 package Serialization;
 
+import Config.ScoringConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -37,7 +38,8 @@ public class JPub {
 		return new GameState(
 				jmap.convert(),
 				Collections.nCopies(tileCount, new Tile(ITile.Shape.Star, ITile.TileColor.Purple)),
-				List.of(activePlayer.convert())
+				List.of(activePlayer.convert()),
+				new ScoringConfig.ScoringConfigBuilder().build()
 		);
 	}
 

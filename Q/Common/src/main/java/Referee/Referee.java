@@ -1,7 +1,7 @@
 package Referee;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import Action.IAction;
 import Action.PassAction;
 import Action.PlaceAction;
+import Config.RefereeConfig;
+import Config.ScoringConfig;
 import Map.Tile.ITile;
 import Observer.IObserver;
 import Player.IPlayer;
@@ -26,7 +28,6 @@ import Referee.Visitor.PlacesEntireHand;
 public class Referee implements IReferee {
 	private boolean shouldGameEnd = false;
 	private boolean placementThisRound = false;
-	private static final int TIMEOUT_IN_SECONDS = 5;
 	private List<String> assholes;
 
 	/**
@@ -34,67 +35,42 @@ public class Referee implements IReferee {
 	 *
 	 * @param players The players in the game. Assume the players are sorted by age already.
 	 */
-	public GameResult playGame(List<IPlayer> players, List<IObserver> observers) {
+	public GameResult playGame(List<IPlayer> players, RefereeConfig refereeConfig) {
 		ExecutorService executorService = Executors.newCachedThreadPool();
 
 		List<PlayerSafetyAdapter> playerSafetyAdapters =
-				createPlayerSafetyAdapters(players, executorService);
+				createPlayerSafetyAdapters(players, executorService, refereeConfig);
 
 		Map<String, PlayerSafetyAdapter> playerNames =
 				createPlayerNamesMap(playerSafetyAdapters);
 
-		IGameState gameState = createGameState(
-				playerSafetyAdapters.stream()
-						.flatMap(player -> player.name().stream())
-						.collect(Collectors.toList())
-		);
-
-		return playGame(playerNames, gameState, executorService, observers);
-	}
-
-	public GameResult playGame(List<IPlayer> players) {
-		return this.playGame(players, new ArrayList<>());
-	}
-
-	/**
-	 * Plays a game to completion with a list of players and a starting game state.
-	 *
-	 * @param players The players in the game. Assume the players are sorted by age already.
-	 * @param gameState the game state to start the game with.
-	 */
-	public GameResult playGame(List<IPlayer> players, IGameState gameState, List<IObserver> observers) {
-		ExecutorService executorService = Executors.newCachedThreadPool();
-
-		List<PlayerSafetyAdapter> playerSafetyAdapters =
-				createPlayerSafetyAdapters(players, executorService);
-
-		return playGame(
-				createPlayerNamesMap(playerSafetyAdapters),
-				gameState,
-				executorService,
-				observers
-		);
-	}
-
-	public GameResult playGame(List<IPlayer> players, IGameState gameState) {
-		return this.playGame(players, gameState, new ArrayList<>());
+		return playGame(playerNames, refereeConfig, executorService);
 	}
 
 	private GameResult playGame(
 			Map<String, PlayerSafetyAdapter> playerNames,
-			IGameState gameState,
-			ExecutorService executorService,
-			List<IObserver> observers
+			RefereeConfig refereeConfig,
+			ExecutorService executorService
 	) {
 		assholes = new ArrayList<>();
 
+		IGameState gameState = refereeConfig.gameState().orElseGet(() ->
+			createGameState(
+				playerNames.values().stream()
+						.flatMap(player -> player.name().stream())
+						.collect(Collectors.toList())
+			)
+		);
+
 		announceSetup(gameState, playerNames);
-		updateObservers(observers, gameState);
+		refereeConfig.observer().ifPresent(
+				observer -> updateObserver(observer, gameState)
+		);
 		shouldGameEnd = false;
 
 		// while main loop that plays a game to completion
 		while (!shouldGameEnd) {
-			playRound(playerNames, gameState, observers);
+			playRound(playerNames, gameState, refereeConfig.observer());
 			shouldGameEnd |= gameState.getPlayerStates().isEmpty() || !placementThisRound;
 		}
 
@@ -104,31 +80,33 @@ public class Referee implements IReferee {
 	}
 
 	private void playRound(Map<String, PlayerSafetyAdapter> playerNames, IGameState gameState,
-												 List<IObserver> observers) {
+												 Optional<IObserver> observer) {
 		placementThisRound = false;
 
 		int numTurns = gameState.getPlayerStates().size();
 
 		for (int i = 0; i < numTurns && !shouldGameEnd; i++) {
-			PlayerSafetyAdapter activePlayer = playerNames.get(gameState.getActivePlayer().getName());
+			PlayerSafetyAdapter activePlayer =
+					playerNames.get(gameState.getActivePlayer().getName());
 			takeTurn(gameState, activePlayer);
-			updateObservers(observers, gameState);
+			observer.ifPresent(o -> updateObserver(o, gameState));
 		}
 	}
 
-	private void updateObservers(List<IObserver> observers, IGameState gameState) {
-		observers.forEach(o -> o.receiveState(gameState.copy()));
+	private void updateObserver(IObserver observer, IGameState gameState) {
+		observer.receiveState(gameState.copy());
 	}
 
 	private List<PlayerSafetyAdapter> createPlayerSafetyAdapters(
 			List<IPlayer> players,
-			ExecutorService executorService
+			ExecutorService executorService,
+			RefereeConfig refereeConfig
 	) {
 		return players.stream()
 				.map(player -> new PlayerSafetyAdapter(
 						player,
 						executorService,
-						TIMEOUT_IN_SECONDS
+						refereeConfig.playerTimeoutInSeconds()
 				))
 				.collect(Collectors.toList());
 	}
@@ -140,7 +118,7 @@ public class Referee implements IReferee {
 	 * @return the mapping of name to iplayer client.
 	 */
 	private Map<String, PlayerSafetyAdapter> createPlayerNamesMap(List<PlayerSafetyAdapter> players) {
-		Map<String, PlayerSafetyAdapter> playerNames = new HashMap<>();
+		Map<String, PlayerSafetyAdapter> playerNames = new LinkedHashMap<>();
 		for (PlayerSafetyAdapter player : players) {
 			player.name().ifPresent(name -> playerNames.put(name, player));
 		}
@@ -148,7 +126,7 @@ public class Referee implements IReferee {
 	}
 
 	private IGameState createGameState(List<String> names) {
-		return new GameState(names);
+		return new GameState(names, new ScoringConfig.ScoringConfigBuilder().build());
 	}
 
 	private void announceSetup(IGameState gameState, Map<String, PlayerSafetyAdapter> playerNames) {

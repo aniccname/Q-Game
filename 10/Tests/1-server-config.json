@@ -1,0 +1,57 @@
+{
+    "port": 43454,
+    "server-tries": 1,
+    "server-wait": 2,
+    "wait-for-signup": 2,
+    "quiet": true,
+    "ref-spec": {
+        "state0": {
+            "map": [
+                [
+                    0,
+                    [
+                        0,
+                        {
+                            "color": "yellow",
+                            "shape": "star"
+                        }
+                    ]
+                ]
+            ],
+            "tile*": [],
+            "players": [
+                {
+                    "score": 0,
+                    "name": "badtiles",
+                    "tile*": [
+                        {
+                            "color": "yellow",
+                            "shape": "circle"
+                        },
+                        {
+                            "color": "blue",
+                            "shape": "square"
+                        }
+                    ]
+                },
+                {
+                    "score": 10,
+                    "name": "CrashingKyle",
+                    "tile*": [
+                        {
+                            "color": "blue",
+                            "shape": "circle"
+                        }
+                    ]
+                }
+            ]
+        },
+        "quiet": true,
+        "config-s": {
+            "qbo": 8,
+            "fbo": 4
+        },
+        "per-turn": 2,
+        "observe": false
+    }
+}

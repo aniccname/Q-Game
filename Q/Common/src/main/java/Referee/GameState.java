@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import Action.IAction;
+import Config.ScoringConfig;
 import Map.Coord;
 import Map.GameMap;
 import Map.IMap;
@@ -31,12 +32,11 @@ import Referee.Visitor.PlacesEntireHand;
 public class GameState implements IGameState {
   public static final int FULL_HAND_TILE_COUNT = 6; // the max number of tiles a player can have
   private static final int MAX_EACH_TILE_COUNT = 30; // the max number of each tile in the game
-  public static final int Q_POINTS = 8; // the number of points a Q is worth
-  public static final int WHOLE_HAND_BONUS = 4; // the bonus for placing the entire hand
 
   private final IMap map; // the game map
   private final List<ITile> refTiles; // the list of referee's tiles
   private final PlayerOrder order; // the order which the players make moves
+  private final ScoringConfig scoringConfig; // the scoring configuration of the game
 
   /**
    * Creates a game state with a new randomly generated tile at the center, and a list of
@@ -44,8 +44,8 @@ public class GameState implements IGameState {
    *
    * @param players the list of names of the players that the game starts with
    */
-  public GameState(List<String> players) {
-    this(new Random(), players);
+  public GameState(List<String> players, ScoringConfig scoringConfig) {
+    this(new Random(), players, scoringConfig);
   }
 
   /**
@@ -56,7 +56,7 @@ public class GameState implements IGameState {
    * @param random seeded random
    * @param players the list of names of the players that the game starts with
    */
-  public GameState(Random random, List<String> players) {
+  public GameState(Random random, List<String> players, ScoringConfig scoringConfig) {
     if (players.isEmpty()) {
       throw new IllegalArgumentException("The game state must start with at least 1 player");
     }
@@ -75,6 +75,8 @@ public class GameState implements IGameState {
 
     // place a random tile in the center of the game map
     this.map = new GameMap(pickRefTiles(1).get(0));
+
+    this.scoringConfig = scoringConfig;
   }
 
   /**
@@ -86,8 +88,9 @@ public class GameState implements IGameState {
         state.map.copyMap(),
         new ArrayList<>(state.refTiles),
         state.getPlayerStates().stream()
-            .map(PlayerState::new).collect(Collectors.toList())
-        );
+            .map(PlayerState::new).collect(Collectors.toList()),
+        state.scoringConfig
+    );
   }
 
   /**
@@ -97,10 +100,16 @@ public class GameState implements IGameState {
    * @param map the IMap to initialize the game state with
    * @param players the current states of the players
    */
-  public GameState(IMap map, List<ITile> refTiles, List<IPlayerState> players) {
+  public GameState(
+      IMap map,
+      List<ITile> refTiles,
+      List<IPlayerState> players,
+      ScoringConfig scoringConfig
+  ) {
     this.map = map.copyMap();
     this.refTiles = new ArrayList<>(refTiles);
     this.order = new PlayerOrder(players);
+    this.scoringConfig = scoringConfig;
   }
 
   /**
@@ -147,7 +156,7 @@ public class GameState implements IGameState {
 
     getActivePlayer().addScore(
         action.accept(
-            new ActionScorer(placesEntireHand, Q_POINTS, WHOLE_HAND_BONUS),
+            new ActionScorer(placesEntireHand, scoringConfig),
             this.getMap()
         )
     );

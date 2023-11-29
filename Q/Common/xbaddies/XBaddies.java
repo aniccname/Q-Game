@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import Config.RefereeConfig;
 import Player.Player;
 import Referee.GameResult;
 import Referee.Referee;
@@ -27,7 +28,7 @@ public class XBaddies {
 
 		GameResult result = new Referee().playGame(
 				Arrays.stream(jActors).collect(Collectors.toList()),
-				jState.convert()
+				new RefereeConfig.RefereeConfigBuilder().gameState(jState.convert()).build()
 		);
 
 		System.out.println(gson.toJson(List.of(

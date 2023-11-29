@@ -8,7 +8,9 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonStreamParser;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.List;
@@ -27,11 +29,20 @@ import Serialization.JTile;
  */
 public class ProxyPlayer implements IPlayer {
   private final String name;
-  private final Socket pSocket;
+  private final JsonStreamParser in;
+  private final PrintStream out;
 
-  public ProxyPlayer(Socket pSocket, String name) {
-    this.name = name;
-    this.pSocket = pSocket;
+  /**
+   * Creates a new proxy player, communicating with a remote player through the
+   * given input and output streams. Reads a string from the input stream and
+   * uses that as the name of this player
+   * @param in the input stream to read from
+   * @param out the output stream to write to
+   */
+  public ProxyPlayer(InputStream in, OutputStream out) {
+    this.in = new JsonStreamParser(new InputStreamReader(in));
+    this.out = new PrintStream(out);
+    this.name = new Gson().fromJson(this.in.next(), String.class);
   }
 
   @Override
@@ -96,13 +107,7 @@ public class ProxyPlayer implements IPlayer {
   }
 
   private JsonElement invoke(JsonElement elem) {
-    try {
-      new PrintStream(this.pSocket.getOutputStream()).println(elem.toString());
-      JsonStreamParser reader =
-              new JsonStreamParser(new InputStreamReader(this.pSocket.getInputStream()));
-      return reader.next();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    out.println(elem.toString());
+    return in.next();
   }
 }
