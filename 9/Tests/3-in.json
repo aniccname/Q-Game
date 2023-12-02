@@ -15,4 +15,4 @@
                 "name" : "AbsentAlex",
                 "tile*" : [{"color" : "green", "shape" : "circle"}]
                 }]}
-[["AbsentAlbert", "dag", "setup", 1], ["AbsentAlice", "dag", "setup", 1], ["AbsentAlex" , "dag", "setup", "1"]]
+[["AbsentAlbert", "dag", "setup", 1], ["AbsentAlice", "dag", "setup", 1], ["AbsentAlex" , "dag", "setup", 1]]
