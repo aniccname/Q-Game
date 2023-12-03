@@ -52,7 +52,7 @@ public class ProxyReferee {
    */
   public void playGame(InputStream in, OutputStream out) {
     PrintStream output = new PrintStream(out);
-    output.println(new JsonPrimitive(player.name()));
+    output.println("    " + new JsonPrimitive(player.name()));
     JsonStreamParser serverMessages = new JsonStreamParser(new InputStreamReader(in));
     while (serverMessages.hasNext() && !isGameOver) {
       try {

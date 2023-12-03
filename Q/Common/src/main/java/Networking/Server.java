@@ -1,11 +1,6 @@
 package Networking;
 
-import Config.ServerConfig;
-import com.google.gson.Gson;
-import com.google.gson.JsonStreamParser;
-
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -14,14 +9,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
-import Referee.IReferee;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import Config.ServerConfig;
 import Player.IPlayer;
 import Referee.GameResult;
+import Referee.IReferee;
 
 /**
  * Represents a Server that <ul>
@@ -100,30 +96,22 @@ public class Server {
     } catch (IOException e) {
       return Optional.empty();
     }
-    if (!serverConfig.quiet()) {
-      System.err.println("Player connected.");
-    }
+    printIfNotQuiet("Player connected: " + prospectivePlayer.getInetAddress());
     return this.getPlayerWithTimeout(prospectivePlayer, executorService);
   }
 
-  private IPlayer getPlayer(Socket player) throws IOException {
-    return new ProxyPlayer(player.getInputStream(), player.getOutputStream());
+  private IPlayer getPlayer(Socket socket) throws IOException {
+    IPlayer player = new ProxyPlayer(socket.getInputStream(), socket.getOutputStream());
+    printIfNotQuiet("Player " + player.name() + " has joined the game.");
+    return player;
   }
 
   private Optional<IPlayer> getPlayerWithTimeout(Socket player, ExecutorService executorService) {
-    Future<IPlayer> future = executorService.submit(() -> {
-      IPlayer iPlayer = this.getPlayer(player);
-      if (!serverConfig.quiet()) {
-        System.err.println("Player " + iPlayer.name() + " has joined the game.");
-      }
-      return iPlayer;
-    });
+    Future<IPlayer> future = executorService.submit(() -> getPlayer(player));
     try {
       return Optional.ofNullable(future.get(serverConfig.waitForNameInSeconds(), TimeUnit.SECONDS));
     } catch (Exception e) {
-      if (!serverConfig.quiet()) {
-        System.err.println("Unable to get player: " + e);
-      }
+      printIfNotQuiet("Unable to get player: " + e);
       future.cancel(true);
       return Optional.empty();
     }
@@ -138,6 +126,12 @@ public class Server {
           System.err.println("Unable to close connection: " + e);
         }
       }
+    }
+  }
+
+  private void printIfNotQuiet(String message) {
+    if (!serverConfig.quiet()) {
+      System.err.println(message);
     }
   }
 
