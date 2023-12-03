@@ -52,7 +52,8 @@ public class ProxyReferee {
    */
   public void playGame(InputStream in, OutputStream out) {
     PrintStream output = new PrintStream(out);
-    output.println("    " + new JsonPrimitive(player.name()));
+    output.println(new JsonPrimitive(player.name()));
+    output.flush();
     JsonStreamParser serverMessages = new JsonStreamParser(new InputStreamReader(in));
     while (serverMessages.hasNext() && !isGameOver) {
       try {
@@ -60,6 +61,7 @@ public class ProxyReferee {
         String methodName = message.get(0).getAsString();
         JsonArray args = message.get(1).getAsJsonArray();
         commands.get(methodName).execute(player, output, args);
+        output.flush();
       } catch (JsonParseException e) {
         return;
       }
