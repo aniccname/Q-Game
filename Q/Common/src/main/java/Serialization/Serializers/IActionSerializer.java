@@ -26,13 +26,13 @@ public class IActionSerializer implements IVisitor<Void, JsonElement> {
 
 	@Override
 	public JsonElement visitPlace(PlaceAction action, Void additionalArg) {
-		Coord coord = action.getPlacements().get(0).getKey();
-		ITile tile = action.getPlacements().get(0).getValue();
 		return new Gson().toJsonTree(
-				new OnePlacement(
-						new JCoordinate(coord),
-						new JTile(tile)
-				)
+				action.getPlacements().stream().map(
+						placement -> new OnePlacement(
+								new JCoordinate(placement.getKey()),
+								new JTile(placement.getValue())
+						)
+				).toArray()
 		);
 	}
 }
