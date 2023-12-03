@@ -58,6 +58,7 @@ public class Client {
           Thread.sleep(500);
         } catch (InterruptedException e2) {
           printIfNotQuiet("Interrupted while sleeping: " + e2);
+          return Optional.empty();
         }
       }
     }

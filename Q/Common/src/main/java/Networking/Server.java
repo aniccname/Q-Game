@@ -108,7 +108,13 @@ public class Server {
   }
 
   private Optional<IPlayer> getPlayerWithTimeout(Socket player, ExecutorService executorService) {
-    Future<IPlayer> future = executorService.submit(() -> this.getPlayer(player));
+    Future<IPlayer> future = executorService.submit(() -> {
+      IPlayer iPlayer = this.getPlayer(player);
+      if (!serverConfig.quiet()) {
+        System.err.println("Player " + iPlayer.name() + " has joined the game.");
+      }
+      return iPlayer;
+    });
     try {
       return Optional.ofNullable(future.get(serverConfig.waitForNameInSeconds(), TimeUnit.SECONDS));
     } catch (Exception e) {
