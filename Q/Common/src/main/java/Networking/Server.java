@@ -100,6 +100,9 @@ public class Server {
     } catch (IOException e) {
       return Optional.empty();
     }
+    if (!serverConfig.quiet()) {
+      System.err.println("Player connected.");
+    }
     return this.getPlayerWithTimeout(prospectivePlayer, executorService);
   }
 
@@ -118,6 +121,9 @@ public class Server {
     try {
       return Optional.ofNullable(future.get(serverConfig.waitForNameInSeconds(), TimeUnit.SECONDS));
     } catch (Exception e) {
+      if (!serverConfig.quiet()) {
+        System.err.println("Unable to get player: " + e);
+      }
       future.cancel(true);
       return Optional.empty();
     }
