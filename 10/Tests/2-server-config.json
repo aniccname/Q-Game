@@ -1,0 +1,92 @@
+{
+    "port": 43454,
+    "server-tries": 1,
+    "server-wait": 10,
+    "wait-for-signup": 2,
+    "quiet": true,
+    "ref-spec": {
+        "state0": {
+            "map": [
+                [
+                    0,
+                    [
+                        0,
+                        {
+                            "color": "yellow",
+                            "shape": "circle"
+                        }
+                    ]
+                ]
+            ],
+            "tile*": [
+                {
+                    "color": "purple",
+                    "shape": "clover"
+                }
+            ],
+            "players": [
+                {
+                    "score": 0,
+                    "name": "XnTiles",
+                    "tile*": [
+                        {
+                            "color": "red",
+                            "shape": "circle"
+                        },
+                        {
+                            "color": "purple",
+                            "shape": "clover"
+                        },
+                        {
+                            "color": "green",
+                            "shape": "square"
+                        }
+                    ]
+                },
+                {
+                    "score": 0,
+                    "name": "Alberto",
+                    "tile*": [
+                        {
+                            "color": "red",
+                            "shape": "circle"
+                        },
+                        {
+                            "color": "red",
+                            "shape": "circle"
+                        },
+                        {
+                            "color": "blue",
+                            "shape": "8star"
+                        }
+                    ]
+                },
+                {
+                    "score": 0,
+                    "name": "Barbera",
+                    "tile*": [
+                        {
+                            "color": "green",
+                            "shape": "circle"
+                        },
+                        {
+                            "color": "green",
+                            "shape": "square"
+                        },
+                        {
+                            "color": "blue",
+                            "shape": "8star"
+                        }
+                    ]
+                }
+            ]
+        },
+        "quiet": true,
+        "config-s": {
+            "qbo": 8,
+            "fbo": 4
+        },
+        "per-turn": 2,
+        "observe": false
+    }
+}

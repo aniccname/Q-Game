@@ -1,0 +1,18 @@
+{
+    "port": 43454,
+    "host": "localhost",
+    "wait": 2,
+    "quiet": true,
+    "players": [
+        [
+            "Dag",
+            "dag"
+        ],
+        [
+            "Ldasg",
+            "ldasg",
+            "a cheat",
+            "non-adjacent-coordinate"
+        ]
+    ]
+}
