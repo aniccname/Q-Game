@@ -1,0 +1,6 @@
+{"port" : 43454,
+ "host" :  "localhost",
+ "wait" :  4,
+ "quiet":  true,
+ "players" : [["XnTiles", "dag", "new-tiles"], ["Alberto", "dag"], ["Barbera" , "dag"]]
+}
