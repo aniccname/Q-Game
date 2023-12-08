@@ -1,8 +1,5 @@
 package Observer;
 
-import java.util.Map;
-
-import Map.IMap;
 import Referee.IGameState;
 
 /**

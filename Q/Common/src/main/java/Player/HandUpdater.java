@@ -3,7 +3,6 @@ package Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import Action.ExchangeAction;
 import Action.PassAction;
@@ -62,7 +61,7 @@ public class HandUpdater implements IVisitor<IShareableInfo, List<ITile>> {
 		// find all the tiles that was used in the placement
 		// remove in the new hand
 		for(ITile tile : action.getPlacements().stream()
-				.map(Map.Entry::getValue).collect(Collectors.toList())) {
+				.map(Map.Entry::getValue).toList()) {
 			newHand.remove(tile);
 		}
 

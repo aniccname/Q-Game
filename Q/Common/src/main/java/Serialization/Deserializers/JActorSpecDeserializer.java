@@ -36,25 +36,16 @@ public class JActorSpecDeserializer implements JsonDeserializer<Player> {
 	public Player deserialize(JsonElement jsonElement, Type type,
 														JsonDeserializationContext jsonDeserializationContext)
 			throws JsonParseException {
-		Gson gson = new Gson();
-
 		JsonArray jsonArray = jsonElement.getAsJsonArray();
 
 		String name = jsonArray.get(0).getAsString();
 		String jStrategy = jsonArray.get(1).getAsString();
 
-		IStrategy strategy;
-
-		switch (jStrategy) {
-			case "dag":
-				strategy = new DagStrategy();
-				break;
-			case "ldasg":
-				strategy = new LdasgStrategy();
-				break;
-			default:
-				throw new RuntimeException("Unknown strategy: " + jStrategy);
-		}
+		IStrategy strategy = switch (jStrategy) {
+			case "dag" -> new DagStrategy();
+			case "ldasg" -> new LdasgStrategy();
+			default -> throw new RuntimeException("Unknown strategy: " + jStrategy);
+		};
 
 		if (jsonArray.size() == 2) {
 			return new Player(name, strategy);

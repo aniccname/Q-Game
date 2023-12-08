@@ -1,11 +1,8 @@
 package Map;
 
 import java.awt.Color;
-import java.awt.FlowLayout;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,9 +14,6 @@ import javax.swing.JPanel;
 
 import Map.Tile.EmptyTile;
 import Map.Tile.ITile;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * An instance of a map of the Q game. The map is represented by a Hashmap that places the tile

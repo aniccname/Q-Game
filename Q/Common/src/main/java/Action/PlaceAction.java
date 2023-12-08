@@ -6,7 +6,6 @@ import java.util.Map;
 
 import Map.Coord;
 import Map.Tile.ITile;
-import Referee.IGameState;
 import Referee.Visitor.IVisitor;
 
 /**

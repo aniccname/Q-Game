@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import Config.ScoringConfig;
-import Player.IPlayer;
 import Referee.GameState;
 import Referee.IGameState;
 import Referee.IPlayerState;

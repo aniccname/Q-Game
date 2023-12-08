@@ -3,7 +3,6 @@ package Referee.Visitor;
 import Action.ExchangeAction;
 import Action.PassAction;
 import Action.PlaceAction;
-import Referee.IGameState;
 
 /**
  * Represents a visitor that will explore actions providing some result <T>.

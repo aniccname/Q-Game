@@ -12,7 +12,6 @@ import Config.ScoringConfig;
 import Map.Coord;
 import Map.IMap;
 import Map.Tile.ITile;
-import Referee.IGameState;
 
 /**
  * An ActionScorer is able to give actions a score based on what action was taken.
@@ -109,8 +108,7 @@ public class ActionScorer implements IVisitor<IMap, Integer> {
 	 */
 	private List<Sequence> sequences(IMap map, PlaceAction action) {
 		List<Coord> coords = action.getPlacements().stream()
-				.map(Map.Entry::getKey)
-				.collect(Collectors.toList());
+				.map(Map.Entry::getKey).toList();
 
 		return coords.stream()
 				.flatMap(coord -> getSequences(map, coord).stream())
@@ -180,7 +178,7 @@ public class ActionScorer implements IVisitor<IMap, Integer> {
 		 */
 		public boolean isQ(IMap map) {
 			if (getLength() != 6) return false;
-			List<ITile> tiles = getAllCoords().stream().map(map::getTile).collect(Collectors.toList());
+			List<ITile> tiles = getAllCoords().stream().map(map::getTile).toList();
 			long numShapes = tiles.stream().map(ITile::getShape).distinct().count();
 			long numColors = tiles.stream().map(ITile::getColor).distinct().count();
 			return numShapes == 6 || numColors == 6;

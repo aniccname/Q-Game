@@ -19,7 +19,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonStreamParser;
 
 public class XClients {
-	public static void main(String[] args) throws InterruptedException, ExecutionException {
+	public static void main(String[] args) throws InterruptedException {
 		int port = Integer.parseInt(args[0]);
 
 		Gson gson = new GsonBuilder()

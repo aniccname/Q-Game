@@ -1,14 +1,11 @@
 package Player.Strategy;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import Map.Coord;
 import Map.IMap;
 import Map.Tile.ITile;
-import java.util.Map;
 
 /**
  * Chooses the smallest (according to lexographic ordering) tile that can extend

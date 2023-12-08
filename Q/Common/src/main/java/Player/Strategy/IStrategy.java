@@ -4,7 +4,6 @@ import java.util.List;
 
 import Action.IAction;
 import Map.Tile.ITile;
-import Referee.IPlayerState;
 import Referee.IShareableInfo;
 
 /**

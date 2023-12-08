@@ -3,8 +3,6 @@ package Serialization.Serializers;
 import Action.ExchangeAction;
 import Action.PassAction;
 import Action.PlaceAction;
-import Map.Coord;
-import Map.Tile.ITile;
 import Referee.Visitor.IVisitor;
 import Serialization.JCoordinate;
 import Serialization.JTile;

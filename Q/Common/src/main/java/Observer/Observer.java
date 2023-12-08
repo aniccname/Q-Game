@@ -8,15 +8,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import Map.IMap;
 import Referee.IGameState;
 import Serialization.JState;
-import com.google.gson.Gson;
 
 /**
  * Renders and saves the observed QGame.

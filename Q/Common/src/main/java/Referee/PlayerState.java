@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Map.Tile.ITile;
-import Player.IPlayer;
 
 /**
  * Represents an implementation of the player state.

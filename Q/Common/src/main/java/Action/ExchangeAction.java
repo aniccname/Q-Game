@@ -1,6 +1,5 @@
 package Action;
 
-import Referee.IGameState;
 import Referee.Visitor.IVisitor;
 
 /**

@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.swing.JComponent;
 
 import Map.Tile.ITile;
-import com.google.gson.JsonElement;
 
 /**
  * An IMap is a representation of a map for the Q game.

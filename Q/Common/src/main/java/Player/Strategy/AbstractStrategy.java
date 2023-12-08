@@ -15,7 +15,6 @@ import Map.Coord;
 import Map.IMap;
 import Map.Tile.ITile;
 import Referee.IShareableInfo;
-import Referee.Visitor.ActionChecker;
 
 /**
  * A strategy that attempts to place tiles in lexographic order. If no tiles
@@ -80,7 +79,7 @@ public abstract class AbstractStrategy implements IStrategy {
 	protected Optional<Map.Entry<Coord, ITile>> nextPlacement(
 			IMap map, List<ITile> hand
 	) {
-		for (ITile tile : hand.stream().sorted().collect(Collectors.toList())) {
+		for (ITile tile : hand.stream().sorted().toList()) {
 			Optional<Coord> coord = findPlace(map, tile);
 			if (coord.isPresent()) {
 				return Optional.of(new AbstractMap.SimpleEntry<>(coord.get(), tile));

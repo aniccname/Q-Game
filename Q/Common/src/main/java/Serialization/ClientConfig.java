@@ -1,7 +1,5 @@
 package Serialization;
 
-import java.util.List;
-
 import Player.Player;
 
 public class ClientConfig {
