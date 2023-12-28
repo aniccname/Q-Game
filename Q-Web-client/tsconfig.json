@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "ESNext",
+        "target":"ESNext",
+        "lib":["ES2015", "DOM"],
+        "sourceMap": false,
+        "strict": true,
+        "emitDeclarationOnly": false,
+        "noEmit": true,
+        "moduleResolution": "Bundler",
+        "allowImportingTsExtensions": true,
+        "esModuleInterop": true,
+    },
+    "exclude": [
+        "node_modules"
+    ],
+}
