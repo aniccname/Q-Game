@@ -1,14 +1,14 @@
 {
     "compilerOptions": {
-        "module": "ESNext",
-        "target":"ESNext",
-        "lib":["ES2015", "DOM"],
-        "sourceMap": false,
+        "jsx": "react",
+        "module": "nodenext",
+        "target": "esnext",
+        "lib": ["esnext", "DOM"],
+        "sourceMap": true,
         "strict": true,
         "emitDeclarationOnly": false,
         "noEmit": true,
-        "moduleResolution": "Bundler",
-        "allowImportingTsExtensions": true,
+        "moduleResolution": "NodeNext",
         "esModuleInterop": true,
     },
     "exclude": [
