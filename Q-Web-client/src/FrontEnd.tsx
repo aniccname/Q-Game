@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import Button from "@mui/material/Button"
 import Grid2 from "@mui/material/Unstable_Grid2"
-import {Tile, Empty, Coord, Board, makeCoord, makeTile, descendingOrder} from "./Data"
+import {Tile, Empty, Coord, Board, makeCoord, makeTile, descendingOrder, TurnInfo} from "./Data"
 import { JSXElementConstructor, StrictMode } from "react"
 import { Container, Stack} from "@mui/material"
 
@@ -161,16 +161,13 @@ export function Scores({playerScore, otherScores}
 }
 
 export function TilesRemaining({poolSize} : {poolSize : Number }) : React.JSX.Element {
-    return <b>{poolSize + " tiles remaining."}</b>
+    return <b>{"The board has " + poolSize + " tiles remaining."}</b>
 }
 
-export default function Game() : React.JSX.Element {
-    const _b = new Board();
-    _b.set(makeCoord(1, 10), makeTile("red", "8star"));
-    _b.set(makeCoord(-1, -1), makeTile("orange", "star"));
-    let [hand, setHand] = useState<Tile[]>([makeTile("red", "star"), makeTile("purple", "square")]);
+export default function Game({turnInfo} : {turnInfo: TurnInfo}) : React.JSX.Element {
+    let [hand, setHand] = useState<Tile[]>(turnInfo.myInfo.tiles);
     let [activeTile, setActiveTile] = useState<number | "none">("none");
-    let [board, setBoard] = useState(_b);
+    let [board, setBoard] = useState(turnInfo.board);
     const clickHandler = (coord : Coord) => () => {
         ///setBoard(new Board().set(coord, makeTile("blue", "diamond")));
         if (activeTile !== "none") {
@@ -182,18 +179,26 @@ export default function Game() : React.JSX.Element {
     const tileSelector = (t : Tile, id : number) => () => {
         setActiveTile(id);
         console.log(t, id);
-    }
+    };
     
     return (
       <>
       <meta name="viewport" content="initial-scale=0.25, width=device-width" />
-      <Container maxWidth="lg">
-        <b> {"Board has a current size of " + board.size} </b>
-        <div className="Game">
-          <GameBoard board={board} placer={clickHandler}/>
-        </div> 
-      </Container>
-        <PlayerTiles tiles={hand} selector={tileSelector} active={activeTile}/>
+      <Stack direction="row" spacing={4}>
+        <Container maxWidth="lg">
+            <b> {"Board has a current size of " + board.size} </b>
+            <div className="Game">
+            <GameBoard board={board} placer={clickHandler}/>
+            </div> 
+            <PlayerTiles tiles={hand} selector={tileSelector} active={activeTile}/>
+        </Container>
+        <Container maxWidth="sm">
+            <Stack direction="column">
+                <TilesRemaining poolSize={turnInfo.poolSize}/>
+                <Scores playerScore={turnInfo.myInfo.score} otherScores={turnInfo.otherScores}/>
+            </Stack>
+        </Container>
+      </Stack>
       </>
     );
 }
