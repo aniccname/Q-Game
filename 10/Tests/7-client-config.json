@@ -1,6 +1,0 @@
-{"port" : 43454,
-  "host" :  "localhost",
-  "wait" :  4,
-  "quiet":  true,
-  "players" : [["InfTiles", "dag", "new-tiles", 2], ["Alberto", "dag"], ["Barbera" , "dag"]]
-}
