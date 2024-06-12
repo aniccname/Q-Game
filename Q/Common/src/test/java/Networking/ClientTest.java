@@ -31,14 +31,17 @@ public class ClientTest {
 
   @Test
   public void testClient() throws IOException, ExecutionException, InterruptedException {
-    executorService = Executors.newSingleThreadExecutor();
+    executorService = Executors.newFixedThreadPool(2);
     ServerSocket listener = new ServerSocket(port);
     Future<Socket> futureSource = executorService.submit(listener::accept);
-    client = new Client(new MockRefereeProxy());
-    client.connect(new Player("Jon", new DagStrategy()), "localhost", port);
+    client = new Client(new ProxyReferee(new Player("Jon", new DagStrategy())), true);
+    //Deadlock is happening between the server socket and the client, where the listener is being created,
+    // then the client is being launched connecting and then playing the game and waiting for the next message (that the first message is their name). How to make this work though
+    Future<?> client_playing = executorService.submit(() -> client.connectAndPlay( "localhost", port));
     serverSocket = futureSource.get();
     JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(serverSocket.getInputStream()));
     assertEquals(new JsonPrimitive("Jon"), jp.next());
+    listener.close();
   }
 
 }

@@ -5,7 +5,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import Config.RefereeConfig;
+import Config.ScoringConfig;
 import Map.GameMap;
 import Map.IMap;
 import Map.Tile.ITile;
@@ -32,14 +35,14 @@ public class ObserverTest {
 
 		IMap map = new GameMap(new Tile(ITile.Shape.Clover, ITile.TileColor.Red));
 
-		IGameState gamestate = new GameState(map, List.of(), List.of(dagState));
+		IGameState gamestate = new GameState(map, List.of(), List.of(dagState), new ScoringConfig(10, 2));
 
 		IObserver observer = new Observer();
 
 		File tmpDir = new File("Tmp");
 		emptyDir(tmpDir);
 
-		new Referee().playGame(players, gamestate, List.of(observer));
+		new Referee().playGame(players, new RefereeConfig(Optional.of(gamestate), 1, Optional.of(observer)));
 
 		assertEquals(tmpDir.listFiles().length, 2);
 
@@ -60,14 +63,14 @@ public class ObserverTest {
 
 		IMap map = new GameMap(new Tile(ITile.Shape.Clover, ITile.TileColor.Red));
 
-		IGameState gamestate = new GameState(map, List.of(), List.of(dagState));
+		IGameState gamestate = new GameState(map, List.of(), List.of(dagState), new ScoringConfig(10, 5));
 
 		IObserver observer = new Observer();
 
 		File tmpDir = new File("Tmp");
 		emptyDir(tmpDir);
 
-		new Referee().playGame(players, gamestate, List.of(observer));
+		new Referee().playGame(players, new RefereeConfig(Optional.of(gamestate), 1, Optional.of(observer)));
 
 		assertEquals(tmpDir.listFiles().length, 3);
 

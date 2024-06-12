@@ -11,6 +11,7 @@ import Action.ExchangeAction;
 import Action.IAction;
 import Action.PassAction;
 import Action.PlaceAction;
+import Config.ScoringConfig;
 import Map.Coord;
 import Map.Tile.ITile;
 import Map.Tile.Tile;
@@ -24,7 +25,7 @@ public class DagStrategyTest {
 
 	@Before
 	public void init() {
-		igs = new GameState(new Random(1), List.of("Alice", "Bob"));
+		igs = new GameState(new Random(1), List.of("Alice", "Bob"), new ScoringConfig(5, 10));
 	}
 
 	@Test

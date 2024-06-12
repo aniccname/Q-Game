@@ -5,11 +5,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonStreamParser;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -19,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import Config.ScoringConfig;
 import Map.GameMap;
 import Map.Tile.ITile;
 import Map.Tile.Tile;
@@ -37,6 +41,7 @@ import static org.junit.Assert.*;
  * A test class for the proxy referee.
  */
 public class ProxyRefereeTest {
+  private final ScoringConfig defaultConfig = new ScoringConfig(6, 10);
 
   ProxyReferee proxy;
   Socket sourceSocket;
@@ -46,22 +51,36 @@ public class ProxyRefereeTest {
   int port = 7779;
   PrintStream sourceStream;
 
+  ServerSocket listener;
+
+
   @Before
   public void setup() throws IOException, ExecutionException, InterruptedException {
     executorService = Executors.newSingleThreadExecutor();
-    ServerSocket listener = new ServerSocket(port);
+    listener = new ServerSocket(port);
     Future<Socket> futureSource = executorService.submit(listener::accept);
     proxySocket = new Socket("localhost", port);
     sourceSocket = futureSource.get();
     sourceStream = new PrintStream(sourceSocket.getOutputStream());
-    proxy = new ProxyReferee();
     player = new Player("Jeven", new DagStrategy());
-    executorService.submit(() -> proxy.playGame(proxySocket, player));
+    proxy = new ProxyReferee(player);
+    InputStream in = proxySocket.getInputStream();
+    OutputStream out = proxySocket.getOutputStream();
+    executorService.submit(() -> proxy.playGame(in, out));
+  }
+
+  @After
+  public void cleanup() throws IOException {
+    proxySocket.close();
+    executorService.shutdown();
+    listener.close();
   }
 
   @Test
   public void testSetup() throws InterruptedException, IOException {
-    IShareableInfo gs = new GameState(List.of("Jeven"));
+    JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
+    assertEquals(new JsonPrimitive("Jeven"), jp.next());
+    IShareableInfo gs = new GameState(List.of("Jeven"), defaultConfig);
     JsonArray message = new JsonArray();
     message.add("setup");
     JsonArray args = new JsonArray();
@@ -70,7 +89,6 @@ public class ProxyRefereeTest {
     message.add(args);
     this.sourceStream.println(message);
     Thread.sleep(500);
-    JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
     assertEquals(new JsonPrimitive("void"), jp.next());
     proxySocket.close();
     executorService.shutdown();
@@ -78,11 +96,13 @@ public class ProxyRefereeTest {
 
   @Test
   public void testTakeTurn() throws InterruptedException, IOException {
+    JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
+    assertEquals(new JsonPrimitive("Jeven"), jp.next());
     PlayerState jevenInfo = new PlayerState("Jeven");
     Tile gc = new Tile(ITile.TileColor.Green, ITile.Shape.Clover);
     jevenInfo.acceptTiles(List.of(gc));
     IShareableInfo gs = new GameState(new GameMap(new Tile(ITile.TileColor.Blue, ITile.Shape.Star)),
-            List.of(), List.of(jevenInfo));
+            List.of(), List.of(jevenInfo), defaultConfig);
     JsonArray message = new JsonArray();
     message.add("setup");
     JsonArray args = new JsonArray();
@@ -93,7 +113,6 @@ public class ProxyRefereeTest {
     message.add(args);
     this.sourceStream.println(message);
     Thread.sleep(500);
-    JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
     assertEquals(new JsonPrimitive("void"), jp.next());
     message = new JsonArray();
     message.add( new JsonPrimitive( "take-turn"));
@@ -109,9 +128,11 @@ public class ProxyRefereeTest {
 
   @Test
   public void testNewTiles() throws InterruptedException, IOException {
+    JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
+    assertEquals(new JsonPrimitive("Jeven"), jp.next());
     PlayerState jevenInfo = new PlayerState("Jeven");
     IShareableInfo gs = new GameState(new GameMap(new Tile(ITile.TileColor.Blue, ITile.Shape.Star)),
-            List.of(), List.of(jevenInfo));
+            List.of(), List.of(jevenInfo), defaultConfig);
     JsonArray message = new JsonArray();
     message.add("setup");
     JsonArray args = new JsonArray();
@@ -120,7 +141,6 @@ public class ProxyRefereeTest {
     message.add(args);
     this.sourceStream.println(message);
     Thread.sleep(500);
-    JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
     assertEquals(new JsonPrimitive("void"), jp.next());
     message = new JsonArray();
     message.add("new-tiles");
@@ -134,6 +154,8 @@ public class ProxyRefereeTest {
 
   @Test
   public void testWin() throws InterruptedException, IOException {
+    JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
+    assertEquals(new JsonPrimitive("Jeven"), jp.next());
     JsonArray message = new JsonArray();
     message.add("win");
     JsonArray args = new JsonArray();
@@ -141,7 +163,6 @@ public class ProxyRefereeTest {
     message.add(args);
     this.sourceStream.println(message);
     Thread.sleep(500);
-    JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
     assertEquals(new JsonPrimitive("void"), jp.next());
     executorService.shutdown();
   }

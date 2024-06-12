@@ -7,8 +7,7 @@ import Player.IPlayer;
 
 public class MockRefereeProxy extends ProxyReferee {
 
-  @Override
-  public boolean playGame(Socket s, IPlayer player) throws IOException {
-    return true;
+  public MockRefereeProxy(IPlayer player) {
+    super(player);
   }
 }

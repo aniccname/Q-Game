@@ -1,5 +1,6 @@
 package Action;
 
+import Config.ScoringConfig;
 import Map.Tile.ITile;
 import Referee.IPlayerState;
 import Referee.Visitor.ActionChecker;
@@ -26,7 +27,7 @@ public class ExchangeActionTest {
 
   @Before
   public void init() {
-    gs1 = new GameState(new Random(1), List.of("Alice", "Bob"));
+    gs1 = new GameState(new Random(1), List.of("Alice", "Bob"), new ScoringConfig(10, 10));
     ea1 = new ExchangeAction();
   }
   @Test

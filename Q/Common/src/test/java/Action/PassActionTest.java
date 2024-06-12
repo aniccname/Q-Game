@@ -1,5 +1,6 @@
 package Action;
 
+import Config.ScoringConfig;
 import Referee.Visitor.ActionChecker;
 import Referee.Visitor.ActionExecutor;
 import org.junit.Before;
@@ -23,7 +24,7 @@ public class PassActionTest {
 
   @Before
   public void init() {
-    gs1 = new GameState(new Random(1), List.of("Alice", "Bob"));
+    gs1 = new GameState(new Random(1), List.of("Alice", "Bob"), new ScoringConfig(5, 5));
     ea1 = new PassAction();
   }
   @Test

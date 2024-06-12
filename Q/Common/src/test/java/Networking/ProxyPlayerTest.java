@@ -4,11 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonStreamParser;
+import com.google.gson.stream.JsonReader;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
@@ -24,6 +27,7 @@ import Action.ExchangeAction;
 import Action.IAction;
 import Action.PassAction;
 import Action.PlaceAction;
+import Config.ScoringConfig;
 import Map.Coord;
 import Map.GameMap;
 import Map.Tile.ITile;
@@ -42,6 +46,7 @@ import static org.junit.Assert.*;
  * Testing class for player.
  */
 public class ProxyPlayerTest {
+  private final ScoringConfig defaultConfig = new ScoringConfig(6, 10);
 
   IPlayer proxy;
   Socket sourceSocket;
@@ -56,19 +61,30 @@ public class ProxyPlayerTest {
     ServerSocket listener = new ServerSocket(port);
     Future<Socket> futureSource = executorService.submit(listener::accept);
     proxySocket = new Socket("localhost", port);
+    var inputStream = proxySocket.getInputStream();
     sourceSocket = futureSource.get();
-    proxy = new ProxyPlayer(proxySocket, "Jave");
+    var sourceStream = new PrintStream(sourceSocket.getOutputStream());
+    sourceStream.println(new JsonPrimitive("Jave"));
+    sourceStream.flush();
+    proxy = new ProxyPlayer(inputStream, proxySocket.getOutputStream());
+    listener.close();
   }
 
-  @Test
+  @After
+  public void cleanup() throws IOException {
+    proxySocket.close();
+    executorService.shutdown();
+  }
+
+  @Test(timeout = 1000L)
   public void testName() {
     assertEquals("Jave", proxy.name());
   }
 
-  @Test
+  @Test(timeout = 1000L)
   public void testSetup() throws InterruptedException, IOException, ExecutionException {
     IShareableInfo gb = new GameState(new GameMap(new Tile(ITile.TileColor.Green, ITile.Shape.Star)),
-            List.of(), List.of(new PlayerState("Jave"), new PlayerState("Janual")));
+            List.of(), List.of(new PlayerState("Jave"), new PlayerState("Janual")), defaultConfig);
     Future<?> future = executorService.submit(() -> this.proxy.setup(gb, List.of()));
     Thread.sleep(500);
     JsonStreamParser jparser =
@@ -81,10 +97,10 @@ public class ProxyPlayerTest {
     future.get();
   }
 
-  @Test
+  @Test(timeout = 1000L)
   public void testTakeTurnPass() throws InterruptedException, IOException, ExecutionException {
     IShareableInfo gb = new GameState(new GameMap(new Tile(ITile.TileColor.Green, ITile.Shape.Star)),
-            List.of(), List.of(new PlayerState("Jave"), new PlayerState("Janual")));
+            List.of(), List.of(new PlayerState("Jave"), new PlayerState("Janual")), defaultConfig);
     Future<IAction> future = executorService.submit(() -> this.proxy.takeAction(gb));
     Thread.sleep(500);
     JsonStreamParser jparser =
@@ -96,10 +112,10 @@ public class ProxyPlayerTest {
     assertTrue(future.get() instanceof PassAction);
   }
 
-  @Test
+  @Test(timeout = 1000L)
   public void testTakeTurnExchange() throws InterruptedException, IOException, ExecutionException {
     IShareableInfo gb = new GameState(new GameMap(new Tile(ITile.TileColor.Green, ITile.Shape.Star)),
-            List.of(), List.of(new PlayerState("Jave"), new PlayerState("Janual")));
+            List.of(), List.of(new PlayerState("Jave"), new PlayerState("Janual")), defaultConfig);
     Future<IAction> future = executorService.submit(() -> this.proxy.takeAction(gb));
     Thread.sleep(500);
     JsonStreamParser jparser =
@@ -111,10 +127,10 @@ public class ProxyPlayerTest {
     assertTrue(future.get() instanceof ExchangeAction);
   }
 
-  @Test
+  @Test(timeout = 1000L)
   public void testTakeTurnPlace() throws InterruptedException, IOException, ExecutionException {
     IShareableInfo gb = new GameState(new GameMap(new Tile(ITile.TileColor.Green, ITile.Shape.Star)),
-            List.of(), List.of(new PlayerState("Jave"), new PlayerState("Janual")));
+            List.of(), List.of(new PlayerState("Jave"), new PlayerState("Janual")), defaultConfig);
     Future<IAction> future = executorService.submit(() -> this.proxy.takeAction(gb));
     Thread.sleep(500);
     JsonStreamParser jparser =
@@ -133,7 +149,7 @@ public class ProxyPlayerTest {
             action.getPlacements());
   }
 
-  @Test
+  @Test(timeout = 1000L)
   public void testNewTiles() throws InterruptedException, IOException, ExecutionException {
     Future<?> future = executorService.submit(() -> this.proxy.newTiles(List.of()));
     Thread.sleep(500);
@@ -147,7 +163,7 @@ public class ProxyPlayerTest {
     future.get();
   }
 
-  @Test
+  @Test(timeout = 1000L)
   public void testWin() throws InterruptedException, IOException, ExecutionException {
     Future<?> future = executorService.submit(() -> this.proxy.win(false));
     Thread.sleep(500);

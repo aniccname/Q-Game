@@ -11,6 +11,7 @@ import Action.ExchangeAction;
 import Action.IAction;
 import Action.PassAction;
 import Action.PlaceAction;
+import Config.ScoringConfig;
 import Map.Coord;
 import Map.IMap;
 import Map.GameMap;
@@ -34,7 +35,7 @@ public class LdasgStrategyTest {
 					new Coord(0,1), new Tile(ITile.Shape.Star, ITile.TileColor.Purple)
 			));
 
-			igs = new GameState(map, List.of(tile), List.of(new PlayerState("Test Player")));
+			igs = new GameState(map, List.of(tile), List.of(new PlayerState("Test Player")), new ScoringConfig(10, 8));
 		}
 
 		@Test

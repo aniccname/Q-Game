@@ -98,7 +98,9 @@ public class GameState implements IGameState {
    * already exists and players already have hands and scores
    *
    * @param map the IMap to initialize the game state with
+   * @param refTiles the Tiles that the referee will contain
    * @param players the current states of the players
+   * @param scoringConfig the bonus points that this GameState will award
    */
   public GameState(
       IMap map,

@@ -1,5 +1,6 @@
 package Referee;
 
+import Config.ScoringConfig;
 import Map.Tile.ITile;
 import org.junit.Before;
 
@@ -35,7 +36,7 @@ public class GameStateTest {
 
   @Before
   public void init() {
-    igs = new GameState(new Random(1), List.of("Alice", "Bob"));
+    igs = new GameState(new Random(1), List.of("Alice", "Bob"), new ScoringConfig(6, 10));
     exchange = new ExchangeAction();
     pass = new PassAction();
 
@@ -49,7 +50,7 @@ public class GameStateTest {
     placeGreenStarx0yn1 = new PlaceAction(List.of(placement1));
     placeOrangeCirclex1y0 = new PlaceAction(List.of(placement2));
 
-    igs2 = new GameState(new Random(1), List.of("bob", "blerner", "mattias"));
+    igs2 = new GameState(new Random(1), List.of("bob", "blerner", "mattias"), new ScoringConfig(6, 10));
   }
 
   @org.junit.Test
