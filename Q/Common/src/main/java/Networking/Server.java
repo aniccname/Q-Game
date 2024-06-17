@@ -64,7 +64,7 @@ public class Server {
         players.addAll(acceptSignups(listener, threadPool, maxPlayers - players.size()));
       }
       if (players.size() < minPlayers) {
-        return new GameResult(List.of(), List.of());
+        return GameResult.EMPTY_RESULT;
       }
       return referee.playGame(players, serverConfig.refereeConfig());
     } finally {

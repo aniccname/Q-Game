@@ -25,4 +25,18 @@ public class GameResult {
 		this.assholes = assholes;
 	}
 
+	@Override
+	public String toString() {
+		return "[[" +
+						this.winners.stream().reduce((name, result) -> name + ", " + result).orElse("[]") +
+						"], [" +
+						this.assholes.stream().reduce((name, result) -> name + ", " + result).orElse("[]") +
+						"]]";
+	}
+
+	/**
+	 * A GameResult for a game that fails to run.
+	 */
+	public static GameResult EMPTY_RESULT = new GameResult(List.of(), List.of());
+
 }

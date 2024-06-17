@@ -78,7 +78,7 @@ public void onOpen(WebSocket webSocket) {
 
   @Override
   public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-    System.out.println("It's closed!");
+    System.out.println("Connection closed due to: " + statusCode + " (" + reason + ")");
     return WebSocket.Listener.super.onClose(webSocket, statusCode, reason);
   }
 }
