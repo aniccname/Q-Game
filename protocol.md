@@ -11,11 +11,11 @@ Errors are specified with the JSON form of
 Server requests are styled as remote method calls, sent with the form of `[method, [args... ]]`,
  where method is the name of the method being called, and args... the variable number of arguments being called. All methods called expect a return value. If no return value is sent back in a timely manner, the client is disconnected from the game. 
 The server expects each request to be answered with an expected return value, specified below. 
-  - setup(<a href=#jpub> JPub </a>, <a href=#jtile> JTile...</a>) -> "void"
-  - take-turn(<a href=#jpub> JPub </a>) -> <a href=#jpub>JChoice</a>
-  - new-tiles(<a href=#jtile> JTile...) -> "void"
+  - setup(<a href=#jpub>JPub</a>, <a href=#jtile> JTile...</a>) -> "void"
+  - take-turn(<a href=#jpub>JPub</a>) -> <a href=#jpub>JChoice</a>
+  - new-tiles(<a href=#jtile>JTile...</a>) -> "void"
   - win(boolean) -> "void"
-  - watch-turn(<a href=#jpub>) -> "void"
+  - watch-turn(<a href=#jpub>JPub</a>) -> "void"
 
 ### Data encodings ###
 <h6 id=color>Color</h6>
@@ -50,7 +50,7 @@ Is a {"score": PosInteger, "name": String, "tile*" <a href=#jtile> JTile... </a>
 Is a {"name": String, "tile*": PosInteger, "score": Integer} representing an opposing player's score, name, and number of tiles.
 <h6 id=jpub>JPub</h6>
 Is a {"map": <a href=#jmap> JMap </a>, "tile*": PosInteger, "players": [<a href=#jplayer>JPlayer</a>, <a href=#jopponent>JOpponent</a>, ...]}
-<h6 id=1placement>1Placement</a>
+<h6 id=1placement>1Placement</h6>
 Is a {"coordinate": <a href=#jcoordinate> JCoordinate </a>, "1tile": <a href=#jtile> JTile </a>} representing a tile to place at the given coordinate. 
-<h6 id=jplacements>JPlacements</a>
+<h6 id=jplacements>JPlacements</h6>
 Is a [<a href=#1placement> 1Placement </a>, ...] representing the placement of one or more tiles by the active player. 
