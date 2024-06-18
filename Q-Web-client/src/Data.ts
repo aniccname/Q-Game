@@ -224,10 +224,16 @@ interface JPlayer {
     "tile*:": Array<JTile>
 }
 
+interface JOpponent {
+    score: Number, 
+    name?: String, 
+    "tile#": Number
+}
+
 interface JPub {
     map: JMap,
     "tile*": Number,
-    players: [JPlayer, Number, ...Number[]]
+    players: [(JPlayer|JOpponent)[]]
 }
 
 //Parsing Functionality
@@ -243,7 +249,7 @@ function parseJTile(text: string | any) : Tile {
         try {
             parsed = JSON.parse(text);
         } catch (e) {
-            throw Error("Unable to parse given JPub. " + e);
+            throw Error("Unable to parse given Jtile. " + e);
         }
     }
     else {

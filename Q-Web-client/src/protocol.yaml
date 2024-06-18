@@ -1,0 +1,39 @@
+asyncapi: 3.0.0
+info: 
+  title: Client/Server Protocol
+  version: 1.0.0
+  description: This protocol is in charge of communication between a QGame server and any complient client. 
+channels:
+  game:
+    address: "???"
+    messages:
+servers:
+  development: 
+    host: "???"
+    protocol: ws
+    description: The address of the server running the QGame. Routing to sub game servers not implemented yet. 
+
+operations:
+  join: 
+    action: send
+    channel:
+      $ref : '#/channels/game'
+    messages: 
+      $ref : '#/components/messages/connect'
+
+components:
+  messages: 
+    join:
+      payload:
+        type: string
+    # Figure out if I can abstract into one error message (No players, ect...)
+    timeout:
+      payload:
+        type: object
+        properties:
+          error: 
+            type: string
+            description: The reason for the given error (timeout in this instance)
+    setup : 
+      payload: 
+        type: 
