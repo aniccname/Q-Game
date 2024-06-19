@@ -19,21 +19,21 @@ The server expects each request to be answered with an expected return value, sp
 
 ### Data encodings ###
 <h6 id=color>Color</h6>
-One of:
-    - "red"
-    - "green"
-    - "blue"
-    - "yelow"
-    - "orange"
-    - "purple"
+One of:  
+  - "red"  
+  - "green"  
+  - "blue"  
+  - "yelow"  
+  - "orange"  
+  - "purple"  
 <h6 id =shape>Shape</h6>
-One of:
-    - "star"
-    - "8star"
-    - "square"
-    - "circle"
-    - "clover"
-    - "diamond"
+One of:  
+  - "star"  
+  - "8star"  
+  - "square"  
+  - "circle"  
+  - "clover"  
+  - "diamond"  
 <h6 id=jtile>JTile</h6>
 Is a {"color": <a href=#color>Color</a>, "shape": <a href=#shape>Shape</a>}
 <h6 id=jcoordinate>JCoordinate</h6>
@@ -45,7 +45,7 @@ Is a [Integer, JCell, ...] representing one non-empty row of the game board with
 <h6 id=jmap>JMap</h6>
 Is a [JRow...] representing the complete game board with a non empty sequence of JMaps. 
 <h6 id=jplayer>JPlayer</h6>
-Is a {"score": PosInteger, "name": String, "tile*" <a href=#jtile> JTile... </a>} representing the player's score, name, and the player's 0 or more tiles. 
+Is a {"score": PosInteger, "name": String, "tile*": <a href=#jtile> JTile... </a>} representing the player's score, name, and the player's 0 or more tiles. 
 <h6 id=jopponent>JOpponent</h6>
 Is a {"name": String, "tile*": PosInteger, "score": Integer} representing an opposing player's score, name, and number of tiles.
 <h6 id=jpub>JPub</h6>
