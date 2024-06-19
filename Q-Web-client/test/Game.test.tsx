@@ -1,7 +1,7 @@
 import {test, expect, jest} from "@jest/globals"
 import {makeCoord, makeTile, Coord, Board, Tile, TurnAnswer, Placement} from "../src/Data"
 
-import {BoardLocation, GameBoard, Loc, PlayerTile, PlayerTiles, Scores, expandBoard, Place} from "../src/Game"
+import {BoardLocation, GameBoard, Loc, PlayerTile, PlayerTiles, PlayerOrder, expandBoard, Place} from "../src/Game"
 
 test("Empty Board Location", () => {
     const result = BoardLocation({value: "Empty", onClick: () => ("Clicked!")});
@@ -119,27 +119,31 @@ test("PlayerTiles test", () => {
 });
 
 test("Single player scores test", () => {
-    const result = Scores({playerScore: 12345, otherScores: []});
+    const result = PlayerOrder({playerOrdering: [{name: "you", numTiles: 6, score: 70}]});
     const listItems = result.props.children;
-    expect(result.type).toBe("ol");
+    expect(result.type).toBe("ul");
     expect(listItems.length).toBe(1);
-    expect(listItems[0].type).toBe("li");
-    expect(listItems[0].props.children).toBe("you: 12345");
+    expect(listItems[0].type).toBe("b");
+    console.log(listItems[0].props.children);
+    expect(listItems[0].props.children.type).toBe("li");
+    expect(listItems[0].props.children.props.children[1]).toBe("you: 70 pts. 6 tiles remaining.");
 });
 
 test("Multi player scores test", () => {
-    const result = Scores({playerScore: 2, otherScores: [1, 2, 3]});
+    const result = PlayerOrder({playerOrdering: 
+        [{name: "you", numTiles: 6, score: 70}, 
+        {name: "name1", numTiles: 4, score: 72}, 
+        {name: "name2", numTiles: 7, score: 44}]});
     const listItems = result.props.children;
-    expect(result.type).toBe("ol");
-    expect(listItems.length).toBe(4);
+    expect(result.type).toBe("ul");
+    expect(listItems.length).toBe(3);
     expect(listItems[0].type).toBe("li");
-    expect(listItems[0].props.children).toBe("not you: 3");
-    expect(listItems[1].type).toBe("li");
-    expect(listItems[1].props.children).toBe("not you: 2");
+    expect(listItems[0].props.children[1]).toBe("you: 70 pts. 6 tiles remaining.");
+    expect(listItems[1].type).toBe("b");
+    expect(listItems[1].props.children.type).toBe("li");
+    expect(listItems[1].props.children.props.children[1]).toBe("name1: 72 pts. 4 tiles remaining.");
     expect(listItems[2].type).toBe("li");
-    expect(listItems[2].props.children).toBe("you: 2");
-    expect(listItems[3].type).toBe("li");
-    expect(listItems[3].props.children).toBe("not you: 1");
+    expect(listItems[2].props.children[1]).toBe("name2: 44 pts. 7 tiles remaining.");
 });
 
 test("Place no placements test", () => {

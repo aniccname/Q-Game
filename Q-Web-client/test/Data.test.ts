@@ -146,14 +146,19 @@ test("2 Player no referee tiles JPub deserialization", () => {
     +'[[0, [0, { "color": "red", "shape": "clover" }]],' 
     + '[1, [0, { "color": "red", "shape": "star" }]],'
     + '[2, [0, { "color": "red", "shape": "8star" }]]],'
-    +'"players": [{ "score": 0, "tile*": [{ "color": "blue", "shape": "clover" },'
+    +'"players": [{"name": "me", "score": 0, "tile*":' 
+    +'[{ "color": "blue", "shape": "clover" },'
     + '{ "color": "blue", "shape": "star" },'
-    + '{ "color": "blue", "shape": "8star" }] }, 77], "tile*": 0 }');
+    + '{ "color": "blue", "shape": "8star" }]},'
+    + '{"name": "not me", "tile#": 4, "score": 10}],'
+    + '"tile*": 0 }');
     const result : TurnInfo = {
-        board: board1,
-        poolSize : 0,
-        myInfo : player1,
-        otherScores : [77]
+        global: {
+            board: board1,
+            poolSize : 0,
+            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}]
+        },
+        player : player1,
     };
     expect(parsed).toEqual(result);
 });
@@ -163,22 +168,41 @@ test("8 Player 50 referee tiles JPub deserialization", () => {
     +'[[0, [0, { "color": "red", "shape": "clover" }]],' 
     + '[1, [0, { "color": "red", "shape": "star" }]],'
     + '[2, [0, { "color": "red", "shape": "8star" }]]],'
-    +'"players": [{ "score": 77, "tile*": [] }, 76, 89, 0], "tile*": 0 }');
+    +'"players": [{"name": "me", "score": 0, "tile*":' 
+    +'[{ "color": "blue", "shape": "clover" },'
+    + '{ "color": "blue", "shape": "star" },'
+    + '{ "color": "blue", "shape": "8star" }]},'
+    + '{"name": "name1", "tile#": 4, "score": 10},'
+    + '{"name": "name2", "tile#": 8, "score": 2}, '
+    + '{"name": "name3", "tile#": 5, "score": 3}, '
+    + '{"name": "name4", "tile#": 4, "score": 0}, '
+    + '{"name": "name5", "tile#": 2, "score": 22}, '
+    + '{"name": "name6", "tile#": 6, "score": 8}, '
+    + '{"name": "name7", "tile#": 12, "score": 80}],'
+    + '"tile*": 0 }');
     const result : TurnInfo = {
-        board : board1,
-        poolSize : 0,
-        myInfo : {
-            tiles : [],
-            score: 77
+        global: {
+            board: board1,
+            poolSize : 0,
+            playerOrdering: [{name: "me", score: 0, numTiles: 3}, 
+                    {name: "name1", score: 10, numTiles: 4},
+                    {name: "name2", score: 2, numTiles: 8},
+                    {name: "name3", score: 3, numTiles: 5},
+                    {name: "name4", score: 0, numTiles: 4},
+                    {name: "name5", score: 22, numTiles: 2},
+                    {name: "name6", score: 8, numTiles: 6},
+                    {name: "name7", score: 80, numTiles: 12}]
         },
-        otherScores : [76, 89, 0]
-    }
+        player : player1,
+    };
+    expect(parsed).toEqual(result);
 });
 
-test("Improper JPub formatting: Improper JMap formatting", () => {
+test("Improper JPub formatting: empty map", () => {
     expect(() => parseJPub('{"map":[],'
-    +'"players":[{"score":0,"tile*":[{"color":"blue","shape":"clover"},'
-    +'{"color":"blue","shape":"star"},{"color":"blue","shape":"8star"}]}, 77],'
+    +'"players":[{"name": "me", "score":0,"tile*":[{"color":"blue","shape":"clover"},'
+    +'{"color":"blue","shape":"star"},{"color":"blue","shape":"8star"}]},'
+    + '{"name": "me", "score":0,"tile#": 9}],'
     +'"tile*":0}'))
     .toThrow("JMap must be non empty!");
 });

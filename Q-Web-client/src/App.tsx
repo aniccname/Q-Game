@@ -26,6 +26,8 @@ export default function App() : React.JSX.Element {
         setStatus("connected");
         this.send(name);
     }
+
+    return <>TODO: Everything :)</>
     
     
 }

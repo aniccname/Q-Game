@@ -1,8 +1,36 @@
 "use strict";
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.localFunc = exports.Board = exports.descendingOrder = exports.makeTile = exports.makeCoord = exports.parseJMap = exports.parseJTile = exports.parseJPlayer = exports.parseJPub = void 0;
 //TODO : Decide whether the function should enforce the enumeration of Colors and Shapes. 
-const makeTile = (c, s) => ({ color: c, shape: s });
+var makeTile = function (c, s) { return ({ color: c, shape: s }); };
 exports.makeTile = makeTile;
 /**
  * Makes a new Coord with the given x and y value.
@@ -10,7 +38,7 @@ exports.makeTile = makeTile;
  * @param y The y position of the new coordinate.
  * @returns A new Coord with the given x and y value.
  */
-const makeCoord = (x, y) => ({ "x": x, "y": y });
+var makeCoord = function (x, y) { return ({ "x": x, "y": y }); };
 exports.makeCoord = makeCoord;
 /**
  * Compares the two coordinates in descending order (top to bottom, left to right).
@@ -18,7 +46,7 @@ exports.makeCoord = makeCoord;
  * @param c2 A coordinate to compare.
  */
 function descendingOrder(c1, c2) {
-    const verticalDiff = c1.y - c2.y;
+    var verticalDiff = c1.y - c2.y;
     if (verticalDiff === 0) {
         return c1.x - c2.x;
     }
@@ -26,70 +54,89 @@ function descendingOrder(c1, c2) {
         return verticalDiff;
 }
 exports.descendingOrder = descendingOrder;
-class Board {
-    internalMap;
-    untransformedEntries;
-    size;
-    constructor(b) {
+var Board = /** @class */ (function () {
+    function Board(b) {
+        var e_1, _b;
+        this[_a] = "Board";
         this.internalMap = new Map();
         this.untransformedEntries = [];
         this.size = 0;
         if (b) {
-            for (let [c, v] of b.entries()) {
-                this.internalMap.set(this.transform(c), v);
-                this.untransformedEntries.push([c, v]);
-                this.size += 1;
+            try {
+                for (var _c = __values(b.entries()), _d = _c.next(); !_d.done; _d = _c.next()) {
+                    var _e = __read(_d.value, 2), c = _e[0], v = _e[1];
+                    this.internalMap.set(this.transform(c), v);
+                    this.untransformedEntries.push([c, v]);
+                    this.size += 1;
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (_d && !_d.done && (_b = _c.return)) _b.call(_c);
+                }
+                finally { if (e_1) throw e_1.error; }
             }
         }
     }
-    clear() {
+    Board.prototype.clear = function () {
         this.untransformedEntries = [];
         this.internalMap.clear();
         this.size = 0;
-    }
-    delete(key) {
+    };
+    Board.prototype.delete = function (key) {
         if (this.internalMap.has(this.transform(key))) {
             this.internalMap.delete(this.transform(key));
-            this.untransformedEntries = this.untransformedEntries.filter(([coord, _]) => (coord !== key));
+            this.untransformedEntries = this.untransformedEntries.filter(function (_b) {
+                var _c = __read(_b, 2), coord = _c[0], _ = _c[1];
+                return (coord !== key);
+            });
             this.size -= 1;
             return true;
         }
         return false;
-    }
-    forEach(callbackfn, thisArg) {
+    };
+    Board.prototype.forEach = function (callbackfn, thisArg) {
         throw new Error("Method not implemented.");
-    }
-    has(key) {
+    };
+    Board.prototype.has = function (key) {
         return this.internalMap.has(this.transform(key));
-    }
-    keys() {
-        return this.untransformedEntries.map(([coord, _]) => (coord)).values();
-    }
-    values() {
+    };
+    Board.prototype.keys = function () {
+        return this.untransformedEntries.map(function (_b) {
+            var _c = __read(_b, 2), coord = _c[0], _ = _c[1];
+            return (coord);
+        }).values();
+    };
+    Board.prototype.values = function () {
         return this.internalMap.values();
-    }
-    [Symbol.iterator]() {
+    };
+    Board.prototype[Symbol.iterator] = function () {
         return this.untransformedEntries.values();
-    }
-    [Symbol.toStringTag] = "Board";
-    transform(c) {
+    };
+    Board.prototype.transform = function (c) {
         return "(" + c.x + "," + c.y + ")";
-    }
-    get(key) {
+    };
+    Board.prototype.get = function (key) {
         return this.internalMap.get(this.transform(key));
-    }
-    set(key, value) {
-        this.untransformedEntries = this.untransformedEntries.filter(([c, _]) => (c.x != key.x || c.y != key.y));
+    };
+    Board.prototype.set = function (key, value) {
+        this.untransformedEntries = this.untransformedEntries.filter(function (_b) {
+            var _c = __read(_b, 2), c = _c[0], _ = _c[1];
+            return (c.x != key.x || c.y != key.y);
+        });
         this.untransformedEntries.push([key, value]);
         this.internalMap.set(this.transform(key), value);
         this.size = this.internalMap.size;
         return this;
-    }
-    entries() {
+    };
+    Board.prototype.entries = function () {
         return this.untransformedEntries.values();
-    }
-}
+    };
+    return Board;
+}());
 exports.Board = Board;
+_a = Symbol.toStringTag;
 function test() {
     function doesThisBreak() { }
 }
@@ -97,8 +144,9 @@ exports.localFunc = test;
 //#region JSON Serializers
 //INVARIANT: b is not empty
 function BoardToJMap(b) {
+    var e_2, _b;
     function PlaceInJRow(coord, t) {
-        let jCells = rows.get(coord.x);
+        var jCells = rows.get(coord.x);
         if (jCells === undefined) {
             rows.set(coord.x, [TileToJCell(coord.y, t)]);
         }
@@ -109,13 +157,26 @@ function BoardToJMap(b) {
     if (b.size == 0) {
         throw "Cannot convert an empty board to JMap";
     }
-    const rows = new Map;
-    b.forEach((t, c, _) => PlaceInJRow(c, t));
-    const jMap = [];
-    for (let [row, cells] of rows) {
-        let jRow = [row];
-        cells.forEach((jc, _) => jRow.push(jc));
+    var rows = new Map;
+    b.forEach(function (t, c, _) { return PlaceInJRow(c, t); });
+    var jMap = [];
+    var _loop_1 = function (row, cells) {
+        var jRow = [row];
+        cells.forEach(function (jc, _) { return jRow.push(jc); });
         jMap.push(jRow);
+    };
+    try {
+        for (var rows_1 = __values(rows), rows_1_1 = rows_1.next(); !rows_1_1.done; rows_1_1 = rows_1.next()) {
+            var _c = __read(rows_1_1.value, 2), row = _c[0], cells = _c[1];
+            _loop_1(row, cells);
+        }
+    }
+    catch (e_2_1) { e_2 = { error: e_2_1 }; }
+    finally {
+        try {
+            if (rows_1_1 && !rows_1_1.done && (_b = rows_1.return)) _b.call(rows_1);
+        }
+        finally { if (e_2) throw e_2.error; }
     }
     return jMap;
 }
@@ -148,13 +209,13 @@ function serializeTile(t) {
  * @returns a new Tile equivalent to the given JTile.
  */
 function parseJTile(text) {
-    let parsed;
+    var parsed;
     if (typeof text === "string") {
         try {
             parsed = JSON.parse(text);
         }
         catch (e) {
-            throw Error("Unable to parse given JPub. " + e);
+            throw Error("Unable to parse given Jtile. " + e);
         }
     }
     else {
@@ -174,14 +235,26 @@ exports.parseJTile = parseJTile;
  * @returns a new Board equivalent to the given JTile.
  */
 function parseJMap(text) {
-    const b = new Board();
-    const parsed = typeof text === "string" ? JSON.parse(text) : text;
+    var e_3, _b;
+    var b = new Board();
+    var parsed = typeof text === "string" ? JSON.parse(text) : text;
     function parseJRow(parsed) {
+        var e_4, _b;
         if (!(parsed instanceof Array)) {
             throw new Error("Given JSON value is not a JMap");
         }
-        for (let jCell of parsed.slice(1)) {
-            parseJCell(parsed[0], jCell);
+        try {
+            for (var _c = __values(parsed.slice(1)), _d = _c.next(); !_d.done; _d = _c.next()) {
+                var jCell = _d.value;
+                parseJCell(parsed[0], jCell);
+            }
+        }
+        catch (e_4_1) { e_4 = { error: e_4_1 }; }
+        finally {
+            try {
+                if (_d && !_d.done && (_b = _c.return)) _b.call(_c);
+            }
+            finally { if (e_4) throw e_4.error; }
         }
     }
     function parseJCell(row, jCell) {
@@ -190,8 +263,18 @@ function parseJMap(text) {
         }
         b.set(makeCoord(jCell[0], row), parseJTile(jCell[1]));
     }
-    for (let jRow of parsed) {
-        parseJRow(jRow);
+    try {
+        for (var parsed_1 = __values(parsed), parsed_1_1 = parsed_1.next(); !parsed_1_1.done; parsed_1_1 = parsed_1.next()) {
+            var jRow = parsed_1_1.value;
+            parseJRow(jRow);
+        }
+    }
+    catch (e_3_1) { e_3 = { error: e_3_1 }; }
+    finally {
+        try {
+            if (parsed_1_1 && !parsed_1_1.done && (_b = parsed_1.return)) _b.call(parsed_1);
+        }
+        finally { if (e_3) throw e_3.error; }
     }
     if (b.size == 0) {
         throw Error("JMap must be non empty!");
@@ -205,7 +288,7 @@ exports.parseJMap = parseJMap;
  * @returns a new PlayerInfo equivalent to the given JPlayer.
  */
 function parseJPlayer(text) {
-    const parsed = typeof text === "string" ? JSON.parse(text) : text;
+    var parsed = typeof text === "string" ? JSON.parse(text) : text;
     if (!(parsed instanceof Object && typeof parsed.score === "number" && parsed["tile*"] instanceof Array)) {
         throw new Error("Given JSON value is not a JPlayer!");
     }
@@ -216,12 +299,42 @@ function parseJPlayer(text) {
 }
 exports.parseJPlayer = parseJPlayer;
 /**
+ * Parses the given JPlayer or JOpponent into a OpponentInfo
+ * @param text The JPlayer or JOpponent to parse.
+ * @Returns a new JOpponent representing the JPlayer or JOpponent
+ */
+function parsePlayers(text) {
+    var parsed;
+    if (typeof text === "string") {
+        try {
+            parsed = JSON.parse(text);
+        }
+        catch (e) {
+            throw Error("Unable to parse given JPub. " + e);
+        }
+    }
+    else {
+        parsed = text;
+    }
+    if (!(parsed instanceof Object
+        && typeof parsed["score"] === "number"
+        && typeof parsed["name"] === "string" &&
+        (typeof parsed["tile#"] === "number" || typeof parsed["tile*"] === "object"))) {
+        throw new Error("Given JSON value is not a JPlayer or JOpponent!");
+    }
+    return {
+        name: parsed["name"],
+        score: parsed["score"],
+        numTiles: parsed["tile*"] != undefined ? parsed["tile*"].length : parsed["tile#"]
+    };
+}
+/**
  * Parses the given JPub into a TurnInfo.
  * @param text The JPub to parse.
  * @returns a new TurnInfo equivalent to the given JPub.
  */
 function parseJPub(text) {
-    let parsed;
+    var parsed;
     if (typeof text === "string") {
         try {
             parsed = JSON.parse(text);
@@ -237,11 +350,15 @@ function parseJPub(text) {
         && typeof parsed["tile*"] === "number" && typeof parsed.players === "object" && parsed.players.length > 1)) {
         throw new Error("Given JSON value is not a JPub!");
     }
+    var player = parsed.players.find(function (p) { return p["tile*"] != undefined; });
+    var order = parsed.players.map(parsePlayers);
     return {
-        board: parseJMap(parsed.map),
-        poolSize: parsed["tile*"],
-        myInfo: parseJPlayer(parsed.players[0]),
-        otherScores: parsed.players.slice(1)
+        global: {
+            board: parseJMap(parsed.map),
+            poolSize: parsed["tile*"],
+            playerOrdering: order
+        },
+        player: parseJPlayer(player)
     };
 }
 exports.parseJPub = parseJPub;

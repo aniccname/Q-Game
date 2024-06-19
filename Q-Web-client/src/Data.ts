@@ -10,6 +10,7 @@ export{
     Coord,
     Tile,
     PlayerInfo,
+    OpponentInfo,
     TurnInfo,
     Empty,
     Placement,
@@ -66,7 +67,7 @@ type PlayerInfo = {
 }
 
 type OpponentInfo = {
-    readonly name: String, 
+    readonly name: string, 
     readonly score: number, 
     readonly numTiles: number
 }
@@ -127,7 +128,7 @@ class Board implements Map<Coord, Tile>{
         return this.internalMap.get(this.transform(key));
     }
     public set(key: Coord, value: Tile): this {
-        this.untransformedEntries.filter(([c, _]) => (c.x != key.x || c.y != key.y));
+        this.untransformedEntries = this.untransformedEntries.filter(([c, _]) => (c.x != key.x || c.y != key.y));
         this.untransformedEntries.push([key, value]);
         this.internalMap.set(this.transform(key), value);
         this.size = this.internalMap.size;
@@ -139,10 +140,14 @@ class Board implements Map<Coord, Tile>{
 }
 
 type TurnInfo = {
+    readonly global: GlobalInfo,
+    readonly player: PlayerInfo
+}
+
+type GlobalInfo = {
     readonly board: Board,
-    readonly myInfo: PlayerInfo,
     readonly poolSize: number,
-    readonly otherScores: number[]
+    readonly playerOrdering: (OpponentInfo)[]
 }
 
 function test() {
@@ -324,6 +329,36 @@ function parseJPlayer(text: string | any) : PlayerInfo {
 }
 
 /**
+ * Parses the given JPlayer or JOpponent into a OpponentInfo
+ * @param text The JPlayer or JOpponent to parse.
+ * @Returns a new JOpponent representing the JPlayer or JOpponent
+ */
+function parsePlayers(text: string | any) : OpponentInfo {
+    let parsed;
+    if (typeof text === "string") {
+        try {
+            parsed = JSON.parse(text);
+        } catch (e) {
+            throw Error("Unable to parse given JPub. " + e)
+        }
+    }
+    else {
+        parsed = text;
+    }
+    if (!(parsed instanceof Object 
+        && typeof parsed["score"] === "number" 
+        && typeof parsed["name"] === "string" && 
+        (typeof parsed["tile#"] === "number" || typeof parsed["tile*"] === "object"))) {
+        throw new Error("Given JSON value is not a JPlayer or JOpponent!")
+    }
+    return {
+        name: parsed["name"],
+        score: parsed["score"],
+        numTiles: parsed["tile*"] != undefined ? parsed["tile*"].length : parsed["tile#"]
+    }
+}
+
+/**
  * Parses the given JPub into a TurnInfo.
  * @param text The JPub to parse.
  * @returns a new TurnInfo equivalent to the given JPub.
@@ -344,11 +379,15 @@ function parseJPub(text: string | any) : TurnInfo {
     && typeof parsed["tile*"] === "number" && typeof parsed.players === "object" && parsed.players.length > 1)) {
         throw new Error("Given JSON value is not a JPub!")
     }
+    const player = parsed.players.find((p : any) => p["tile*"] != undefined);
+    const order = parsed.players.map(parsePlayers);
     return {
-        board: parseJMap(parsed.map),
-        poolSize: parsed["tile*"],
-        myInfo: parseJPlayer(parsed.players[0]),
-        otherScores: parsed.players.slice(1)
+        global: {
+            board: parseJMap(parsed.map),
+            poolSize: parsed["tile*"],
+            playerOrdering: order
+        },
+        player: parseJPlayer(player)
     }
 }
 

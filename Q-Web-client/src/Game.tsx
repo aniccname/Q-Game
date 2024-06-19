@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import Button from "@mui/material/Button"
 import Grid2 from "@mui/material/Unstable_Grid2"
-import {Tile, Empty, Coord, Board, makeCoord, TurnAnswer, descendingOrder, TurnInfo, Placement} from "./Data"
+import {Tile, Empty, Coord, Board, makeCoord, TurnAnswer, descendingOrder, TurnInfo, Placement, PlayerInfo, OpponentInfo} from "./Data"
 import { JSXElementConstructor, StrictMode } from "react"
 import { Container, Stack, Box} from "@mui/material"
 import { ClassNames } from "@emotion/react"
@@ -133,6 +133,13 @@ export function PlayerTile({value, id, active, onClick} :
     </Button>
 }
 
+/**
+ * Creates a list of interactive player tiles
+ * @param param0  {tiles: the tiles to draw.
+ *                 active: the index of the active tile
+ *                 selector: Function that takes in the tile and index of the tile to select.}
+ * @returns 
+ */
 export function PlayerTiles({tiles, active, selector}
         : {tiles : Tile[], active : number | "none", selector : (t : Tile, key: number) => thunk})
     : React.JSX.Element {
@@ -149,16 +156,18 @@ export function PlayerTiles({tiles, active, selector}
  *               otherScores: An array of all the other scores in the game} 
  * @returns 
  */
-export function Scores({playerScore, otherScores}
-    : {playerScore : number, otherScores : number[]}) : React.JSX.Element {
-        
-        const scores : [string, number][] = otherScores.map((s) => ["not you", s]);
-        scores.push(["you", playerScore]);
-        scores.sort(([_, s1], [__, s2]) => (s2 - s1));
+export function PlayerOrder({playerOrdering}
+    : {playerOrdering: OpponentInfo[]}) : React.JSX.Element {
+        //Name, score, num tiles
+        const scores : [string, number, number][] = playerOrdering.map((info) => [info.name, info.score, info.numTiles]);
+        const maxScore = Math.max(...scores.map(([_name, score, _numTiles], i) => score));
         return(
-        <ol>
-            {scores.map(([name, s], i) => (<li key={i}>{name + ": " + s}</li>))}
-        </ol>
+        <ul>
+            {scores.map(([name, score, numtiles], i) => 
+                (score == maxScore ? 
+                <b><li key={i}> {name + ": " + score + " pts. " + numtiles + " tiles remaining."} </li></b>
+                :  <li key={i}> {name + ": " + score + " pts. " + numtiles + " tiles remaining."} </li>))}
+        </ul>
         )
 }
 
@@ -265,7 +274,7 @@ export default function Game({turnInfo, submission} : {turnInfo: TurnInfo, submi
         <Container maxWidth="sm">
             <Stack direction="column">
                 <TilesRemaining poolSize={turnInfo.global.poolSize}/>
-                <Scores playerScore={turnInfo.player.score} otherScores={turnInfo.global.otherScores}/>
+                <PlayerOrder playerOrdering={turnInfo.global.playerOrdering}/>
             </Stack>
         </Container>
       </Stack>
