@@ -5,6 +5,12 @@ import java.util.stream.Collectors;
 
 import Referee.IPlayerState;
 import Referee.PlayerState;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.annotations.SerializedName;
 
 public class JPlayer {
@@ -32,4 +38,14 @@ public class JPlayer {
 		playerState.acceptTiles(Arrays.stream(tiles).map(JTile::convert).collect(Collectors.toList()));
 		return playerState;
 	}
+
+	public JsonElement serialize() {
+		JsonObject jPlayer = new JsonObject();
+		jPlayer.add("name", new JsonPrimitive(name));
+		jPlayer.add("score", new JsonPrimitive(score));
+		JsonElement jtiles = new Gson().toJsonTree(tiles);
+		jPlayer.add("tile*", jtiles);
+		return jPlayer;
+	}
+
 }

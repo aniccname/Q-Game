@@ -41,6 +41,7 @@ public class ProxyReferee {
     this.commands.put("take-turn", new TakeTurnCommand());
     this.commands.put("new-tiles", new NewTilesCommand());
     this.commands.put("win", new WinCommand());
+    this.commands.put("watch-turn", new WatchTurnCommand());
   }
 
   /**
@@ -114,6 +115,14 @@ public class ProxyReferee {
       player.win(args.get(0).getAsBoolean());
       returnVoid(output);
       isGameOver = true;
+    }
+  }
+
+  private static class WatchTurnCommand implements PlayerCommand {
+    @Override
+    public void execute(IPlayer player, PrintStream output, JsonArray args) {
+      player.watchTurn(getISharable(args.get(0)));
+      returnVoid(output);
     }
   }
 }

@@ -79,6 +79,16 @@ public class Referee implements IReferee {
 		return new GameResult(winners, assholes);
 	}
 
+	private void playTurn(Map<String, PlayerSafetyAdapter> playerNames, IGameState gameState) {
+		gameState.getPlayerStates().stream().forEach(gs -> {
+			if (gs.equals(gameState.getActivePlayer())) {
+				takeTurn(gameState, playerNames.get(gs.getName()));
+			} else {
+				watchTurn(gameState, gs, playerNames);
+			}
+		});
+	}
+
 	private void playRound(Map<String, PlayerSafetyAdapter> playerNames, IGameState gameState,
 												 Optional<IObserver> observer) {
 		placementThisRound = false;
@@ -86,9 +96,7 @@ public class Referee implements IReferee {
 		int numTurns = gameState.getPlayerStates().size();
 
 		for (int i = 0; i < numTurns && !shouldGameEnd; i++) {
-			PlayerSafetyAdapter activePlayer =
-					playerNames.get(gameState.getActivePlayer().getName());
-			takeTurn(gameState, activePlayer);
+			playTurn(playerNames, gameState);
 			observer.ifPresent(o -> updateObserver(o, gameState));
 		}
 	}
@@ -171,6 +179,13 @@ public class Referee implements IReferee {
 			// give the active player new tiles
 			boolean playerBehaved = activePlayer.newTiles(newTiles);
 			if (!playerBehaved) kickPlayer(activePlayerState, gameState);
+		}
+	}
+
+	private void watchTurn(IGameState gameState, IPlayerState watchingPlayer, Map<String, PlayerSafetyAdapter> playerNames) {
+		PlayerSafetyAdapter adapter = playerNames.get(watchingPlayer.getName());
+		if (!adapter.watchTurn(gameState)) {
+			kickPlayer(watchingPlayer, gameState);
 		}
 	}
 

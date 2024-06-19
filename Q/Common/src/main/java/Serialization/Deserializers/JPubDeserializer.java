@@ -1,8 +1,12 @@
 package Serialization.Deserializers;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
 
+import Referee.IPlayerState;
 import Serialization.JMap;
+import Serialization.JOpponent;
 import Serialization.JPlayer;
 import Serialization.JPub;
 import Serialization.JRow;
@@ -33,9 +37,12 @@ public class JPubDeserializer implements JsonDeserializer<JPub> {
 
 		JsonArray jsonArray = jsonObject.get("players").getAsJsonArray();
 
-		JPlayer activePlayer = gson.fromJson(jsonArray.remove(0), JPlayer.class);
-		int[] otherScores = gson.fromJson(jsonArray, int[].class);
+		JPlayer playingPlayer = gson.fromJson(jsonArray.remove(0), JPlayer.class);
+		JOpponent[] otherPlayers = gson.fromJson(jsonArray, JOpponent[].class);
 
-		return new JPub(jMap, tileCount, activePlayer, otherScores);
+		List<IPlayerState> allPlayers = new java.util.ArrayList<>(Arrays.stream(otherPlayers).map(JOpponent::convert).toList());
+		allPlayers.add(playingPlayer.convert());
+
+		return new JPub(jMap, tileCount, playingPlayer.convert().getName(), allPlayers);
 	}
 }

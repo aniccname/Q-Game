@@ -79,4 +79,9 @@ public class Player implements IPlayer {
 	public void win(boolean won) {
 		// TODO: as we are not sure how to represent a win in the player yet
 	}
+
+	@Override
+	public void watchTurn(IShareableInfo publicState) {
+		//Nothing! This is an AI we don't care about it.
+	}
 }

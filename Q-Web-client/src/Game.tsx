@@ -144,7 +144,7 @@ export function PlayerTiles({tiles, active, selector}
 }
 
 /**
- * Creates sorted list to rank the player's score.
+ * Creates list of player scores, names, and number of remaining tiles left 
  * @param props {playerScore: The score of the player
  *               otherScores: An array of all the other scores in the game} 
  * @returns 

@@ -55,6 +55,13 @@ public class PlayerSafetyAdapter {
 		}).orElse(false);
 	}
 
+	public boolean watchTurn(IShareableInfo publicState) {
+		return callWithTimeout(() -> {
+			player.watchTurn(publicState);
+			return true;
+		}).orElse(false);
+	}
+
 	private <T> Optional<T> callWithTimeout(Callable<T> toRun) {
 		Future<T> future = executorService.submit(toRun);
 		try {

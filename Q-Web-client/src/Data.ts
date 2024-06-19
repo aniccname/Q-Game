@@ -12,6 +12,8 @@ export{
     PlayerInfo,
     TurnInfo,
     Empty,
+    Placement,
+    TurnAnswer,
     test as localFunc,
 }
 
@@ -34,6 +36,8 @@ type Coord = {
     readonly x: number,
     readonly y: number
 }
+
+type Placement = [Coord, Tile]
 
 /**
  * Makes a new Coord with the given x and y value. 
@@ -60,6 +64,14 @@ type PlayerInfo = {
     readonly score: number,
     readonly tiles: Tile[]
 }
+
+type OpponentInfo = {
+    readonly name: String, 
+    readonly score: number, 
+    readonly numTiles: number
+}
+
+type TurnAnswer = "pass" | "replace" | Placement[]
 
 class Board implements Map<Coord, Tile>{
     private internalMap : Map<String, Tile>;

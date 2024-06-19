@@ -35,7 +35,7 @@ public abstract class AProxyPlayer implements IPlayer {
   @Override
   public void setup(IShareableInfo map, List<ITile> tiles) {
     JsonElement methodCall =
-            serializeMethodCall("setup", new JPub(map).serialize(), this.getJTiles(tiles));
+            serializeMethodCall("setup", new JPub(map, this.name).serialize(), this.getJTiles(tiles));
     JsonElement response = this.invoke(methodCall);
     this.assertVoid(response);
   }
@@ -68,7 +68,7 @@ public abstract class AProxyPlayer implements IPlayer {
   @Override
   public IAction takeAction(IShareableInfo publicState) {
     JsonElement methodCall =
-            this.serializeMethodCall("take-turn", new JPub(publicState).serialize());
+            this.serializeMethodCall("take-turn", new JPub(publicState, this.name).serialize());
     JsonElement response = this.invoke(methodCall);
     Gson gson = new GsonBuilder().registerTypeAdapter(IAction.class, new JChoiceDeserializer()).create();
     return gson.fromJson(response, IAction.class);
@@ -84,6 +84,14 @@ public abstract class AProxyPlayer implements IPlayer {
   @Override
   public void win(boolean won) {
     JsonElement methodCall = this.serializeMethodCall("win", new JsonPrimitive(won));
+    JsonElement response = this.invoke(methodCall);
+    this.assertVoid(response);
+  }
+
+  @Override
+  public void watchTurn(IShareableInfo publicState) {
+    JsonElement methodCall =
+            this.serializeMethodCall("watch-turn", new JPub(publicState, this.name).serialize());
     JsonElement response = this.invoke(methodCall);
     this.assertVoid(response);
   }

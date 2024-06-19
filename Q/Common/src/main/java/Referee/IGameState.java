@@ -77,12 +77,6 @@ public interface IGameState extends IShareableInfo {
   void placeTileByOther(Coord coord, ITile tile);
 
   /**
-   * Returns the states of all players.
-   * @return the states of all players
-   */
-  List<IPlayerState> getPlayerStates();
-
-  /**
    * Creates a copy of the game state.
    */
   IGameState copy();

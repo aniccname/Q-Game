@@ -50,6 +50,7 @@ public class ProxyRefereeTest {
   IPlayer player;
   int port = 7779;
   PrintStream sourceStream;
+  String name = "Jeven";
 
   ServerSocket listener;
 
@@ -62,7 +63,7 @@ public class ProxyRefereeTest {
     proxySocket = new Socket("localhost", port);
     sourceSocket = futureSource.get();
     sourceStream = new PrintStream(sourceSocket.getOutputStream());
-    player = new Player("Jeven", new DagStrategy());
+    player = new Player(name, new DagStrategy());
     proxy = new ProxyReferee(player);
     InputStream in = proxySocket.getInputStream();
     OutputStream out = proxySocket.getOutputStream();
@@ -84,7 +85,7 @@ public class ProxyRefereeTest {
     JsonArray message = new JsonArray();
     message.add("setup");
     JsonArray args = new JsonArray();
-    args.add(new JPub(gs).serialize());
+    args.add(new JPub(gs, name).serialize());
     args.add(new JsonArray());
     message.add(args);
     this.sourceStream.println(message);
@@ -106,7 +107,7 @@ public class ProxyRefereeTest {
     JsonArray message = new JsonArray();
     message.add("setup");
     JsonArray args = new JsonArray();
-    args.add(new JPub(gs).serialize());
+    args.add(new JPub(gs, name).serialize());
     JsonArray tiles = new JsonArray();
     tiles.add(new Gson().toJsonTree(new JTile(gc)));
     args.add(tiles);
@@ -117,7 +118,7 @@ public class ProxyRefereeTest {
     message = new JsonArray();
     message.add( new JsonPrimitive( "take-turn"));
     args = new JsonArray();
-    args.add(new JPub(gs).serialize());
+    args.add(new JPub(gs, name).serialize());
     message.add(args);
     this.sourceStream.println(message);
     Thread.sleep(500);
@@ -136,7 +137,7 @@ public class ProxyRefereeTest {
     JsonArray message = new JsonArray();
     message.add("setup");
     JsonArray args = new JsonArray();
-    args.add(new JPub(gs).serialize());
+    args.add(new JPub(gs, name).serialize());
     args.add(new JsonArray());
     message.add(args);
     this.sourceStream.println(message);
@@ -160,6 +161,23 @@ public class ProxyRefereeTest {
     message.add("win");
     JsonArray args = new JsonArray();
     args.add(new JsonPrimitive(true));
+    message.add(args);
+    this.sourceStream.println(message);
+    Thread.sleep(500);
+    assertEquals(new JsonPrimitive("void"), jp.next());
+    executorService.shutdown();
+  }
+
+  @Test
+  public void testWatchTurn() throws InterruptedException, IOException {
+    JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
+    assertEquals(new JsonPrimitive("Jeven"), jp.next());
+    IShareableInfo gs = new GameState(List.of("Jeven"), defaultConfig);
+    JsonArray message = new JsonArray();
+    message.add("watch-turn");
+    JsonArray args = new JsonArray();
+    args.add(new JPub(gs, name).serialize());
+    args.add(new JsonArray());
     message.add(args);
     this.sourceStream.println(message);
     Thread.sleep(500);

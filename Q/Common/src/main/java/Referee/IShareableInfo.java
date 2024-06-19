@@ -54,4 +54,11 @@ public interface IShareableInfo {
    */
   IPlayerState activePlayer();
 
+  /**
+   * Returns the states of all players.
+   * @return the states of all players
+   */
+  List<IPlayerState> getPlayerStates();
+
+
 }

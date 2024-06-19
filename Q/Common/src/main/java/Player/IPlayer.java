@@ -44,4 +44,10 @@ public interface IPlayer {
    * @param won true if the player won the game, false otherwise.
    */
   void win(boolean won);
+
+  /**
+   * Informs the player about an opponents' turn.
+   * @param publicState the state of the game during the opponents turn.
+   */
+  void watchTurn(IShareableInfo publicState);
 }

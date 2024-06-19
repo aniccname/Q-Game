@@ -2,6 +2,7 @@ package Networking;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonStreamParser;
 import com.google.gson.stream.JsonReader;
@@ -37,6 +38,7 @@ import Referee.GameState;
 import Referee.IShareableInfo;
 import Referee.PlayerState;
 import Serialization.JCoordinate;
+import Serialization.JPub;
 import Serialization.JTile;
 import Serialization.OnePlacement;
 
@@ -176,5 +178,22 @@ public class ProxyPlayerTest {
     new PrintStream(this.sourceSocket.getOutputStream()).println(new JsonPrimitive("void"));
     future.get();
   }
+
+  @Test(timeout = 1000L)
+  public void testWatchTurn() throws InterruptedException, IOException, ExecutionException {
+    IShareableInfo gb = new GameState(new GameMap(new Tile(ITile.TileColor.Green, ITile.Shape.Star)),
+            List.of(), List.of(new PlayerState("Jave"), new PlayerState("Janual")), defaultConfig);
+    Future<?> future = executorService.submit(() -> this.proxy.watchTurn(gb));
+    Thread.sleep(500);
+    JsonStreamParser jparser =
+            new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
+    JsonArray result = (JsonArray) jparser.next();
+    assertEquals(new JsonPrimitive("watch-turn"), result.get(0));
+    assertTrue(result.get(1) instanceof JsonArray);
+    assertEquals(new JPub(gb, "Jave").serialize(), result.get(1).getAsJsonArray().get(0));
+    new PrintStream(this.sourceSocket.getOutputStream()).println(new JsonPrimitive("void"));
+    future.get();
+  }
+
 
 }
