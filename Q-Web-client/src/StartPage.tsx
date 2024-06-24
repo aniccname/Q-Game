@@ -11,20 +11,27 @@ import { Button, Container, Stack, TextField } from "@mui/material"
 type HasTargetValue = {target : {value: string}}
 
 export default function StartPage({connector} : {connector : (addr: string, name: string) => void}) : React.JSX.Element{
-    let [address, setAddress] = useState("");
+    let [hostname, setHostname] = useState("");
     let [name, setName] = useState("");
+    let [port, setPort] = useState("")
 
-    const handleAddressChange = (event : HasTargetValue) => (setAddress(event.target.value));
+    const handleHostnameChange = (event : HasTargetValue) => (setHostname(event.target.value));
+    const handlePortChange = (event : HasTargetValue) => (setPort(event.target.value));
     const handleNameChange = (event : HasTargetValue) => (setName(event.target.value));
-    const submitAnswer = () => (connector(address, name));
-    const submittable = address == '' || name == '';
+    const submitAnswer = () => (connector("ws://" + hostname + ":" + port, name));
+    const submittable = port != '' && name != '' && hostname != '';
+
+    
 
     return(
     <Container maxWidth="md">   
         <Stack spacing={1} direction="column">
-            <TextField id="server-address" label="Server" variant="outlined" onChange={handleAddressChange}/>
+            <Stack spacing={0.5} direction="row">
+                <TextField id="server-hostname" label="Hostname" variant="outlined" onChange={handleHostnameChange}/>
+                <TextField id="server-port" label="Port" variant="outlined" onChange={handlePortChange}/>
+            </Stack>
             <TextField id="display-name" label="Name" variant="outlined" onChange={handleNameChange}/>
-            <Button id="submit-button" variant="outlined" disabled={submittable} onClick={submitAnswer}>Connect</Button>
+            <Button id="submit-button" variant="outlined" disabled={!submittable} onClick={submitAnswer}>Connect</Button>
         </Stack>
     </Container> )
 }

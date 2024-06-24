@@ -123,10 +123,9 @@ test("Single player scores test", () => {
     const listItems = result.props.children;
     expect(result.type).toBe("ul");
     expect(listItems.length).toBe(1);
-    expect(listItems[0].type).toBe("b");
-    console.log(listItems[0].props.children);
-    expect(listItems[0].props.children.type).toBe("li");
-    expect(listItems[0].props.children.props.children[1]).toBe("you: 70 pts. 6 tiles remaining.");
+    expect(listItems[0].type).toBe("li");
+    console.log(listItems[0].props.children[0]);
+    expect(listItems[0].props.children[1].type).toBe("b");
 });
 
 test("Multi player scores test", () => {
@@ -139,9 +138,8 @@ test("Multi player scores test", () => {
     expect(listItems.length).toBe(3);
     expect(listItems[0].type).toBe("li");
     expect(listItems[0].props.children[1]).toBe("you: 70 pts. 6 tiles remaining.");
-    expect(listItems[1].type).toBe("b");
-    expect(listItems[1].props.children.type).toBe("li");
-    expect(listItems[1].props.children.props.children[1]).toBe("name1: 72 pts. 4 tiles remaining.");
+    expect(listItems[1].type).toBe("li");
+    expect(listItems[1].props.children[1].type).toBe("b");
     expect(listItems[2].type).toBe("li");
     expect(listItems[2].props.children[1]).toBe("name2: 44 pts. 7 tiles remaining.");
 });

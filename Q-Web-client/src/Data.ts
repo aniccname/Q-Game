@@ -6,6 +6,7 @@ export{
     makeCoord,
     makeTile,
     descendingOrder,
+    serializeTurnAnswer,
     Board,
     Coord,
     Tile,
@@ -201,6 +202,10 @@ function TileToJTile(t : Tile) : JTile {
     return t;
 }
 
+function CoordToJCoordinate(c : Coord) : JCoordinate {
+    return {row : c.y, column : c.x}
+}
+
 /**
  * Serializes a Board into a JTile representation of a Tile
  * @param t The Tile to serialize.
@@ -208,6 +213,31 @@ function TileToJTile(t : Tile) : JTile {
  */
 function serializeTile(t : Tile) : string {
     return JSON.stringify(TileToJTile(t))
+}
+
+/**
+ * Transforms the Placement into a OnePlacement to send to the server. 
+ * @param p the placement to encode
+ */
+function PlacementToOnePlacement(p : Placement) : OnePlacement {
+    const [coord, tile] = p;
+    return {coordinate : CoordToJCoordinate(coord), "1tile": TileToJTile(tile)}
+}
+
+/**
+ * Transforms the TurnAnswer into valid JChoice to send to the server. 
+ * @param ta The turn answer to turn into transform into a JChoice
+ */
+function TurnAnswerToJChoice(ta : TurnAnswer) : JChoice {
+    if (ta == "pass" || ta == "replace") {
+        return ta;
+    } else {
+        return ta.map(PlacementToOnePlacement);
+    }
+}
+
+function serializeTurnAnswer(ta: TurnAnswer) : string {
+    return JSON.stringify(TurnAnswerToJChoice(ta));
 }
 
 //#endregion JSON Serializers
@@ -239,19 +269,23 @@ interface JPlayer {
     score: Number,
     name?: String,
     "tile*:": Array<JTile>
-}
+};
 
 interface JOpponent {
     score: Number, 
     name?: String, 
     "tile#": Number
-}
+};
 
 interface JPub {
     map: JMap,
     "tile*": Number,
     players: [(JPlayer|JOpponent)[]]
-}
+};
+
+type OnePlacement = {coordinate: JCoordinate, "1tile": JTile};
+type JPlacements = OnePlacement[];
+type JChoice = "pass" | "replace" | JPlacements
 
 //Parsing Functionality
 
@@ -376,8 +410,8 @@ function parseJPub(text: string | any) : TurnInfo {
         parsed = text
     }
     if (!(parsed instanceof Object && typeof parsed.map === "object" 
-    && typeof parsed["tile*"] === "number" && typeof parsed.players === "object" && parsed.players.length > 1)) {
-        throw new Error("Given JSON value is not a JPub!")
+    && typeof parsed["tile*"] === "number" && typeof parsed.players === "object" && parsed.players.length >= 1)) {
+        throw new Error("Given JSON value " + JSON.stringify(parsed) + "is not a JPub!")
     }
     const player = parsed.players.find((p : any) => p["tile*"] != undefined);
     const order = parsed.players.map(parsePlayers);
@@ -390,5 +424,7 @@ function parseJPub(text: string | any) : TurnInfo {
         player: parseJPlayer(player)
     }
 }
+
+
 
 //#endregion JSON

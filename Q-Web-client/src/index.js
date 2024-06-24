@@ -16,12 +16,12 @@ const exampleInfo = {
     {name: "name2", numTiles: 7, score: 44}]
   },
   player : {
-      tiles : [makeTile("green", "8star"), makeTile("green", "diamond")],
+      tiles : [makeTile("blue", "8star"), makeTile("green", "8star")],
       score: 77
   },
 }
 root.render(
   <StrictMode>
-    <Game turnInfo={exampleInfo} submission={console.log}/>
+    <Game turnInfo={exampleInfo} submission={console.log} isPlaying={false}/>
   </StrictMode>
 );

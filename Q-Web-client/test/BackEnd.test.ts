@@ -1,6 +1,6 @@
 import { test, expect, jest} from "@jest/globals"
-import { match, validPlacement} from "../src/BackEnd"
-import { Board, makeCoord, makeTile } from "../src/Data"
+import { match, validPlacement, validPlacements} from "../src/BackEnd"
+import { Board, makeCoord, makeTile, serializeTurnAnswer } from "../src/Data"
 
 test("match same tile", () => {
     expect(match(makeTile("blue", "8star"), makeTile("blue", "8star"))).toBe(true);
@@ -74,4 +74,49 @@ test("No tiles", () => {
     const b : Board = new Board();
     expect(validPlacement(makeCoord(0, 0), makeTile("purple", "diamond"), b)).toBe(false);
     expect(validPlacement(makeCoord(1, 2), makeTile("yellow", "clover"), b)).toBe(false);
+})
+
+test("Tiles match whole line", () => {
+    const b : Board = new Board();
+    b.set(makeCoord(0, 0), makeTile("blue", "circle"));
+    b.set(makeCoord(-1, 0), makeTile("green", "circle"));
+    expect(validPlacement(makeCoord(1, 0), makeTile("blue", "8star"), b)).toBe(false);
+    expect(validPlacement(makeCoord(1, 0), makeTile("orange", "circle"), b)).toBe(true);
+})
+
+test("serializeTurnAnswer", () => {
+    const result = '[{"coordinate": {"row": 4, "column": -1}, ' 
+        + '"1tile": {"color": "green", "shape": "star"}}]';
+    expect(serializeTurnAnswer("pass")).toBe('"pass"');
+    expect(serializeTurnAnswer("replace")).toBe('"replace"');
+    //JSON equality to see if they both parse to the same object
+    expect(JSON.parse(serializeTurnAnswer([[makeCoord(-1, 4), makeTile("green", "star")]])))
+    .toEqual(JSON.parse(result));
+})
+
+//Tis case should never happen
+test("NoPlacements", () => {
+    const b : Board = new Board();
+    b.set(makeCoord(1, 0), makeTile("purple", "clover"));
+    expect(validPlacements([], b)).toBe(false);
+})
+
+test("OnePlacement", () => {
+    const b : Board = new Board();
+    b.set(makeCoord(1, 0), makeTile("purple", "clover"));
+    expect(validPlacements([[makeCoord(0, 0), makeTile("blue", "clover")]], b)).toBe(true);
+    expect(validPlacements([[makeCoord(0, 0), makeTile("blue", "square")]], b)).toBe(false);
+})
+
+test("ManyPlacements", () => {
+    const b : Board = new Board();
+    b.set(makeCoord(1, 0), makeTile("purple", "clover"));
+    expect(validPlacements([[makeCoord(0, 0), makeTile("blue", "clover")],
+                            [makeCoord(-1, 0), makeTile("blue", "clover")]], b)).toBe(true);
+    expect(validPlacements([[makeCoord(0, 0), makeTile("blue", "clover")],
+                            [makeCoord(0, 1), makeTile("blue", "clover")]], b)).toBe(true);
+    expect(validPlacements([[makeCoord(1, 1), makeTile("blue", "clover")],
+                            [makeCoord(0, 0), makeTile("blue", "clover")]], b)).toBe(false);
+    expect(validPlacements([[makeCoord(0, 0), makeTile("purple", "clover")],
+                            [makeCoord(-1, 0), makeTile("blue", "clover")]], b)).toBe(true);
 })

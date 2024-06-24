@@ -28,7 +28,7 @@ var __read = (this && this.__read) || function (o, n) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.localFunc = exports.Board = exports.descendingOrder = exports.makeTile = exports.makeCoord = exports.parseJMap = exports.parseJTile = exports.parseJPlayer = exports.parseJPub = void 0;
+exports.localFunc = exports.Board = exports.serializeTurnAnswer = exports.descendingOrder = exports.makeTile = exports.makeCoord = exports.parseJMap = exports.parseJTile = exports.parseJPlayer = exports.parseJPub = void 0;
 //TODO : Decide whether the function should enforce the enumeration of Colors and Shapes. 
 var makeTile = function (c, s) { return ({ color: c, shape: s }); };
 exports.makeTile = makeTile;
@@ -194,6 +194,9 @@ function TileToJCell(ColumnIndex, t) {
 function TileToJTile(t) {
     return t;
 }
+function CoordToJCoordinate(c) {
+    return { row: c.y, column: c.x };
+}
 /**
  * Serializes a Board into a JTile representation of a Tile
  * @param t The Tile to serialize.
@@ -202,6 +205,33 @@ function TileToJTile(t) {
 function serializeTile(t) {
     return JSON.stringify(TileToJTile(t));
 }
+/**
+ * Transforms the Placement into a OnePlacement to send to the server.
+ * @param p the placement to encode
+ */
+function PlacementToOnePlacement(p) {
+    var _b = __read(p, 2), coord = _b[0], tile = _b[1];
+    return { coordinate: CoordToJCoordinate(coord), "1tile": TileToJTile(tile) };
+}
+/**
+ * Transforms the TurnAnswer into valid JChoice to send to the server.
+ * @param ta The turn answer to turn into transform into a JChoice
+ */
+function TurnAnswerToJChoice(ta) {
+    if (ta == "pass" || ta == "replace") {
+        return ta;
+    }
+    else {
+        return ta.map(PlacementToOnePlacement);
+    }
+}
+function serializeTurnAnswer(ta) {
+    return JSON.stringify(TurnAnswerToJChoice(ta));
+}
+exports.serializeTurnAnswer = serializeTurnAnswer;
+;
+;
+;
 //Parsing Functionality
 /**
  * Parses the given JTile into a Tile.
@@ -347,8 +377,8 @@ function parseJPub(text) {
         parsed = text;
     }
     if (!(parsed instanceof Object && typeof parsed.map === "object"
-        && typeof parsed["tile*"] === "number" && typeof parsed.players === "object" && parsed.players.length > 1)) {
-        throw new Error("Given JSON value is not a JPub!");
+        && typeof parsed["tile*"] === "number" && typeof parsed.players === "object" && parsed.players.length >= 1)) {
+        throw new Error("Given JSON value " + JSON.stringify(parsed) + "is not a JPub!");
     }
     var player = parsed.players.find(function (p) { return p["tile*"] != undefined; });
     var order = parsed.players.map(parsePlayers);

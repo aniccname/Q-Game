@@ -4,7 +4,7 @@ from CS4500 (with some minor alterations to make the communications more useful)
 
 #### ERRORS ####
 Errors are specified with the JSON form of 
-`["ERROR", message]` where  
+`["ERROR", [message]]` where  
   - **message** is the contents of the error message. 
 
 ### Server messages ###
@@ -12,7 +12,7 @@ Server requests are styled as remote method calls, sent with the form of `[metho
  where method is the name of the method being called, and args... the variable number of arguments being called. All methods called expect a return value. If no return value is sent back in a timely manner, the client is disconnected from the game. 
 The server expects each request to be answered with an expected return value, specified below. 
   - setup(<a href=#jpub>JPub</a>, <a href=#jtile> JTile...</a>) -> "void"
-  - take-turn(<a href=#jpub>JPub</a>) -> <a href=#jpub>JChoice</a>
+  - take-turn(<a href=#jpub>JPub</a>) -> <a href=#jchoice>JChoice</a>
   - new-tiles(<a href=#jtile>JTile...</a>) -> "void"
   - win(boolean) -> "void"
   - watch-turn(<a href=#jpub>JPub</a>) -> "void"
@@ -54,3 +54,8 @@ Is a {"map": <a href=#jmap> JMap </a>, "tile*": PosInteger, "players": [<a href=
 Is a {"coordinate": <a href=#jcoordinate> JCoordinate </a>, "1tile": <a href=#jtile> JTile </a>} representing a tile to place at the given coordinate. 
 <h6 id=jplacements>JPlacements</h6>
 Is a [<a href=#1placement> 1Placement </a>, ...] representing the placement of one or more tiles by the active player. 
+<h6 id=jchoice>JChoice</h6>
+Is one of: 
+    - "pass"
+    - "replace"
+    - <a href=#jplacements>JPlacements</a>

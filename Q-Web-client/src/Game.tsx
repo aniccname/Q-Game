@@ -5,7 +5,7 @@ import {Tile, Empty, Coord, Board, makeCoord, TurnAnswer, descendingOrder, TurnI
 import { JSXElementConstructor, StrictMode } from "react"
 import { Container, Stack, Box} from "@mui/material"
 import { ClassNames } from "@emotion/react"
-import { validPlacement } from "./BackEnd"
+import { validPlacements} from "./BackEnd"
 
 export type Loc = Tile | Empty
 type Submission = (ans : TurnAnswer) => void
@@ -165,7 +165,7 @@ export function PlayerOrder({playerOrdering}
         <ul>
             {scores.map(([name, score, numtiles], i) => 
                 (score == maxScore ? 
-                <b><li key={i}> {name + ": " + score + " pts. " + numtiles + " tiles remaining."} </li></b>
+                <li key={i}> <b>{name + ": " + score + " pts. " + numtiles + " tiles remaining."} </b></li>
                 :  <li key={i}> {name + ": " + score + " pts. " + numtiles + " tiles remaining."} </li>))}
         </ul>
         )
@@ -197,8 +197,8 @@ export function Replace({submission, disabled} : {submission: Submission, disabl
 /**
  * A UI button that submits all placed tiles <i>this turn</i> as the player's TurnAnswer
  */
-export function Place({submission, placements} : {submission: Submission, placements: Placement[]}) : React.JSX.Element {
-    return <Button variant="outlined" onClick={()=>submission(placements)} className="place" disabled={placements.length == 0}> 
+export function Place({submission, placements, isPlaying} : {submission: Submission, placements: Placement[], isPlaying : boolean}) : React.JSX.Element {
+    return <Button variant="outlined" onClick={()=>submission(placements)} className="place" disabled={placements.length == 0 || !isPlaying}> 
         Place
     </Button>
 }
@@ -212,6 +212,14 @@ function Undo({resetter, disabled} : {resetter: thunk, disabled: boolean}) : Rea
     </Button>
 }
 
+function MyTurn({isMyTurn} : {isMyTurn : boolean}) : React.JSX.Element {
+    if (isMyTurn) {
+        return <b>It's your turn! Waiting for your submission...</b>
+    } else {
+        return <>It's not your turn. Please wait and watch the game.</>
+    }
+}
+
 //TODO: The gameboard needs some way of figuring out of it's our turn (where we should be able to take all these actions) or not (where we're just observing the changes while it's somebody's else's turn).
 //My intuition on this is to take in the index of the active player, so that Game can highlight whose turn it is, but if this is the case what happens when it's our turn? 
 // Do we highlight our score and name? I think this is probably the best way to go about it, but it might not play well with the current scoring code that I have. 
@@ -221,16 +229,16 @@ function Undo({resetter, disabled} : {resetter: thunk, disabled: boolean}) : Rea
  * @param {turnInfo, submission} turn information to render and interact with.
  * @returns 
  */
-export default function Game({turnInfo, submission} : {turnInfo: TurnInfo, submission : Submission}) : React.JSX.Element {
+export default function Game({turnInfo, submission, isPlaying} : 
+    {turnInfo: TurnInfo, submission : Submission, isPlaying : boolean}) : React.JSX.Element {
     let [hand, setHand] = useState<Tile[]>(turnInfo.player.tiles);
     let [activeTile, setActiveTile] = useState<number | "none">("none");
     let [board, setBoard] = useState(new Board(turnInfo.global.board));
     let [placements, setPlacements] = useState<Placement[]>([]);
     const clickHandler = (coord : Coord) => () => {
-        ///setBoard(new Board().set(coord, makeTile("blue", "diamond")));
         if (activeTile !== "none") {
             let selectedTile = hand[activeTile];
-            if (validPlacement(coord, selectedTile, board)) {
+            if (validPlacements(placements.concat([[coord, selectedTile]]), turnInfo.global.board)) {
                 setBoard(new Board(board.set(coord, selectedTile)));
                 setHand(hand.filter((_, i) => (i !== activeTile)));
                 placements.push([coord, selectedTile]);
@@ -265,9 +273,9 @@ export default function Game({turnInfo, submission} : {turnInfo: TurnInfo, submi
             </Box> 
             <PlayerTiles tiles={hand} selector={tileSelector} active={activeTile}/>
             <Stack direction="row">
-                <Pass submission={submission} disabled={anyPlacements}/>
-                <Replace submission={submission} disabled={anyPlacements}/>
-                <Place submission={submission} placements={placements}/>
+                <Pass submission={submission} disabled={anyPlacements || !isPlaying}/>
+                <Replace submission={submission} disabled={anyPlacements || !isPlaying}/>
+                <Place submission={submission} placements={placements} isPlaying={isPlaying}/>
             </Stack>
         </Container>
         <Undo resetter={resetter} disabled={!anyPlacements}/>
@@ -275,6 +283,7 @@ export default function Game({turnInfo, submission} : {turnInfo: TurnInfo, submi
             <Stack direction="column">
                 <TilesRemaining poolSize={turnInfo.global.poolSize}/>
                 <PlayerOrder playerOrdering={turnInfo.global.playerOrdering}/>
+                <MyTurn isMyTurn={isPlaying}/>
             </Stack>
         </Container>
       </Stack>

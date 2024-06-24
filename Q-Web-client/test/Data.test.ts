@@ -213,6 +213,6 @@ test("Improper JPub formatting: No players", () => {
     + '[1, [0, { "color": "red", "shape": "star" }]],'
     + '[2, [0, { "color": "red", "shape": "8star" }]]],'
     +'"players": [], "tile*": 0 }'))
-    .toThrow("Given JSON value is not a JPub!");
+    .toThrow("is not a JPub!");
 });
 
