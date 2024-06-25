@@ -63,6 +63,15 @@ function parseCall(msg : any, state : TurnInfo | string) : TurnInfo | boolean | 
         "win" : parseWin,
         "ERROR" : parseError
     }
+
+    const test_dispatch : DispatchTable<TurnInfo | boolean | Error | "connected"> = {
+        "new-tiles": (arg) => "connected",
+        "setup" : parseJPub,
+        "take-turn" : parseJPub,
+        "watch-turn" : (arg) => "connected",
+        "win" : parseWin,
+        "ERROR" : parseError
+    }
     return runDispatch(msg, dispatch);
 }
 

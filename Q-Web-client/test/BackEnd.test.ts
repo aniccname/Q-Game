@@ -15,14 +15,15 @@ test("match same color", () => {
 })
 
 test("match different color", () => {
-    expect(match(makeTile("red", "square"), makeTile("green", "circle"))).toBe(false);
+    expect(match(makeTile("red", "square"), makeTile("green", "circle"))).toBe("red square does not match green circle.");
 })
 
 test("One tile left", () => {
     const b : Board = new Board();
     b.set(makeCoord(-1, 0), makeTile("blue", "circle"));
     expect(validPlacement(makeCoord(0, 0), makeTile("green", "circle"), b)).toBe(true);
-    expect(validPlacement(makeCoord(0, 0), makeTile("green", "square"), b)).toBe(false);
+    expect(validPlacement(makeCoord(0, 0), makeTile("green", "square"), b))
+    .toBe("green square does not match blue circle.");
     expect(validPlacement(makeCoord(0, 0), makeTile("blue", "square"), b)).toBe(true);
 })
 
@@ -30,7 +31,8 @@ test("One tile right", () => {
     const b : Board = new Board();
     b.set(makeCoord(1, 0), makeTile("purple", "clover"));
     expect(validPlacement(makeCoord(0, 0), makeTile("purple", "diamond"), b)).toBe(true);
-    expect(validPlacement(makeCoord(0, 0), makeTile("orange", "diamond"), b)).toBe(false);
+    expect(validPlacement(makeCoord(0, 0), makeTile("orange", "diamond"), b))
+    .toBe("orange diamond does not match purple clover.");
     expect(validPlacement(makeCoord(0, 0), makeTile("yellow", "clover"), b)).toBe(true);
 })
 
@@ -40,16 +42,20 @@ test("Surrounded by tiles horizontally", () => {
     b.set(makeCoord(-1, 0), makeTile("red", "circle"));
     expect(validPlacement(makeCoord(0, 0), makeTile("green", "circle"), b)).toBe(true);
     expect(validPlacement(makeCoord(0, 0), makeTile("purple", "circle"), b)).toBe(true);
-    expect(validPlacement(makeCoord(0, 0), makeTile("purple", "diamond"), b)).toBe(false);
-    expect(validPlacement(makeCoord(0, 0), makeTile("red", "diamond"), b)).toBe(false);
-    expect(validPlacement(makeCoord(0, 0), makeTile("yellow", "diamond"), b)).toBe(false);
+    expect(validPlacement(makeCoord(0, 0), makeTile("purple", "diamond"), b))
+        .toBe("purple diamond does not match red circle.");
+    expect(validPlacement(makeCoord(0, 0), makeTile("red", "diamond"), b))
+        .toBe("red diamond does not match purple circle.");
+    expect(validPlacement(makeCoord(0, 0), makeTile("yellow", "diamond"), b))
+        .toBe("yellow diamond does not match red circle.");
 })
 
 test("One tile above", () => {
     const b : Board = new Board();
     b.set(makeCoord(0, -1), makeTile("yellow", "square"));
     expect(validPlacement(makeCoord(0, 0), makeTile("purple", "square"), b)).toBe(true);
-    expect(validPlacement(makeCoord(0, 0), makeTile("purple", "circle"), b)).toBe(false);
+    expect(validPlacement(makeCoord(0, 0), makeTile("purple", "circle"), b))
+    .toBe("purple circle does not match yellow square.");
     expect(validPlacement(makeCoord(0, 0), makeTile("yellow", "circle"), b)).toBe(true);
 })
 
@@ -57,7 +63,7 @@ test("One tile below", () => {
     const b : Board = new Board();
     b.set(makeCoord(0, 1), makeTile("orange", "star"));
     expect(validPlacement(makeCoord(0, 0), makeTile("green", "star"), b)).toBe(true);
-    expect(validPlacement(makeCoord(0, 0), makeTile("green", "diamond"), b)).toBe(false);
+    expect(validPlacement(makeCoord(0, 0), makeTile("green", "diamond"), b)).toBe("green diamond does not match orange star.");
     expect(validPlacement(makeCoord(0, 0), makeTile("orange", "diamond"), b)).toBe(true);
 })
 
@@ -66,21 +72,23 @@ test("Surrounded by tiles vertically", () => {
     b.set(makeCoord(0, -1), makeTile("yellow", "8star"));
     b.set(makeCoord(0, 1), makeTile("yellow", "star"));
     expect(validPlacement(makeCoord(0, 0), makeTile("yellow", "clover"), b)).toBe(true);
-    expect(validPlacement(makeCoord(0, 0), makeTile("purple", "star"), b)).toBe(false);
-    expect(validPlacement(makeCoord(0, 0), makeTile("purple", "clover"), b)).toBe(false);
+    expect(validPlacement(makeCoord(0, 0), makeTile("purple", "star"), b)).toBe("purple star does not match yellow 8star.");
+    expect(validPlacement(makeCoord(0, 0), makeTile("purple", "clover"), b)).toBe("purple clover does not match yellow 8star.");
 })
 
 test("No tiles", () => {
     const b : Board = new Board();
-    expect(validPlacement(makeCoord(0, 0), makeTile("purple", "diamond"), b)).toBe(false);
-    expect(validPlacement(makeCoord(1, 2), makeTile("yellow", "clover"), b)).toBe(false);
+    expect(validPlacement(makeCoord(0, 0), makeTile("purple", "diamond"), b))
+        .toBe("The tile must be placed adjacent to at least 1 tile.");
+    expect(validPlacement(makeCoord(1, 2), makeTile("yellow", "clover"), b))
+        .toBe("The tile must be placed adjacent to at least 1 tile.");
 })
 
 test("Tiles match whole line", () => {
     const b : Board = new Board();
     b.set(makeCoord(0, 0), makeTile("blue", "circle"));
     b.set(makeCoord(-1, 0), makeTile("green", "circle"));
-    expect(validPlacement(makeCoord(1, 0), makeTile("blue", "8star"), b)).toBe(false);
+    expect(validPlacement(makeCoord(1, 0), makeTile("blue", "8star"), b)).toBe("blue 8star does not match green circle.");
     expect(validPlacement(makeCoord(1, 0), makeTile("orange", "circle"), b)).toBe(true);
 })
 
@@ -98,14 +106,15 @@ test("serializeTurnAnswer", () => {
 test("NoPlacements", () => {
     const b : Board = new Board();
     b.set(makeCoord(1, 0), makeTile("purple", "clover"));
-    expect(validPlacements([], b)).toBe(false);
+    expect(validPlacements([], b)).toBe(true);
 })
 
 test("OnePlacement", () => {
     const b : Board = new Board();
     b.set(makeCoord(1, 0), makeTile("purple", "clover"));
     expect(validPlacements([[makeCoord(0, 0), makeTile("blue", "clover")]], b)).toBe(true);
-    expect(validPlacements([[makeCoord(0, 0), makeTile("blue", "square")]], b)).toBe(false);
+    expect(validPlacements([[makeCoord(0, 0), makeTile("blue", "square")]], b))
+        .toBe("blue square does not match purple clover.");
 })
 
 test("ManyPlacements", () => {
@@ -116,7 +125,7 @@ test("ManyPlacements", () => {
     expect(validPlacements([[makeCoord(0, 0), makeTile("blue", "clover")],
                             [makeCoord(0, 1), makeTile("blue", "clover")]], b)).toBe(true);
     expect(validPlacements([[makeCoord(1, 1), makeTile("blue", "clover")],
-                            [makeCoord(0, 0), makeTile("blue", "clover")]], b)).toBe(false);
+                            [makeCoord(0, 0), makeTile("blue", "clover")]], b)).toEqual("The placements are not in a line.");
     expect(validPlacements([[makeCoord(0, 0), makeTile("purple", "clover")],
                             [makeCoord(-1, 0), makeTile("blue", "clover")]], b)).toBe(true);
 })

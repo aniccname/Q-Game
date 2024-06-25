@@ -233,20 +233,23 @@ export default function Game({turnInfo, submission, isPlaying} :
     {turnInfo: TurnInfo, submission : Submission, isPlaying : boolean}) : React.JSX.Element {
     let [hand, setHand] = useState<Tile[]>(turnInfo.player.tiles);
     let [activeTile, setActiveTile] = useState<number | "none">("none");
+    //board is a local copy of the current turns board to be mutated after each placement.
     let [board, setBoard] = useState(new Board(turnInfo.global.board));
     let [placements, setPlacements] = useState<Placement[]>([]);
+    let [placementError, setPlacementError] = useState<string>("");
     const clickHandler = (coord : Coord) => () => {
         if (activeTile !== "none") {
             let selectedTile = hand[activeTile];
-            if (validPlacements(placements.concat([[coord, selectedTile]]), turnInfo.global.board)) {
+            const result = validPlacements(placements.concat([[coord, selectedTile]]), turnInfo.global.board)
+            if (result == true) {
                 setBoard(new Board(board.set(coord, selectedTile)));
                 setHand(hand.filter((_, i) => (i !== activeTile)));
                 placements.push([coord, selectedTile]);
                 setPlacements(placements);
                 setActiveTile("none");
+                setPlacementError("");
             } else {
-                //TODO: What would be a good way of displaying an error here? A popup on the bottom saying wthat it's and invalid spot? Would that imply that I would need to give the reasoning on why it's an invalid spot? Basically make it a well formedeness check where I would either pass the validity check or accumulate a list of errors/reasons as to why it was not a valid placement that would then pop up?
-                console.log("Invalid placement");
+                setPlacementError(result);
             }
         }
     };
@@ -261,6 +264,10 @@ export default function Game({turnInfo, submission, isPlaying} :
         setPlacements([]);
     };
     const anyPlacements = placements.length > 0;
+    //Updates the turnInfo with the all of the placements, since the we can't do it for 
+    // each placement since placement rules work in relation to the old borad.
+    const submittor = (ans : TurnAnswer) => 
+        {placements.forEach(([c, t]) => turnInfo.global.board.set(c, t)); return submission(ans)}
     
     return (
       <>
@@ -273,12 +280,13 @@ export default function Game({turnInfo, submission, isPlaying} :
             </Box> 
             <PlayerTiles tiles={hand} selector={tileSelector} active={activeTile}/>
             <Stack direction="row">
-                <Pass submission={submission} disabled={anyPlacements || !isPlaying}/>
-                <Replace submission={submission} disabled={anyPlacements || !isPlaying}/>
-                <Place submission={submission} placements={placements} isPlaying={isPlaying}/>
+                <Pass submission={submittor} disabled={anyPlacements || !isPlaying}/>
+                <Replace submission={submittor} disabled={anyPlacements || !isPlaying}/>
+                <Place submission={submittor} placements={placements} isPlaying={isPlaying}/>
             </Stack>
+            <>{placementError}</>
         </Container>
-        <Undo resetter={resetter} disabled={!anyPlacements}/>
+        <Undo resetter={resetter} disabled={!anyPlacements || !isPlaying}/>
         <Container maxWidth="sm">
             <Stack direction="column">
                 <TilesRemaining poolSize={turnInfo.global.poolSize}/>
@@ -289,4 +297,12 @@ export default function Game({turnInfo, submission, isPlaying} :
       </Stack>
       </>
     );
+}
+
+export function Play({turnInfo, submission} : {turnInfo : TurnInfo, submission : Submission}) {
+    return <Game turnInfo={turnInfo} submission={submission} isPlaying={true}/>
+}
+
+export function Watch({turnInfo, submission} : {turnInfo : TurnInfo, submission : Submission}) {
+    return <Game turnInfo={turnInfo} submission={submission} isPlaying={false}/>
 }

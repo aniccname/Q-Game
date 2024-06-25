@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import StartPage from "./StartPage";
 import { TurnAnswer, TurnInfo, serializeTurnAnswer } from "./Data";
 import { acknowledgeMethod, parseCall, isTurn} from "./ProxyReferee";
-import Game from "./Game";
+import Game, { Play, Watch } from "./Game";
 
 export {App}
 
@@ -85,6 +85,7 @@ export default function App() : React.JSX.Element {
         }
         console.log("sending turn answer " + ans)
         socket.current.send(serializeTurnAnswer(ans));
+        setMyTurn(false);
     }
 
     if (status == "submitting") {
@@ -99,9 +100,15 @@ export default function App() : React.JSX.Element {
         //TODO: Create a winning/loss screen. 
         return <>did you win = {status}</>
     } else if (status instanceof Error) {
+        //Quick and dirty way to dispaly the error. Not sure how to depack it. 
+        throw status;
         return <>An error occured</>
     } else {
-        return <Game turnInfo={status} submission={(ans : TurnAnswer) => {if (myTurn) {return sendReply(ans)}}} isPlaying={myTurn}/>
+        if (myTurn) {//TODO: Figure out how to make it so that this re-rendered each time a message is sent. Maybe split it into Play and watch?
+            return <Play turnInfo={status} submission={(ans : TurnAnswer) => {if (myTurn) {return sendReply(ans)}}}/>
+        } else {
+            return <Watch turnInfo={status} submission={(ans : TurnAnswer) => (ans)}/>
+        }
     }
     
     
