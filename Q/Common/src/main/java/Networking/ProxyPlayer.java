@@ -47,4 +47,15 @@ public class ProxyPlayer extends AProxyPlayer {
     out.println(elem.toString());
     return this.in.next();
   }
+
+  @Override
+  public void error(String reason) {
+    JsonArray msg = new JsonArray();
+    msg.add(this.error);
+    JsonArray rsn = new JsonArray();
+    rsn.add(reason);
+    msg.add(rsn);
+    this.out.println(msg);
+    this.out.close();
+  }
 }

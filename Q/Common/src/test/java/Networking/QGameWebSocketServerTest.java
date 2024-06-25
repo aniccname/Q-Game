@@ -253,7 +253,9 @@ public class QGameWebSocketServerTest {
     var result = JsonParser.parseString(fiveListener.getMessage());
     var expected = new JsonArray();
     expected.add("ERROR");
-    expected.add("Server is full, try again later!");
+    var errmsg = new JsonArray();
+    errmsg.add("Server is full, try again later!");
+    expected.add(errmsg);
     assertEquals(expected, result) ;
   }
 
@@ -277,9 +279,32 @@ public class QGameWebSocketServerTest {
     var result = JsonParser.parseString(threeListener.getMessage());
     var expected = new JsonArray();
     expected.add("ERROR");
-    expected.add("Game has already started.");
+    var errmsg = new JsonArray();
+    errmsg.add("Game has already started.");
+    expected.add(errmsg);
     assertEquals(expected, result);
     assertEquals(2, this.server.getResult().get().winners.size());
+  }
+
+  @Test
+  public void signupsAfterSignupPeriodIsOver() throws InterruptedException {
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(1)
+            .waitingPeriodLengthInSeconds(1).
+            waitForNameInSeconds(1).quiet(false).build();
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname);
+    es.submit(this.server::run);
+    Thread.sleep(1000 + 50);
+    BufferedWebSocketClient listener1 = new BufferedWebSocketClient();
+    WebSocket player1 = connectPlayer(listener1);
+    var result = JsonParser.parseString(listener1.getMessage());
+    var expected = new JsonArray();
+    expected.add("ERROR");
+    var errmsg = new JsonArray();
+    errmsg.add("Game has already started.");
+    expected.add(errmsg);
+    assertEquals(expected, result);
+    assertEquals(GameResult.EMPTY_RESULT, this.server.getResult().get());
   }
 
   @After

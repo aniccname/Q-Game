@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import Action.IAction;
@@ -80,13 +81,15 @@ public class Referee implements IReferee {
 	}
 
 	private void playTurn(Map<String, PlayerSafetyAdapter> playerNames, IGameState gameState) {
-		gameState.getPlayerStates().stream().forEach(gs -> {
+		AtomicReference<PlayerSafetyAdapter> activePlayer = new AtomicReference<>(null);
+		gameState.getPlayerStates().forEach(gs -> {
 			if (gs.equals(gameState.getActivePlayer())) {
-				takeTurn(gameState, playerNames.get(gs.getName()));
+				activePlayer.set(playerNames.get(gs.getName()));
 			} else {
 				watchTurn(gameState, gs, playerNames);
 			}
 		});
+		takeTurn(gameState, activePlayer.get());
 	}
 
 	private void playRound(Map<String, PlayerSafetyAdapter> playerNames, IGameState gameState,
@@ -156,7 +159,8 @@ public class Referee implements IReferee {
 		// the active player will try taking an action
 		Optional<IAction> possibleAction = activePlayer.takeAction(gameState);
 		if (possibleAction.isEmpty()) {
-			kickPlayer(activePlayerState, gameState);
+			kickPlayer(activePlayerState, gameState, activePlayer,
+							"no action received within the allotted period of time.");
 			return;
 		}
 
@@ -164,7 +168,8 @@ public class Referee implements IReferee {
 
 		// validate the action taken and throw exception if fail
 		if (!gameState.validAction(new ActionChecker(), action)) {
-			kickPlayer(activePlayerState, gameState);
+			kickPlayer(activePlayerState, gameState, activePlayer,
+							"given action is not a valid action. Cheating is not allowed here!");
 			return;
 		}
 
@@ -178,14 +183,16 @@ public class Referee implements IReferee {
 		if (!(action instanceof PassAction)) {
 			// give the active player new tiles
 			boolean playerBehaved = activePlayer.newTiles(newTiles);
-			if (!playerBehaved) kickPlayer(activePlayerState, gameState);
+			if (!playerBehaved) kickPlayer(activePlayerState, gameState, activePlayer,
+							"Server didn't receive acknowledgement to receiving new tiles in time.");
 		}
 	}
 
 	private void watchTurn(IGameState gameState, IPlayerState watchingPlayer, Map<String, PlayerSafetyAdapter> playerNames) {
 		PlayerSafetyAdapter adapter = playerNames.get(watchingPlayer.getName());
 		if (!adapter.watchTurn(gameState)) {
-			kickPlayer(watchingPlayer, gameState);
+			kickPlayer(watchingPlayer, gameState, adapter,
+							"Server didn't receive acknowledgement to watching turn in time.");
 		}
 	}
 
@@ -211,8 +218,10 @@ public class Referee implements IReferee {
 		return winners;
 	}
 
-	private void kickPlayer(IPlayerState player, IGameState gameState) {
+	private void kickPlayer(IPlayerState player, IGameState gameState,
+													PlayerSafetyAdapter offender, String reason) {
 		assholes.add(player.getName());
+		offender.error("Kicked due to " + reason);
 		gameState.removePlayer(player);
 	}
 }

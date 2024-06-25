@@ -84,4 +84,9 @@ public class Player implements IPlayer {
 	public void watchTurn(IShareableInfo publicState) {
 		//Nothing! This is an AI we don't care about it.
 	}
+
+	@Override
+	public void error(String reason) {
+		//Nothing! Since this is an AI player, we don't need to respond to this.
+	}
 }

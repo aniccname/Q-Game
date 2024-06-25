@@ -195,5 +195,19 @@ public class ProxyPlayerTest {
     future.get();
   }
 
+  @Test(timeout = 1000L)
+  public void testError() throws InterruptedException, IOException, ExecutionException {
+    Future<?> future = executorService.submit(() -> this.proxy.error("reason"));
+    Thread.sleep(500);
+    JsonStreamParser jparser =
+            new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
+    JsonArray result = (JsonArray) jparser.next();
+    assertEquals(new JsonPrimitive("ERROR"), result.get(0));
+    assertTrue(result.get(1) instanceof JsonArray);
+    assertEquals(new JsonPrimitive("reason"), result.get(1).getAsJsonArray().get(0));
+    assertTrue(this.proxySocket.isClosed());
+    future.get();
+  }
+
 
 }

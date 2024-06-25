@@ -27,6 +27,7 @@ import Serialization.JTile;
  */
 public abstract class AProxyPlayer implements IPlayer {
   protected String name;
+  protected final String error = "ERROR";
   @Override
   public String name() {
     return this.name;

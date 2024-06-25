@@ -114,9 +114,10 @@ public class WebsocketProxyPlayerTest {
   }
 
   @Test(timeout = 1500L)
-  public void testName() {
+  public void testName() throws InterruptedException {
     System.out.println("Testing name!");
     assertEquals("Jave", this.proxyPlayer.name());
+    cleanup();
   }
 
   @Test(timeout = 2000L)
@@ -132,6 +133,7 @@ public class WebsocketProxyPlayerTest {
     this.sourceSocket.sendText(new JsonPrimitive("void").getAsString(), true);
     Thread.sleep(1000);
     future.get();
+    cleanup();
   }
 
   @Test(timeout = 1000L)
@@ -145,6 +147,7 @@ public class WebsocketProxyPlayerTest {
     assertEquals(1, result.get(1).getAsJsonArray().size());
     this.sourceSocket.sendText(new JsonPrimitive("pass").getAsString(), true);
     assertTrue(future.get() instanceof PassAction);
+    cleanup();
   }
 
   @Test(timeout = 1000L)
@@ -158,6 +161,7 @@ public class WebsocketProxyPlayerTest {
     assertEquals(1, result.get(1).getAsJsonArray().size());
     this.sourceSocket.sendText(new JsonPrimitive("replace").getAsString(), true);
     assertTrue(future.get() instanceof ExchangeAction);
+    cleanup();
   }
 
   @Test(timeout = 1000L)
@@ -178,6 +182,7 @@ public class WebsocketProxyPlayerTest {
                     new AbstractMap.SimpleEntry<>(new Coord(0, 1),
                             new Tile(ITile.TileColor.Green, ITile.Shape.Clover))),
             action.getPlacements());
+    cleanup();
   }
 
   @Test(timeout = 1000L)
@@ -190,6 +195,7 @@ public class WebsocketProxyPlayerTest {
     assertEquals(0, result.get(1).getAsJsonArray().get(0).getAsJsonArray().size());
     this.sourceSocket.sendText(new JsonPrimitive("void").getAsString(), true);
     future.get();
+    cleanup();
   }
 
   @Test(timeout = 1000L)
@@ -202,6 +208,7 @@ public class WebsocketProxyPlayerTest {
     assertEquals(new JsonPrimitive(false), result.get(1).getAsJsonArray().get(0));
     this.sourceSocket.sendText(new JsonPrimitive("void").getAsString(), true);
     future.get();
+    cleanup();
   }
 
   @Test//(timeout = 2000L)
@@ -217,14 +224,32 @@ public class WebsocketProxyPlayerTest {
     this.sourceSocket.sendText(new JsonPrimitive("void").getAsString(), true);
     Thread.sleep(1000);
     future.get();
+    cleanup();
   }
 
-  @After
+  @Test(timeout = 1000L)
+  public void testError() throws InterruptedException, ExecutionException {
+    Future<?> future = executorService.submit(() -> this.proxyPlayer.error("reason"));
+    Thread.sleep(500);
+    JsonArray result = (JsonArray) JsonParser.parseString(this.sourceListener.getMessage());
+    assertEquals(new JsonPrimitive("ERROR"), result.get(0));
+    assertTrue(result.get(1) instanceof JsonArray);
+    assertEquals(new JsonPrimitive("reason"), result.get(1).getAsJsonArray().get(0));
+    assertTrue(this.sourceSocket.isOutputClosed());
+    future.get();
+    this.proxyServer.stop(100);
+    this.sourceSocket.abort();
+    this.executorService.shutdown();
+  }
+
+
+  //@After
   public void cleanup() throws InterruptedException {
     this.sourceSocket.sendClose(java.net.http.WebSocket.NORMAL_CLOSURE, "test done!").join();
     this.proxyServer.stop(100);
     this.sourceSocket.abort();
     this.executorService.shutdown();
+    Thread.sleep(200);
   }
 
 }

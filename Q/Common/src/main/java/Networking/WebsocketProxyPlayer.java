@@ -1,5 +1,6 @@
 package Networking;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
@@ -84,7 +85,18 @@ public class WebsocketProxyPlayer extends AProxyPlayer {
 
   @Override
   protected JsonElement invoke(JsonElement elem) {
-    ws.send(elem.toString());
+    this.ws.send(elem.toString());
     return this.nextInput();
+  }
+
+  @Override
+  public void error(String reason) {
+    JsonArray msg = new JsonArray();
+    msg.add(this.error);
+    JsonArray rsn = new JsonArray();
+    rsn.add(reason);
+    msg.add(rsn);
+    this.ws.send(msg.toString());
+    this.ws.close();
   }
 }

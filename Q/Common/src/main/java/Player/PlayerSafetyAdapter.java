@@ -62,6 +62,13 @@ public class PlayerSafetyAdapter {
 		}).orElse(false);
 	}
 
+	public void error(String reason) {
+		callWithTimeout(() ->
+		{this.player.error(reason);
+			return null;
+    });
+	}
+
 	private <T> Optional<T> callWithTimeout(Callable<T> toRun) {
 		Future<T> future = executorService.submit(toRun);
 		try {

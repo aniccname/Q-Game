@@ -50,4 +50,10 @@ public interface IPlayer {
    * @param publicState the state of the game during the opponents turn.
    */
   void watchTurn(IShareableInfo publicState);
+
+  /**
+   * Informs the player that they have been removed from the game due to the given reason.
+   * @param reason the reason behind the caused error.
+   */
+  void error(String reason);
 }

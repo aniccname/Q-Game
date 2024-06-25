@@ -1,6 +1,7 @@
 package Networking;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -77,11 +78,13 @@ public class QGameWebSocketServer extends WebSocketServer {
             printlnIfLoud("Not enough players, game is over. ");
             lock.lock();
             result = GameResult.EMPTY_RESULT;
+            gameStarted = true;
             lock.unlock();
             printlnIfLoud(result.toString());
           }
         } else {
           waitingPeriod += 1;
+          printlnIfLoud("waiting period " + waitingPeriod + " elapsed. Trying again.");
           scheduleGameStart();
         }
       }
@@ -95,8 +98,8 @@ public class QGameWebSocketServer extends WebSocketServer {
    * @param config The config to run the server with.
    * @param hostname The hostname this server will run on.
    */
-  public QGameWebSocketServer(IReferee referee, ServerConfig config, String hostname) {
-    super(new InetSocketAddress(hostname, config.port()));
+  public QGameWebSocketServer(IReferee referee, ServerConfig config, int port, String hostname) {
+    super(new InetSocketAddress(hostname, port));
     this.config = config;
     this.referee = referee;
     this.es = Executors.newCachedThreadPool();
@@ -107,6 +110,10 @@ public class QGameWebSocketServer extends WebSocketServer {
 
   public QGameWebSocketServer(IReferee referee, String hostname) {
     this(referee, new ServerConfig.ServerConfigBuilder().build(), hostname);
+  }
+
+  public QGameWebSocketServer(IReferee referee, ServerConfig config, String hostname) {
+    this(referee, config, config.port(), hostname);
   }
 
   /**
@@ -148,7 +155,9 @@ public class QGameWebSocketServer extends WebSocketServer {
       this.result = referee.playGame(players,
               new RefereeConfig.RefereeConfigBuilder()
                       .gameState(new GameState(players.stream().map(IPlayer::name).toList(),
-                              new ScoringConfig.ScoringConfigBuilder().build())).build());
+                              new ScoringConfig.ScoringConfigBuilder().build()))
+                      .playerTimeoutInSeconds(config.refereeConfig().playerTimeoutInSeconds())
+                      .build());
     } else {
       this.result = GameResult.EMPTY_RESULT;
     }
@@ -181,12 +190,12 @@ public class QGameWebSocketServer extends WebSocketServer {
     }
     //Player did not send name in time, remove the connection and close the websocket.
     if (name == null) {
-      printlnIfLoud("Did not receive name from " + s.toString() + " in time.");
+      printlnIfLoud("Did not receive name " + name + " from " + s.getRemoteSocketAddress() + " in time.");
       this.connections.remove(s);
       s.close();
     }
     else {
-      printlnIfLoud("Retrieved name from " + s.toString() + " in time!");
+      printlnIfLoud("Received name " + name + " from " + s.getRemoteSocketAddress() + " in time.");
     }
   }
   @Override
@@ -196,23 +205,28 @@ public class QGameWebSocketServer extends WebSocketServer {
      addPlayer(webSocket);
     } else  if (this.gameStarted){
       printlnIfLoud("ERROR: Game has already started!");
-      JsonArray response = new JsonArray();
-      response.add(ERROR);
-      response.add("Game has already started.");
-      webSocket.send(response.toString());
+      webSocket.send(error("Game has already started.").toString());
       webSocket.close();
-    }else {
-      JsonArray response = new JsonArray();
-      response.add(ERROR);
-      response.add("Server is full, try again later!");
-      webSocket.send(response.toString());
+    } else {
+      printlnIfLoud("ERROR: Server is full!");
+      webSocket.send(error("Server is full, try again later!").toString());
       webSocket.close();
     }
+  }
+
+  private JsonElement error(String message) {
+    JsonArray response = new JsonArray();
+    response.add(ERROR);
+    JsonArray msg = new JsonArray();
+    msg.add(message);
+    response.add(msg);
+    return response;
   }
 
   @Override
   public void onClose(WebSocket webSocket, int i, String s, boolean b) {
     printlnIfLoud("Socket " + webSocket.toString() + " closed with code " + i);
+    //TODO: Should this remove the webSocket from the connections map?
   }
 
   @Override
