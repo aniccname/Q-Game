@@ -31,8 +31,8 @@ public class RefereeTest {
 
 		List<IPlayer> players = List.of(dag, ldasg);
 
-		IPlayerState dagState = new PlayerState("Dag");
-		IPlayerState ldasgState = new PlayerState("Ldasg");
+		IPlayerState dagState = new PlayerState(new PlayerID(dag.id(), "Dag"));
+		IPlayerState ldasgState = new PlayerState(new PlayerID(dag.id(), "Ldasg"));
 
 		IMap map = new GameMap(new Tile(ITile.Shape.Clover, ITile.TileColor.Red));
 		IGameState gameState = new GameState(map, List.of(), List.of(dagState, ldasgState), defaultConfig);
@@ -51,7 +51,7 @@ public class RefereeTest {
 
 		List<IPlayer> players = List.of(dag);
 
-		IPlayerState dagState = new PlayerState("Dag");
+		IPlayerState dagState = new PlayerState(new PlayerID(dag.id(), "Dag"));
 		dagState.acceptTiles(List.of(new Tile(ITile.Shape.Clover, ITile.TileColor.Blue)));
 
 		IMap map = new GameMap(new Tile(ITile.Shape.Clover, ITile.TileColor.Red));
@@ -72,7 +72,7 @@ public class RefereeTest {
 
 		List<IPlayer> players = List.of(dag);
 
-		IPlayerState dagState = new PlayerState("Dag");
+		IPlayerState dagState = new PlayerState(new PlayerID(dag.id(), "Dag"));
 		dagState.acceptTiles(List.of(new Tile(ITile.Shape.Star, ITile.TileColor.Blue)));
 
 		IMap map = new GameMap(new Tile(ITile.Shape.Clover, ITile.TileColor.Red));

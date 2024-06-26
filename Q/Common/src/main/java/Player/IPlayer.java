@@ -56,4 +56,11 @@ public interface IPlayer {
    * @param reason the reason behind the caused error.
    */
   void error(String reason);
+
+  /**
+   * Returns a unique identifier for this Player.
+   * This is shared with the corresponding IPlayerState
+   * @return an Object acting as the unique identifier for this Player.
+   */
+  Object id();
 }

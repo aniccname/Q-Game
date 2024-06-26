@@ -28,6 +28,7 @@ import Player.IPlayer;
 import Referee.GameResult;
 import Referee.GameState;
 import Referee.IReferee;
+import Referee.PlayerID;
 
 //TODO Investigate whether I can create a new socket with the INetSocketAddr of the socket.
 public class QGameWebSocketServer extends WebSocketServer {
@@ -154,7 +155,8 @@ public class QGameWebSocketServer extends WebSocketServer {
       printlnIfLoud("Starting game");
       this.result = referee.playGame(players,
               new RefereeConfig.RefereeConfigBuilder()
-                      .gameState(new GameState(players.stream().map(IPlayer::name).toList(),
+                      .gameState(new GameState(players.stream()
+                              .map(p -> new PlayerID(p.id(), p.name())).toList(),
                               new ScoringConfig.ScoringConfigBuilder().build()))
                       .playerTimeoutInSeconds(config.refereeConfig().playerTimeoutInSeconds())
                       .build());

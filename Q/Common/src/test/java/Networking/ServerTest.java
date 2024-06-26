@@ -56,7 +56,7 @@ public class ServerTest {
   }
 
   @Test
-  public void fiveSignupts()
+  public void fiveSignups()
           throws IOException, ExecutionException, InterruptedException {
     int port = 7783;
     ExecutorService serverExecutor = Executors.newSingleThreadExecutor();

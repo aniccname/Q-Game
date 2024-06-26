@@ -190,7 +190,7 @@ public class ProxyPlayerTest {
     JsonArray result = (JsonArray) jparser.next();
     assertEquals(new JsonPrimitive("watch-turn"), result.get(0));
     assertTrue(result.get(1) instanceof JsonArray);
-    assertEquals(new JPub(gb, "Jave").serialize(), result.get(1).getAsJsonArray().get(0));
+    assertEquals(new JPub(gb, proxy.id()).serialize(), result.get(1).getAsJsonArray().get(0));
     new PrintStream(this.sourceSocket.getOutputStream()).println(new JsonPrimitive("void"));
     future.get();
   }

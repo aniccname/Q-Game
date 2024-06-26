@@ -31,6 +31,7 @@ import Player.Player;
 import Player.Strategy.DagStrategy;
 import Referee.GameState;
 import Referee.IShareableInfo;
+import Referee.PlayerID;
 import Referee.PlayerState;
 import Serialization.JPub;
 import Serialization.JTile;
@@ -77,15 +78,15 @@ public class ProxyRefereeTest {
     listener.close();
   }
 
-  @Test
+  @Test(timeout = 1000L)
   public void testSetup() throws InterruptedException, IOException {
     JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
     assertEquals(new JsonPrimitive("Jeven"), jp.next());
-    IShareableInfo gs = new GameState(List.of("Jeven"), defaultConfig);
+    IShareableInfo gs = new GameState(List.of(new PlayerID(player.id(), "Jeven")), defaultConfig);
     JsonArray message = new JsonArray();
     message.add("setup");
     JsonArray args = new JsonArray();
-    args.add(new JPub(gs, name).serialize());
+    args.add(new JPub(gs, player.id()).serialize());
     args.add(new JsonArray());
     message.add(args);
     this.sourceStream.println(message);
@@ -99,7 +100,7 @@ public class ProxyRefereeTest {
   public void testTakeTurn() throws InterruptedException, IOException {
     JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
     assertEquals(new JsonPrimitive("Jeven"), jp.next());
-    PlayerState jevenInfo = new PlayerState("Jeven");
+    PlayerState jevenInfo = new PlayerState(new PlayerID(player.id(), "Jeven"));
     Tile gc = new Tile(ITile.TileColor.Green, ITile.Shape.Clover);
     jevenInfo.acceptTiles(List.of(gc));
     IShareableInfo gs = new GameState(new GameMap(new Tile(ITile.TileColor.Blue, ITile.Shape.Star)),
@@ -107,7 +108,7 @@ public class ProxyRefereeTest {
     JsonArray message = new JsonArray();
     message.add("setup");
     JsonArray args = new JsonArray();
-    args.add(new JPub(gs, name).serialize());
+    args.add(new JPub(gs, player.id()).serialize());
     JsonArray tiles = new JsonArray();
     tiles.add(new Gson().toJsonTree(new JTile(gc)));
     args.add(tiles);
@@ -118,7 +119,7 @@ public class ProxyRefereeTest {
     message = new JsonArray();
     message.add( new JsonPrimitive( "take-turn"));
     args = new JsonArray();
-    args.add(new JPub(gs, name).serialize());
+    args.add(new JPub(gs, player.id()).serialize());
     message.add(args);
     this.sourceStream.println(message);
     Thread.sleep(500);
@@ -131,13 +132,13 @@ public class ProxyRefereeTest {
   public void testNewTiles() throws InterruptedException, IOException {
     JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
     assertEquals(new JsonPrimitive("Jeven"), jp.next());
-    PlayerState jevenInfo = new PlayerState("Jeven");
+    PlayerState jevenInfo = new PlayerState(new PlayerID(player.id(),"Jeven"));
     IShareableInfo gs = new GameState(new GameMap(new Tile(ITile.TileColor.Blue, ITile.Shape.Star)),
             List.of(), List.of(jevenInfo), defaultConfig);
     JsonArray message = new JsonArray();
     message.add("setup");
     JsonArray args = new JsonArray();
-    args.add(new JPub(gs, name).serialize());
+    args.add(new JPub(gs, player.id()).serialize());
     args.add(new JsonArray());
     message.add(args);
     this.sourceStream.println(message);
@@ -168,15 +169,15 @@ public class ProxyRefereeTest {
     executorService.shutdown();
   }
 
-  @Test
+  @Test(timeout = 1000)
   public void testWatchTurn() throws InterruptedException, IOException {
     JsonStreamParser jp = new JsonStreamParser(new InputStreamReader(this.sourceSocket.getInputStream()));
     assertEquals(new JsonPrimitive("Jeven"), jp.next());
-    IShareableInfo gs = new GameState(List.of("Jeven"), defaultConfig);
+    IShareableInfo gs = new GameState(List.of(new PlayerID(player.id(), "Jeven")), defaultConfig);
     JsonArray message = new JsonArray();
     message.add("watch-turn");
     JsonArray args = new JsonArray();
-    args.add(new JPub(gs, name).serialize());
+    args.add(new JPub(gs, player.id()).serialize());
     args.add(new JsonArray());
     message.add(args);
     this.sourceStream.println(message);

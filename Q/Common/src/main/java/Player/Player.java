@@ -14,6 +14,7 @@ import Referee.IShareableInfo;
  */
 public class Player implements IPlayer {
 	private final String name;
+	private final Object id;
 	private final IStrategy strategy;
 	protected List<ITile> tiles;
 
@@ -26,6 +27,7 @@ public class Player implements IPlayer {
 	public Player(String name, IStrategy strategy) {
 		this.name = name;
 		this.strategy = strategy;
+		this.id = new Object();
 	}
 
 	/**
@@ -88,5 +90,10 @@ public class Player implements IPlayer {
 	@Override
 	public void error(String reason) {
 		//Nothing! Since this is an AI player, we don't need to respond to this.
+	}
+
+	@Override
+	public Object id() {
+		return this.id;
 	}
 }

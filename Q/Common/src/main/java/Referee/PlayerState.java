@@ -12,15 +12,22 @@ import Map.Tile.ITile;
  */
 public class PlayerState implements IPlayerState {
   private final String name; // the name of the player
+  //This isn;t final since i'm getting some ide warnings about it not being assigned correctly.
+  private Object id; //Unique identifier for this player
   private final List<ITile> playerTiles; // the list of tiles the player holds
   private int score = 0; // the current score of the player
 
   /**
    * Creates a player state with the given name
    */
-  public PlayerState(String name) {
-    this.name = name;
+  public PlayerState(PlayerID pid) {
+    this.id = pid.id();
+    this.name = pid.name();
     this.playerTiles = new ArrayList<>();
+  }
+
+  public PlayerState(String s) {
+    this(new PlayerID(new Object(), s));
   }
 
   /**
@@ -63,5 +70,10 @@ public class PlayerState implements IPlayerState {
   @Override
   public void acceptTiles(List<ITile> tiles) {
     this.playerTiles.addAll(tiles);
+  }
+
+  @Override
+  public Object id() {
+    return this.id;
   }
 }

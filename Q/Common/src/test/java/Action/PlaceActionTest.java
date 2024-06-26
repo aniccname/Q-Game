@@ -1,6 +1,7 @@
 package Action;
 
 import Config.ScoringConfig;
+import Referee.PlayerID;
 import Referee.Visitor.ActionChecker;
 import Referee.Visitor.ActionExecutor;
 import org.junit.Before;
@@ -33,7 +34,7 @@ public class PlaceActionTest {
 
   @Before
   public void init() {
-    gs1 = new GameState(new Random(1), List.of("Alice", "Bob"), new ScoringConfig(1, 0));
+    gs1 = new GameState(new Random(1), List.of(new PlayerID("Alice"), new PlayerID("Bob")), new ScoringConfig(1, 0));
 
     ITile tile = gs1.getMap().getTile(new Coord(0, 0));
     gs1.getActivePlayer().acceptTiles(List.of(tile, tile, tile));

@@ -44,7 +44,7 @@ public class GameState implements IGameState {
    *
    * @param players the list of names of the players that the game starts with
    */
-  public GameState(List<String> players, ScoringConfig scoringConfig) {
+  public GameState(List<PlayerID> players, ScoringConfig scoringConfig) {
     this(new Random(), players, scoringConfig);
   }
 
@@ -56,7 +56,7 @@ public class GameState implements IGameState {
    * @param random seeded random
    * @param players the list of names of the players that the game starts with
    */
-  public GameState(Random random, List<String> players, ScoringConfig scoringConfig) {
+  public GameState(Random random, List<PlayerID> players, ScoringConfig scoringConfig) {
     if (players.isEmpty()) {
       throw new IllegalArgumentException("The game state must start with at least 1 player");
     }

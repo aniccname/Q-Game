@@ -37,6 +37,7 @@ public class ProxyPlayer extends AProxyPlayer {
    * @param out the output stream to write to
    */
   public ProxyPlayer(InputStream in, OutputStream out) {
+    super();
     this.in = new JsonStreamParser(new InputStreamReader(in));
     this.out = new PrintStream(out);
     this.name = new Gson().fromJson(this.in.next(), String.class);

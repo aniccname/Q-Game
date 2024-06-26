@@ -1,7 +1,7 @@
 package Serialization;
 
 import Config.ScoringConfig;
-import com.google.gson.Gson;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -20,18 +20,18 @@ import Referee.IShareableInfo;
 public class JPub {
 	public final JMap jmap;
 	private final int tileCount;
-	private final String playingPlayerName;
+	private final Object playingPlayerID;
 	private final List<IPlayerState> players;
 
-	public JPub(JMap jmap, int tileCount, String playingPlayerName, List<IPlayerState> players) {
+	public JPub(JMap jmap, int tileCount, Object playingPlayerID, List<IPlayerState> players) {
 		this.jmap = jmap;
 		this.tileCount = tileCount;
-		this.playingPlayerName = playingPlayerName;
+		this.playingPlayerID = playingPlayerID;
 		this.players = players;
 	}
 
-	public JPub(IShareableInfo pub, String playingPlayerName) {
-		this(new JMap(pub.getMap()), pub.getRefTileCount(), playingPlayerName,
+	public JPub(IShareableInfo pub, Object playingPlayerID) {
+		this(new JMap(pub.getMap()), pub.getRefTileCount(), playingPlayerID,
             pub.getPlayerStates());
 	}
 
@@ -50,7 +50,7 @@ public class JPub {
 		jpub.add("tile*", new JsonPrimitive(this.tileCount));
 		JsonArray players = new JsonArray();
 		this.players.forEach((ps) -> {
-			if (ps.getName().equals(this.playingPlayerName)) {
+			if (ps.id() == this.playingPlayerID) {
 				players.add(new JPlayer(ps).serialize());
 			} else {
 				players.add(new JOpponent(ps).serialize());

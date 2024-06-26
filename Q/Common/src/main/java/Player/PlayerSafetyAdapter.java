@@ -30,6 +30,12 @@ public class PlayerSafetyAdapter {
 		return callWithTimeout(player::name);
 	}
 
+	//ids are stored locally through proxies, so they are not called with a timeout
+	// (as they are guaranteed to have this field).
+	public Object id() {
+		return player.id();
+	}
+
 	public boolean setup(IShareableInfo map, List<ITile> tiles) {
 		return callWithTimeout(() -> {
 			player.setup(map, tiles);

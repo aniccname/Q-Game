@@ -49,4 +49,11 @@ public interface IPlayerState {
    * @param tiles the tiles to add to the player's hand.
    */
   void acceptTiles(List<ITile> tiles);
+
+  /**
+   * Returns a unique identifier for this object.
+   * This identifier is shared with the corresponding IPlayer.
+   * @return an Object acting as the unique identifier for this PlayerState.
+   */
+  Object id();
 }

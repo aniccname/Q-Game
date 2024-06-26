@@ -17,6 +17,8 @@ import Map.Tile.ITile;
 import Map.Tile.Tile;
 import Referee.GameState;
 import Referee.IGameState;
+import Referee.PlayerID;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +27,9 @@ public class DagStrategyTest {
 
 	@Before
 	public void init() {
-		igs = new GameState(new Random(1), List.of("Alice", "Bob"), new ScoringConfig(5, 10));
+		igs = new GameState(new Random(1),
+						List.of(new PlayerID("Alice"), new PlayerID("Bob")),
+						new ScoringConfig(5, 10));
 	}
 
 	@Test

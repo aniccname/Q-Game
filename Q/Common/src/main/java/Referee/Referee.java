@@ -42,14 +42,14 @@ public class Referee implements IReferee {
 		List<PlayerSafetyAdapter> playerSafetyAdapters =
 				createPlayerSafetyAdapters(players, executorService, refereeConfig);
 
-		Map<String, PlayerSafetyAdapter> playerNames =
+		Map<Object, PlayerSafetyAdapter> playerNames =
 				createPlayerNamesMap(playerSafetyAdapters);
 
 		return playGame(playerNames, refereeConfig, executorService);
 	}
 
 	private GameResult playGame(
-			Map<String, PlayerSafetyAdapter> playerNames,
+			Map<Object, PlayerSafetyAdapter> playerNames,
 			RefereeConfig refereeConfig,
 			ExecutorService executorService
 	) {
@@ -58,10 +58,8 @@ public class Referee implements IReferee {
 		IGameState gameState = refereeConfig.gameState().orElseGet(() ->
 			createGameState(
 				playerNames.values().stream()
-						.flatMap(player -> player.name().stream())
-						.collect(Collectors.toList())
-			)
-		);
+						.map(player ->  new PlayerID(player.id(), player.name().orElseThrow()))
+						.collect(Collectors.toList())));
 
 		announceSetup(gameState, playerNames);
 		refereeConfig.observer().ifPresent(
@@ -80,11 +78,11 @@ public class Referee implements IReferee {
 		return new GameResult(winners, assholes);
 	}
 
-	private void playTurn(Map<String, PlayerSafetyAdapter> playerNames, IGameState gameState) {
+	private void playTurn(Map<Object, PlayerSafetyAdapter> playerNames, IGameState gameState) {
 		AtomicReference<PlayerSafetyAdapter> activePlayer = new AtomicReference<>(null);
 		gameState.getPlayerStates().forEach(gs -> {
 			if (gs.equals(gameState.getActivePlayer())) {
-				activePlayer.set(playerNames.get(gs.getName()));
+				activePlayer.set(playerNames.get(gs.id()));
 			} else {
 				watchTurn(gameState, gs, playerNames);
 			}
@@ -92,7 +90,7 @@ public class Referee implements IReferee {
 		takeTurn(gameState, activePlayer.get());
 	}
 
-	private void playRound(Map<String, PlayerSafetyAdapter> playerNames, IGameState gameState,
+	private void playRound(Map<Object, PlayerSafetyAdapter> playerNames, IGameState gameState,
 												 Optional<IObserver> observer) {
 		placementThisRound = false;
 
@@ -128,23 +126,23 @@ public class Referee implements IReferee {
 	 * @param players the list of players to create a map from
 	 * @return the mapping of name to iplayer client.
 	 */
-	private Map<String, PlayerSafetyAdapter> createPlayerNamesMap(List<PlayerSafetyAdapter> players) {
-		Map<String, PlayerSafetyAdapter> playerNames = new LinkedHashMap<>();
+	private Map<Object, PlayerSafetyAdapter> createPlayerNamesMap(List<PlayerSafetyAdapter> players) {
+		Map<Object, PlayerSafetyAdapter> playerNames = new LinkedHashMap<>();
 		for (PlayerSafetyAdapter player : players) {
-			player.name().ifPresent(name -> playerNames.put(name, player));
+			player.name().ifPresent(name -> playerNames.put(player.id(), player));
 		}
 		return playerNames;
 	}
 
-	private IGameState createGameState(List<String> names) {
-		return new GameState(names, new ScoringConfig.ScoringConfigBuilder().build());
+	private IGameState createGameState(List<PlayerID> pids) {
+		return new GameState(pids, new ScoringConfig.ScoringConfigBuilder().build());
 	}
 
-	private void announceSetup(IGameState gameState, Map<String, PlayerSafetyAdapter> playerNames) {
+	private void announceSetup(IGameState gameState, Map<Object, PlayerSafetyAdapter> playerNames) {
 		// for every representation of the player
 		// lets setup the player client
 		for (IPlayerState playerState : gameState.getPlayerStates()) {
-			boolean playerBehaved = playerNames.get(playerState.getName())
+			boolean playerBehaved = playerNames.get(playerState.id())
 					.setup(gameState, playerState.getTiles());
 			if (!playerBehaved) {
 				gameState.removePlayer(playerState);
@@ -188,15 +186,15 @@ public class Referee implements IReferee {
 		}
 	}
 
-	private void watchTurn(IGameState gameState, IPlayerState watchingPlayer, Map<String, PlayerSafetyAdapter> playerNames) {
-		PlayerSafetyAdapter adapter = playerNames.get(watchingPlayer.getName());
+	private void watchTurn(IGameState gameState, IPlayerState watchingPlayer, Map<Object, PlayerSafetyAdapter> playerNames) {
+		PlayerSafetyAdapter adapter = playerNames.get(watchingPlayer.id());
 		if (!adapter.watchTurn(gameState)) {
 			kickPlayer(watchingPlayer, gameState, adapter,
 							"Server didn't receive acknowledgement to watching turn in time.");
 		}
 	}
 
-	private List<String> announceGameEnd(IGameState gameState, Map<String, PlayerSafetyAdapter> playerNames) {
+	private List<String> announceGameEnd(IGameState gameState, Map<Object, PlayerSafetyAdapter> playerNames) {
 		// calculate the highest score a player has
 		int winningScore = gameState.getPlayerStates().stream()
 				.mapToInt(IPlayerState::getScore).max().orElse(0);
@@ -206,7 +204,7 @@ public class Referee implements IReferee {
 		// send a message to the players determining if they win
 		// using the highest score calculated above
 		for (IPlayerState playerState : gameState.getPlayerStates()) {
-			PlayerSafetyAdapter player = playerNames.get(playerState.getName());
+			PlayerSafetyAdapter player = playerNames.get(playerState.id());
 			boolean playerBehaved = player.win(playerState.getScore() == winningScore);
 			if (!playerBehaved) {
 				assholes.add(playerState.getName());

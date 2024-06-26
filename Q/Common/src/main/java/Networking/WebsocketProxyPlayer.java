@@ -33,14 +33,9 @@ public class WebsocketProxyPlayer extends AProxyPlayer {
   private boolean isNameMessage = true;
   //Should this be null or just the empty string or something like that? Probably null to make it fail asap.
   private final WebSocket ws;
-
-  //TOOD: THis wont' work since all of the communication will come from the server, and as such it needs to be passed in. As such, WebSocketProxyPlayer has to exist in a HashSet inside the server, and have a message that is the equivalent to (message received).
-
-  //TODO: This might just need to be a queue that has an associated condition variable in case the queue is empty.
   private Queue<String> inputs = new ArrayDeque<>();
   private Lock lock = new ReentrantLock();
   private Condition anyInputs = lock.newCondition();
-
 
   /**
    * Returns the next input from the remote client as a JSON element
@@ -80,6 +75,7 @@ public class WebsocketProxyPlayer extends AProxyPlayer {
   }
 
   public WebsocketProxyPlayer(WebSocket ws) {
+    super();
     this.ws = ws;
   }
 
