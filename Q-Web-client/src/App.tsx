@@ -14,7 +14,7 @@ export {App}
  *  * the 'TurnInfo' of the current turn
  *  * a 'boolean' representing whether the game has been won or lost.
  */
-type GameStatus = "submitting"| "connecting"| "connected" | TurnInfo | boolean | Error;
+type GameStatus = "submitting"| "connecting"| "connected" | "new tiles" | TurnInfo | boolean | Error;
 
 /**
  * The Top level component of the Program. Represents either:
@@ -32,6 +32,7 @@ export default function App() : React.JSX.Element {
     let curStatus : {current : GameStatus} = useRef("submitting");
     let name : {current : string} = useRef("");
     let socket : {current : WebSocket | null} = useRef(null);
+    let [turnNum, setTurnNum] = useState(0);
     
     function setStatus(gs : GameStatus) : void {
         updateStatus(gs);
@@ -65,6 +66,7 @@ export default function App() : React.JSX.Element {
         setStatus(parseCall(ev.data, curStatus.current));
         setMyTurn(isTurn(ev.data));
         acknowledgeMethod(() => (this.send("void")), ev.data);
+        setTurnNum(turn => turn + 1);
     }
     
     function onError(this: WebSocket, ev : Event) {
@@ -99,15 +101,18 @@ export default function App() : React.JSX.Element {
     } else if (typeof status == "boolean") {
         //TODO: Create a winning/loss screen. 
         return <>did you win = {status}</>
+    } else if (status == "new tiles") {
+        return <>got new tiles!</>
     } else if (status instanceof Error) {
         //Quick and dirty way to dispaly the error. Not sure how to depack it. 
         throw status;
         return <>An error occured</>
     } else {
+        console.log(status);
         if (myTurn) {//TODO: Figure out how to make it so that this re-rendered each time a message is sent. Maybe split it into Play and watch?
-            return <Play turnInfo={status} submission={(ans : TurnAnswer) => {if (myTurn) {return sendReply(ans)}}}/>
+            return <Play turnInfo={status} submission={sendReply} turnNum={turnNum}/>
         } else {
-            return <Watch turnInfo={status} submission={(ans : TurnAnswer) => (ans)}/>
+            return <Watch turnInfo={status} turnNum={turnNum}/>
         }
     }
     

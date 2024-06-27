@@ -1,6 +1,5 @@
-import { run } from "cypress"
-import {TurnInfo, Tile, parseJPub, parseJTile} from "./Data"
-export {parseCall, acknowledgeMethod, isTurn}
+import {TurnInfo, Tile, parseJPub, parseJTile, findThisPlayerIndex} from "./Data"
+export {parseCall, acknowledgeMethod, isTurn, findThisPlayerIndex}
 
 /**
  * Represnets a mapping from remote method names to accepting functions. 
@@ -11,7 +10,7 @@ type DispatchTable<T> = {
     "take-turn": (jpub: any) => T,
     "new-tiles": (jtiles: any) => T,
     "win": (didWin : any) => T,
-    "watch-turn": (jpub : any) => T
+    "watch-turn": (jpub : any, activeIndx : any) => T
     "ERROR" : (msg: any) => T
 }
 
@@ -32,6 +31,35 @@ function parseError(msg : any) : Error {
     }
 }
 
+function watchTurn(jpub : any, activeIndx : any) : TurnInfo {
+    const info = parseJPub(jpub);
+    if (typeof activeIndx != "number") {
+        throw Error("watch-turn expects an index as a second argument, got " + activeIndx);
+    }
+    return {
+        global: {
+            activePlayerIndx : activeIndx,
+            board : info.global.board,
+            poolSize : info.global.poolSize,
+            playerOrdering : info.global.playerOrdering
+        },
+        player: info.player
+    }
+}
+
+function takeTurn(jpub : any) : TurnInfo {
+    const info = parseJPub(jpub);
+    return {
+        global: {
+            activePlayerIndx : findThisPlayerIndex(jpub),
+            board : info.global.board,
+            poolSize : info.global.poolSize,
+            playerOrdering : info.global.playerOrdering
+        },
+        player: info.player
+    }
+}
+
 /**
  * Parses the remote method call of the format [method, [args...]] and evalutes to the new state of the game. 
  * @param msg the remote method call from the server.
@@ -40,7 +68,7 @@ function parseError(msg : any) : Error {
  * @returns the new stae of the game, 
  * including a boolean if the game is over representing whether this player won or lost. 
  */
-function parseCall(msg : any, state : TurnInfo | string) : TurnInfo | boolean | Error {
+function parseCall(msg : any, state : TurnInfo | string) : TurnInfo | boolean | Error | "new tiles" {
     function parseNewtiles(jtiles : any) : TurnInfo {
         const tiles : Tile[] = jtiles.map(parseJTile);
         if (typeof state == "string") {
@@ -58,21 +86,21 @@ function parseCall(msg : any, state : TurnInfo | string) : TurnInfo | boolean | 
     const dispatch : DispatchTable<TurnInfo | boolean | Error> = {
         "new-tiles": parseNewtiles,
         "setup" : parseJPub,
-        "take-turn" : parseJPub,
-        "watch-turn" : parseJPub,
+        "take-turn" : takeTurn,
+        "watch-turn" : watchTurn,
         "win" : parseWin,
         "ERROR" : parseError
     }
 
-    const test_dispatch : DispatchTable<TurnInfo | boolean | Error | "connected"> = {
-        "new-tiles": (arg) => "connected",
+    const test_dispatch : DispatchTable<TurnInfo | boolean | Error | "new tiles"> = {
+        "new-tiles": (_) => "new tiles",
         "setup" : parseJPub,
-        "take-turn" : parseJPub,
-        "watch-turn" : (arg) => "connected",
+        "take-turn" : takeTurn,
+        "watch-turn" : watchTurn,
         "win" : parseWin,
         "ERROR" : parseError
     }
-    return runDispatch(msg, dispatch);
+    return runDispatch(msg, test_dispatch);
 }
 
 function sendNothing(ws : WebSocket) {
@@ -128,7 +156,7 @@ function runDispatch<T>(msg: any, dispatch : DispatchTable<T>) : T {
     if (typeof method == "string" && 
         (method == "new-tiles" || method == "setup" || method == "take-turn" 
         || method == "watch-turn" || method == "win" || method == "ERROR")){
-        return dispatch[method](msg[1][0]);
+        return dispatch[method](msg[1][0], msg[1][1]);
     } else {
         throw Error("invalid method name, got "  + method)
     }

@@ -7,6 +7,7 @@ export{
     makeTile,
     descendingOrder,
     serializeTurnAnswer,
+    findThisPlayerIndex,
     Board,
     Coord,
     Tile,
@@ -148,7 +149,8 @@ type TurnInfo = {
 type GlobalInfo = {
     readonly board: Board,
     readonly poolSize: number,
-    readonly playerOrdering: (OpponentInfo)[]
+    readonly playerOrdering: (OpponentInfo)[],
+    readonly activePlayerIndx: number | false
 }
 
 function test() {
@@ -419,12 +421,34 @@ function parseJPub(text: string | any) : TurnInfo {
         global: {
             board: parseJMap(parsed.map),
             poolSize: parsed["tile*"],
-            playerOrdering: order
+            playerOrdering: order,
+            activePlayerIndx: false
         },
         player: parseJPlayer(player)
     }
 }
 
-
+/**
+ * Finds the index of this player.
+ * @returns The index of this web program's player. 
+ */
+function findThisPlayerIndex(text : string | any) {
+    let parsed;
+    if (typeof text === "string") {
+        try {
+            parsed = JSON.parse(text);
+        } catch (e) {
+            throw Error("Unable to parse given JPub. " + e)
+        }
+    }
+    else {
+        parsed = text
+    }
+    if (!(parsed instanceof Object && typeof parsed.map === "object" 
+    && typeof parsed["tile*"] === "number" && typeof parsed.players === "object" && parsed.players.length >= 1)) {
+        throw new Error("Given JSON value " + JSON.stringify(parsed) + "is not a JPub!")
+    }
+    return parsed.players.findIndex((p : any) => p["tile*"] != undefined);
+}
 
 //#endregion JSON

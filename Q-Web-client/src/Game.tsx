@@ -156,17 +156,21 @@ export function PlayerTiles({tiles, active, selector}
  *               otherScores: An array of all the other scores in the game} 
  * @returns 
  */
-export function PlayerOrder({playerOrdering}
-    : {playerOrdering: OpponentInfo[]}) : React.JSX.Element {
+export function PlayerOrder({playerOrdering, activePlayerIndx}
+    : {playerOrdering: OpponentInfo[], activePlayerIndx : number | false}) : React.JSX.Element {
         //Name, score, num tiles
-        const scores : [string, number, number][] = playerOrdering.map((info) => [info.name, info.score, info.numTiles]);
+        const scores : [string, number, number][] = 
+            playerOrdering.map((info) => [info.name, info.score, info.numTiles]);
         const maxScore = Math.max(...scores.map(([_name, score, _numTiles], i) => score));
+        function formatPlayer(name : string, score : number, numtiles : number, i : number) : React.JSX.Element {
+            const body = <>{name + ": " + score + " pts. " + numtiles + " tiles remaining."}</>;
+            const withPlayer = i == activePlayerIndx ? <i>{body}</i> : body;
+            const withLead = maxScore == score ? <b>{withPlayer}</b> : withPlayer
+            return <li key={i}>{withLead}</li>;
+        }
         return(
         <ul>
-            {scores.map(([name, score, numtiles], i) => 
-                (score == maxScore ? 
-                <li key={i}> <b>{name + ": " + score + " pts. " + numtiles + " tiles remaining."} </b></li>
-                :  <li key={i}> {name + ": " + score + " pts. " + numtiles + " tiles remaining."} </li>))}
+            {scores.map(([name, score, numtiles], i) => formatPlayer(name, score, numtiles, i))}
         </ul>
         )
 }
@@ -267,7 +271,7 @@ export default function Game({turnInfo, submission, isPlaying} :
     //Updates the turnInfo with the all of the placements, since the we can't do it for 
     // each placement since placement rules work in relation to the old borad.
     const submittor = (ans : TurnAnswer) => 
-        {placements.forEach(([c, t]) => turnInfo.global.board.set(c, t)); return submission(ans)}
+        {placements.forEach(([c, t]) => turnInfo.global.board.set(c, t)); resetter(); return submission(ans)}
     
     return (
       <>
@@ -290,7 +294,7 @@ export default function Game({turnInfo, submission, isPlaying} :
         <Container maxWidth="sm">
             <Stack direction="column">
                 <TilesRemaining poolSize={turnInfo.global.poolSize}/>
-                <PlayerOrder playerOrdering={turnInfo.global.playerOrdering}/>
+                <PlayerOrder playerOrdering={turnInfo.global.playerOrdering} activePlayerIndx={turnInfo.global.activePlayerIndx}/>
                 <MyTurn isMyTurn={isPlaying}/>
             </Stack>
         </Container>
@@ -299,10 +303,16 @@ export default function Game({turnInfo, submission, isPlaying} :
     );
 }
 
-export function Play({turnInfo, submission} : {turnInfo : TurnInfo, submission : Submission}) {
+export function Play({turnInfo, submission, turnNum} : {turnInfo : TurnInfo, submission : Submission, turnNum : number}) {
     return <Game turnInfo={turnInfo} submission={submission} isPlaying={true}/>
 }
 
-export function Watch({turnInfo, submission} : {turnInfo : TurnInfo, submission : Submission}) {
-    return <Game turnInfo={turnInfo} submission={submission} isPlaying={false}/>
+export function Watch({turnInfo, turnNum} : {turnInfo : TurnInfo, turnNum : number}) {
+    return <Game turnInfo={turnInfo} submission={(ans : TurnAnswer) => ans} isPlaying={false}/>
+}
+
+export function makeWatch(turnInfo : TurnInfo) {
+    return function(turnNum : number) {
+        return <Watch turnInfo={turnInfo} turnNum={turnNum}/>
+    }
 }

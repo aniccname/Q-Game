@@ -28,7 +28,7 @@ var __read = (this && this.__read) || function (o, n) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.localFunc = exports.Board = exports.serializeTurnAnswer = exports.descendingOrder = exports.makeTile = exports.makeCoord = exports.parseJMap = exports.parseJTile = exports.parseJPlayer = exports.parseJPub = void 0;
+exports.localFunc = exports.Board = exports.findThisPlayerIndex = exports.serializeTurnAnswer = exports.descendingOrder = exports.makeTile = exports.makeCoord = exports.parseJMap = exports.parseJTile = exports.parseJPlayer = exports.parseJPub = void 0;
 //TODO : Decide whether the function should enforce the enumeration of Colors and Shapes. 
 var makeTile = function (c, s) { return ({ color: c, shape: s }); };
 exports.makeTile = makeTile;
@@ -386,10 +386,35 @@ function parseJPub(text) {
         global: {
             board: parseJMap(parsed.map),
             poolSize: parsed["tile*"],
-            playerOrdering: order
+            playerOrdering: order,
+            activePlayerIndx: false
         },
         player: parseJPlayer(player)
     };
 }
 exports.parseJPub = parseJPub;
+/**
+ * Finds the index of this player.
+ * @returns The index of this web program's player.
+ */
+function findThisPlayerIndex(text) {
+    var parsed;
+    if (typeof text === "string") {
+        try {
+            parsed = JSON.parse(text);
+        }
+        catch (e) {
+            throw Error("Unable to parse given JPub. " + e);
+        }
+    }
+    else {
+        parsed = text;
+    }
+    if (!(parsed instanceof Object && typeof parsed.map === "object"
+        && typeof parsed["tile*"] === "number" && typeof parsed.players === "object" && parsed.players.length >= 1)) {
+        throw new Error("Given JSON value " + JSON.stringify(parsed) + "is not a JPub!");
+    }
+    return parsed.players.findIndex(function (p) { return p["tile*"] != undefined; });
+}
+exports.findThisPlayerIndex = findThisPlayerIndex;
 //#endregion JSON

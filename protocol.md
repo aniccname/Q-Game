@@ -15,7 +15,8 @@ The server expects each request to be answered with an expected return value, sp
   - take-turn(<a href=#jpub>JPub</a>) -> <a href=#jchoice>JChoice</a>
   - new-tiles(<a href=#jtile>JTile...</a>) -> "void"
   - win(boolean) -> "void"
-  - watch-turn(<a href=#jpub>JPub</a>) -> "void"
+  - watch-turn(<a href=#jpub>JPub</a>, PosInt) -> "void"
+    Representing the active player's index. 
 
 ### Data encodings ###
 <h6 id=color>Color</h6>

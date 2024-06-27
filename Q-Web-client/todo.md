@@ -1,9 +1,10 @@
 ### Q Game web client TODO ###
-  * For some reason the order of the player states isn't changing. It's staying constant. What should be done about this? Should the bold player be changed to the active player in the round, and the list shows the round order?
+  * Is there duplicate information with activePlayerIndx and isTurn? I don't think there actually is, considering that the size of the players can change over the course of the game.
 
-#### Nice to haves ####
-  * Change *everything* to allow for duplicate names. This would mean new
-    * PlayerNameAdapter in Referee.java
-    * That's basically it.
-  * Need a way to share a unique identifier between Player and PlayerInfo
-  * Add an extra field called id() that's an Object that servers as the Object's identifier. Create a record that's PlayerID that is just the name of the player and the id() field. PlayerState will get created with this id inside of gamestate. 
+  * new-tiles and watch-turn are not changing the tiles that are being displayed (when clicking replace, even when the new-tiles method is sent, the new tiles are not showing up). 
+    * I have no idea how to fix this. I need ot ask about this. 
+    * Is it maybe that it's at the same position in the tree?
+      * Was able to create a hack by having new tiles become a differnet node in the tree by just being the string "new-tiles". Need to connect with someone else who knows react to figure out how to fix this.
+  
+  * Figure out how to make it look good
+    * graphics?
