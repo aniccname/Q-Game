@@ -94,8 +94,16 @@ public abstract class AProxyPlayer implements IPlayer {
 
   @Override
   public void watchTurn(IShareableInfo publicState) {
+    int activePlayerIndx = publicState.getPlayerStates().indexOf(publicState.activePlayer());
+    watchTurn(publicState, activePlayerIndx);
+  }
+
+  @Override
+  public void watchTurn(IShareableInfo publicState, int activePlayerIndx) {
     JsonElement methodCall =
-            this.serializeMethodCall("watch-turn", new JPub(publicState, this.id).serialize());
+            this.serializeMethodCall("watch-turn",
+                                      new JPub(publicState, this.id).serialize(),
+                                      new JsonPrimitive(activePlayerIndx));
     JsonElement response = this.invoke(methodCall);
     this.assertVoid(response);
   }

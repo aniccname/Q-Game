@@ -45,6 +45,14 @@ public interface IPlayer {
    */
   void win(boolean won);
 
+
+  /**
+   * Informs the player about an opponents' turn.
+   * @param publicState the state of the game during the opponents turn.
+   * @param activePlayerIndx the index of the active player (the player whose turn it is).
+   */
+  void watchTurn(IShareableInfo publicState, int activePlayerIndx);
+
   /**
    * Informs the player about an opponents' turn.
    * @param publicState the state of the game during the opponents turn.

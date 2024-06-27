@@ -211,7 +211,7 @@ public class WebsocketProxyPlayerTest {
     cleanup();
   }
 
-  @Test//(timeout = 2000L)
+  @Test(timeout = 2000L)
   public void testWatchTurn() throws InterruptedException, IOException, ExecutionException {
     IShareableInfo gb = new GameState(new GameMap(new Tile(ITile.TileColor.Green, ITile.Shape.Star)),
             List.of(), List.of(new PlayerState("Jave"), new PlayerState("Janual")), defaultConfig);
@@ -221,6 +221,7 @@ public class WebsocketProxyPlayerTest {
     assertEquals(new JsonPrimitive("watch-turn"), result.get(0));
     assertTrue(result.get(1) instanceof JsonArray);
     assertEquals(new JPub(gb, "Jave").serialize(), result.get(1).getAsJsonArray().get(0));
+    assertEquals(0, result.get(1).getAsJsonArray().get(1).getAsInt());
     this.sourceSocket.sendText(new JsonPrimitive("void").getAsString(), true);
     Thread.sleep(1000);
     future.get();
