@@ -1,5 +1,5 @@
 import {test, expect, jest} from "@jest/globals"
-import {makeCoord, Board, makeTile} from "../src/Data"
+import {makeCoord, Board, makeTile, TurnInfo} from "../src/Data"
 import { parseCall } from "../src/ProxyReferee"
 
 const board1 : Board = new Board();
@@ -26,11 +26,12 @@ test("setupTest", () => {
     + map + ', [{ "color": "blue", "shape": "clover" },'
     + '{ "color": "blue", "shape": "star" },'
     + '{ "color": "blue", "shape": "8star" }]]]'
-    const result  = {
+    const result : TurnInfo = {
         global: {
             board: board1,
             poolSize : 0,
-            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}]
+            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}],
+            activePlayerIndx: false
         },
         player : player1,
     };
@@ -43,7 +44,8 @@ test("takeTurnTest", () => {
         global: {
             board: board1,
             poolSize : 0,
-            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}]
+            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}],
+            activePlayerIndx: 0,
         },
         player : player1,
     };
@@ -52,20 +54,22 @@ test("takeTurnTest", () => {
 
 test("newTilesTest", () => {
     const msg = '["new-tiles", [[{"color": "green", "shape": "star"}]]]'
-    const map  = {
+    const map : TurnInfo = {
         global: {
             board: board1,
             poolSize : 0,
-            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}]
+            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}],
+            activePlayerIndx: false
         },
         player : player1,
     };
     const newPlayer = {score: 0, tiles : [blueClover, blueStar, blue8Star, makeTile("green", "star")]}
-    const result = {
+    const result : TurnInfo= {
         global: {
             board: board1,
             poolSize : 0,
-            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}]
+            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}],
+            activePlayerIndx: 0
         },
         player : newPlayer,
     }
@@ -79,12 +83,13 @@ test("newTilesTurnInfoUndefined", () => {
 })
 
 test("watchTurnTest", () => {
-    const msg = '["take-turn", ['+ map + ']]'
-    const result  = {
+    const msg = '["watch-turn", ['+ map + ', 1]]'
+    const result  : TurnInfo = {
         global: {
             board: board1,
             poolSize : 0,
-            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}]
+            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}],
+            activePlayerIndx: 1
         },
         player : player1,
     };
@@ -93,11 +98,12 @@ test("watchTurnTest", () => {
 
 test("winTurnTrueTest", () => {
     const msg = '["win", [true]]';
-    const map  = {
+    const map : TurnInfo  = {
         global: {
             board: board1,
             poolSize : 0,
-            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}]
+            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}],
+            activePlayerIndx: false
         },
         player : player1,
     };
@@ -106,11 +112,12 @@ test("winTurnTrueTest", () => {
 
 test("winTurnFalseTest", () => {
     const msg = '["win", [false]]';
-    const map  = {
+    const map : TurnInfo = {
         global: {
             board: board1,
             poolSize : 0,
-            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}]
+            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}],
+            activePlayerIndx: false
         },
         player : player1,
     };
@@ -119,11 +126,12 @@ test("winTurnFalseTest", () => {
 
 test("winTurnNonBooleanTest", () => {
     const msg = '["win", [99]]';
-    const map  = {
+    const map : TurnInfo = {
         global: {
             board: board1,
             poolSize : 0,
-            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}]
+            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}],
+            activePlayerIndx: false
         },
         player : player1,
     };

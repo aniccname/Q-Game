@@ -1,0 +1,11 @@
+.board-location {
+    background-color: black;
+    outline-color: dimgray;
+
+}
+
+.game-board {
+    background-attachment: scroll;
+    background-image: url("images/test_background.jpeg");
+    background-clip: content-box;
+}

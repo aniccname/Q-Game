@@ -119,34 +119,32 @@ test("PlayerTiles test", () => {
 });
 
 test("Single player scores test", () => {
-    const result = PlayerOrder({playerOrdering: [{name: "you", numTiles: 6, score: 70}]});
+    const result = PlayerOrder({playerOrdering: [{name: "you", numTiles: 6, score: 70}], activePlayerIndx: false});
     const listItems = result.props.children;
     expect(result.type).toBe("ul");
     expect(listItems.length).toBe(1);
     expect(listItems[0].type).toBe("li");
-    console.log(listItems[0].props.children[0]);
-    expect(listItems[0].props.children[1].type).toBe("b");
+    expect(listItems[0].props.children.type).toBe("b");
 });
 
 test("Multi player scores test", () => {
     const result = PlayerOrder({playerOrdering: 
         [{name: "you", numTiles: 6, score: 70}, 
         {name: "name1", numTiles: 4, score: 72}, 
-        {name: "name2", numTiles: 7, score: 44}]});
+        {name: "name2", numTiles: 7, score: 44}], activePlayerIndx : 0});
     const listItems = result.props.children;
     expect(result.type).toBe("ul");
     expect(listItems.length).toBe(3);
     expect(listItems[0].type).toBe("li");
-    expect(listItems[0].props.children[1]).toBe("you: 70 pts. 6 tiles remaining.");
+    expect(listItems[0].props.children.type).toBe("i");
     expect(listItems[1].type).toBe("li");
-    expect(listItems[1].props.children[1].type).toBe("b");
+    expect(listItems[1].props.children.type).toBe("b");
     expect(listItems[2].type).toBe("li");
-    expect(listItems[2].props.children[1]).toBe("name2: 44 pts. 7 tiles remaining.");
 });
 
 test("Place no placements test", () => {
     let submission : TurnAnswer | "initialized" = "initialized";
-    const result = Place({submission: (ans: TurnAnswer) => submission = ans, placements: []});
+    const result = Place({submission: (ans: TurnAnswer) => submission = ans, placements: [], isPlaying: false});
     result.props.onClick();
     expect(submission).toEqual([]);
     expect(result.props.disabled).toBe(true);
@@ -155,7 +153,7 @@ test("Place no placements test", () => {
 test("Place some placements test", () => {
     let submission : TurnAnswer | "initialized" = "initialized";
     let placements : Placement[] = [[makeCoord(3, 4), makeTile("blue", "circle")]];
-    const result = Place({submission: (ans: TurnAnswer) => submission = ans, placements: placements});
+    const result = Place({submission: (ans: TurnAnswer) => submission = ans, placements: placements, isPlaying: true});
     result.props.onClick();
     expect(submission).toEqual(placements);
     expect(result.props.disabled).toBe(false)

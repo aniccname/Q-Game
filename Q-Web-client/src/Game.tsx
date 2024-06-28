@@ -9,14 +9,17 @@ import { validPlacements} from "./BackEnd"
 
 export type Loc = Tile | Empty
 type Submission = (ans : TurnAnswer) => void
+const TILE_WIDTH = 32;
+const TILE_HEIGHT = 32;
 
-function drawTile(value: Tile) : string {
-    return value.color.charAt(0).toUpperCase() + " " + value.shape.charAt(0).toUpperCase();
+function drawTile(value: Tile) : React.JSX.Element {
+    return <img className="aaaa" src="images/red_star.png" alt={value.color + " " +  value.shape} width={TILE_WIDTH} height={TILE_HEIGHT}/>
+    return<>{value.color.charAt(0).toUpperCase() + " " + value.shape.charAt(0).toUpperCase()}</>;
 }
 
-function drawLoc(value : Loc) : string {
+function drawLoc(value : Loc) : React.JSX.Element {
     if (value === "Empty") {
-        return value;
+        return <>{value}</>;
     }
     else {
         return drawTile(value);
@@ -55,14 +58,14 @@ type BoardView = LocCoord[][];
 export function GameBoard({board, placer} : {board : Board, placer : CoordPlacer}) : React.JSX.Element {
     const rows = expandBoard(board);
     return (
-        <>
+        <Stack spacing="0" direction="column" className="game-board">
         {rows.map((row, r) => {
             return (
                 <Stack spacing="0" direction="row" key={-r}>
                     {row.map((spot, c) => <BoardLocation value={spot.value} onClick={placer(spot.coord)} key={r * row.length + c}/>)}
                 </Stack>
             )})}
-        </>
+        </Stack>
     )
 }
 

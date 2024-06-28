@@ -156,7 +156,8 @@ test("2 Player no referee tiles JPub deserialization", () => {
         global: {
             board: board1,
             poolSize : 0,
-            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}]
+            playerOrdering: [{name: "me", score: 0, numTiles: 3}, {name: "not me", score: 10, numTiles: 4}],
+            activePlayerIndx: false
         },
         player : player1,
     };
@@ -191,7 +192,8 @@ test("8 Player 50 referee tiles JPub deserialization", () => {
                     {name: "name4", score: 0, numTiles: 4},
                     {name: "name5", score: 22, numTiles: 2},
                     {name: "name6", score: 8, numTiles: 6},
-                    {name: "name7", score: 80, numTiles: 12}]
+                    {name: "name7", score: 80, numTiles: 12}],
+            activePlayerIndx: false
         },
         player : player1,
     };
