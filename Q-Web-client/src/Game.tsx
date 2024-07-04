@@ -13,13 +13,14 @@ const TILE_WIDTH = 32;
 const TILE_HEIGHT = 32;
 
 function drawTile(value: Tile) : React.JSX.Element {
-    return <img className="aaaa" src="images/red_star.png" alt={value.color + " " +  value.shape} width={TILE_WIDTH} height={TILE_HEIGHT}/>
-    return<>{value.color.charAt(0).toUpperCase() + " " + value.shape.charAt(0).toUpperCase()}</>;
+    //return <img className="aaaa" src="images/red_star.png" alt={value.color + " " +  value.shape} width={TILE_WIDTH} height={TILE_HEIGHT}/>
+    return <img className="tile" src={"images/" + value.shape + "/" + value.color + ".png"} 
+        alt={value.color + " " +  value.shape} width={TILE_WIDTH} height={TILE_HEIGHT}/>
 }
 
 function drawLoc(value : Loc) : React.JSX.Element {
     if (value === "Empty") {
-        return <>{value}</>;
+        return <img className="empty" src="images/empty.png" alt="empty location" width={TILE_WIDTH} height={TILE_HEIGHT}/>
     }
     else {
         return drawTile(value);
@@ -32,9 +33,11 @@ type thunk = () => void
 export function BoardLocation ({ value, onClick} :
      {value : Loc, onClick : thunk}) : React.JSX.Element  {
     return (
-       <Button className="board-location" onClick={onClick} size="small">
-            {drawLoc(value)}
-       </Button>
+        <span className="board-location">
+            <Button onClick={onClick} size="small">
+                    {drawLoc(value)}
+            </Button>
+        </span>
     );
 }
 
@@ -58,7 +61,7 @@ type BoardView = LocCoord[][];
 export function GameBoard({board, placer} : {board : Board, placer : CoordPlacer}) : React.JSX.Element {
     const rows = expandBoard(board);
     return (
-        <Stack spacing="0" direction="column" className="game-board">
+        <Stack spacing="0" direction="column">
         {rows.map((row, r) => {
             return (
                 <Stack spacing="0" direction="row" key={-r}>
@@ -147,9 +150,11 @@ export function PlayerTiles({tiles, active, selector}
         : {tiles : Tile[], active : number | "none", selector : (t : Tile, key: number) => thunk})
     : React.JSX.Element {
     return (
-        <Grid2 container spacing={0.5}>
-            {tiles.map((tile, i) => <PlayerTile value={tile} key={i} id={i} active={active} onClick={selector(tile, i)}/>)}
-        </Grid2>
+        <Container className="player-tiles">
+            <Grid2 spacing={0.5}>
+                {tiles.map((tile, i) => <PlayerTile value={tile} key={i} id={i} active={active} onClick={selector(tile, i)}/>)}
+            </Grid2>
+        </Container>
     )
 }
 
@@ -187,7 +192,7 @@ export function TilesRemaining({poolSize} : {poolSize : Number }) : React.JSX.El
  * A UI button to allow for the user to pass
  */
 export function Pass({submission, disabled} : {submission : Submission, disabled: boolean}) : React.JSX.Element {
-    return <Button variant="outlined" onClick={()=>submission("pass")} className="pass" disabled={disabled}>
+    return <Button variant="contained" onClick={()=>submission("pass")} className="pass" disabled={disabled}>
         Pass
     </Button>
 }
@@ -196,7 +201,7 @@ export function Pass({submission, disabled} : {submission : Submission, disabled
  * A UI button to allow the user to replace all tiles
  */
 export function Replace({submission, disabled} : {submission: Submission, disabled: boolean}) : React.JSX.Element {
-    return <Button variant="outlined" onClick={()=>submission("replace")} className="replace" disabled={disabled}>
+    return <Button variant="contained" onClick={()=>submission("replace")} className="replace" disabled={disabled}>
         Replace
     </Button>
 }
@@ -205,7 +210,7 @@ export function Replace({submission, disabled} : {submission: Submission, disabl
  * A UI button that submits all placed tiles <i>this turn</i> as the player's TurnAnswer
  */
 export function Place({submission, placements, isPlaying} : {submission: Submission, placements: Placement[], isPlaying : boolean}) : React.JSX.Element {
-    return <Button variant="outlined" onClick={()=>submission(placements)} className="place" disabled={placements.length == 0 || !isPlaying}> 
+    return <Button variant="contained" onClick={()=>submission(placements)} className="place" disabled={placements.length == 0 || !isPlaying}> 
         Place
     </Button>
 }
@@ -214,7 +219,7 @@ export function Place({submission, placements, isPlaying} : {submission: Submiss
  * A Button that applies the given reset function, resetting the state of the program to the beginning of the turn.
  */
 function Undo({resetter, disabled} : {resetter: thunk, disabled: boolean}) : React.JSX.Element {
-    return <Button variant="outlined" onClick={resetter} className="undo" disabled={disabled}>
+    return <Button variant="contained" onClick={resetter} className="undo" disabled={disabled}>
         Undo
     </Button>
 }
@@ -277,23 +282,25 @@ export default function Game({turnInfo, submission, isPlaying} :
         {placements.forEach(([c, t]) => turnInfo.global.board.set(c, t)); resetter(); return submission(ans)}
     
     return (
-      <>
+      <div className="game">
       <meta name="viewport" content="initial-scale=0.25, width=device-width" />
       <Stack direction="row" spacing={4}>
         <Container maxWidth="lg">
-            <b> {"Board has a current size of " + board.size} </b>
-            <Box className="Game">
-                <GameBoard board={board} placer={clickHandler}/>
-            </Box> 
-            <PlayerTiles tiles={hand} selector={tileSelector} active={activeTile}/>
-            <Stack direction="row">
-                <Pass submission={submittor} disabled={anyPlacements || !isPlaying}/>
-                <Replace submission={submittor} disabled={anyPlacements || !isPlaying}/>
-                <Place submission={submittor} placements={placements} isPlaying={isPlaying}/>
+            <Stack spacing={2}>
+                <b> {"Board has a current size of " + board.size} </b>
+                <Box className="game-board">
+                    <GameBoard board={board} placer={clickHandler}/>
+                </Box> 
+                <PlayerTiles tiles={hand} selector={tileSelector} active={activeTile}/>
+                <Stack direction="row">
+                    <Pass submission={submittor} disabled={anyPlacements || !isPlaying}/>
+                    <Replace submission={submittor} disabled={anyPlacements || !isPlaying}/>
+                    <Place submission={submittor} placements={placements} isPlaying={isPlaying}/>
+                </Stack>
+                <text>{placementError}</text>
             </Stack>
-            <>{placementError}</>
         </Container>
-        <Undo resetter={resetter} disabled={!anyPlacements || !isPlaying}/>
+        <Undo resetter={resetter} disabled={!anyPlacements}/>
         <Container maxWidth="sm">
             <Stack direction="column">
                 <TilesRemaining poolSize={turnInfo.global.poolSize}/>
@@ -302,7 +309,7 @@ export default function Game({turnInfo, submission, isPlaying} :
             </Stack>
         </Container>
       </Stack>
-      </>
+      </div>
     );
 }
 

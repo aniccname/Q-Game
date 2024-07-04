@@ -25,9 +25,9 @@ function parseWin(didWin : any) : boolean {
 
 function parseError(msg : any) : Error {
     if (typeof msg != "string") {
-        throw Error("Server responded with unknown error " + msg)
+        throw Error("Unknown error " + msg)
     } else {
-        return Error("Server responded with error: " + msg);
+        return Error(msg);
     }
 }
 

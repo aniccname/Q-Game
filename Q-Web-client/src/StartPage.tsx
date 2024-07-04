@@ -1,5 +1,6 @@
 import React, { useState } from "react"
-import { Button, Container, Stack, TextField } from "@mui/material"
+import { Button, Container, Stack, TextField, Box} from "@mui/material"
+import InfoIcon from '@mui/icons-material/Info';
 
 
 /** TODO: How do I have different pages in a website? I assume thorugh different files. Assuming that's the case...
@@ -24,15 +25,25 @@ export default function StartPage({connector} : {connector : (addr: string, name
     
 
     return(
-    <Container maxWidth="md">   
-        <Stack spacing={1} direction="column">
-            <Stack spacing={0.5} direction="row">
-                <TextField id="server-hostname" label="Hostname" variant="outlined" onChange={handleHostnameChange}/>
-                <TextField id="server-port" label="Port" variant="outlined" onChange={handlePortChange}/>
+    <Container maxWidth="md" className="start-page">   
+        <Stack spacing={5} direction="column">
+            <Stack spacing={1} direction="column">
+                <Stack spacing={0.5} direction="row">
+                    <TextField id="server-hostname" label="Hostname" variant="outlined" onChange={handleHostnameChange}/>
+                    <TextField id="server-port" label="Port" variant="outlined" onChange={handlePortChange}/>
+                </Stack>
+                <TextField id="display-name" label="Name" variant="outlined" onChange={handleNameChange}/>
+                <Button id="submit-button" variant="contained" disabled={!submittable} onClick={submitAnswer}>Connect</Button>
             </Stack>
-            <TextField id="display-name" label="Name" variant="outlined" onChange={handleNameChange}/>
-            <Button id="submit-button" variant="outlined" disabled={!submittable} onClick={submitAnswer}>Connect</Button>
+            <img src="images/title.png" alt="Q-Game" className="title"/> 
+            <Box alignSelf="center">
+                <Stack spacing={1}>
+                    <p>A Quirkle inspired game. Open up the manual <InfoIcon/> for instructions</p>
+                    <p>Server developed primarily in Fall 2023 in Software Development.</p>
+                    <p>Web client developed primarily in Summer 2024.</p>
+                </Stack>
+            </Box>
         </Stack>
-    </Container> )
+    </Container>
+)
 }
-//Maybe in a different file have above this component an App or some other top level component that has 4 states, 'start', 'connecting', 'playing', 'error' that deals with creating the websocket and then creating the appropriate rendering and such

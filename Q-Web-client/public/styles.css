@@ -1,11 +1,61 @@
 .board-location {
-    background-color: black;
     outline-color: dimgray;
-
 }
 
 .game-board {
     background-attachment: scroll;
-    background-image: url("images/test_background.jpeg");
-    background-clip: content-box;
+    background-clip:content-box;
+    background-color: rgb(65, 10, 104);
+    background-repeat: repeat;
+    outline-color: black;
+    outline-width: thick;
+    outline-style: ridge;
+    border-radius: 10px 10px;
+}   
+
+body {
+    background-color: rgb(255, 255, 255);
+}
+
+.player-tiles {
+    background-attachment: scroll;
+    background-clip: padding-box;
+    background-color: rgb(109, 73, 16);
+    outline-color: black;
+    outline-width: medium;
+    outline-style: ridge;
+    border-radius: 15px 15px;
+}
+
+img.title {
+    image-rendering: pixelated;
+    size: 50%;
+    align-self: center;
+}
+
+text.connecting {
+    align-self: center;
+    size:64pt;
+}
+
+text.error-message {
+    align-self: center;
+}
+
+text.error-help-message {
+    align-self: center;
+}
+
+.info {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.info-button {
+    position: absolute;
+    bottom: 5%;
+    right: 10%;
+}
+
+.page-body {
+    position: relative;
 }
