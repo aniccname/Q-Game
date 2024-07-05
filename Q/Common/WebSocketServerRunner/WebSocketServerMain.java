@@ -19,10 +19,14 @@ import Referee.Referee;
 
 /**
  * A Java program to read form the command line and start WebSocketServer
+ * Input read in the format of port rounds timeout name-timeout
  */
 public class WebSocketServerMain {
   public static void main(String[] args) throws IOException {
     int port = Integer.parseInt(args[0]);
+    int rounds = Integer.parseInt(args[1]);
+    int playerTimout = Integer.parseInt(args[2]);
+    int nameTimeout = Integer.parseInt(args[3]);
 
     /**Gson gson = new GsonBuilder()
             .registerTypeAdapter(JRow.class, new JRowDeserializer())
@@ -31,8 +35,9 @@ public class WebSocketServerMain {
     JsonStreamParser parser = new JsonStreamParser(new InputStreamReader(System.in));
 
     ServerConfig config = gson.fromJson(parser.next(), ServerConfig.class);**/
-  var refConfig = new RefereeConfig.RefereeConfigBuilder().playerTimeoutInSeconds(60).build();
-    var config = new ServerConfig.ServerConfigBuilder().port(port).quiet(false).refereeConfig(refConfig).build();
+  var refConfig = new RefereeConfig.RefereeConfigBuilder().playerTimeoutInSeconds(playerTimout).build();
+    var config = new ServerConfig.ServerConfigBuilder().port(port).quiet(false)
+            .numWaitingPeriods(rounds).waitForNameInSeconds(nameTimeout).refereeConfig(refConfig).build();
 
     QGameWebSocketServer server = new QGameWebSocketServer(new Referee(), config, port,"localhost");
 

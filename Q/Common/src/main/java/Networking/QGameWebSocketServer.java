@@ -153,13 +153,18 @@ public class QGameWebSocketServer extends WebSocketServer {
     }
     if (this.connections.size() >= MIN_PLAYERS) {
       printlnIfLoud("Starting game");
-      this.result = referee.playGame(players,
-              new RefereeConfig.RefereeConfigBuilder()
-                      .gameState(new GameState(players.stream()
-                              .map(p -> new PlayerID(p.id(), p.name())).toList(),
-                              new ScoringConfig.ScoringConfigBuilder().build()))
-                      .playerTimeoutInSeconds(config.refereeConfig().playerTimeoutInSeconds())
-                      .build());
+      try {
+        this.result = referee.playGame(players,
+                new RefereeConfig.RefereeConfigBuilder()
+                        .gameState(new GameState(players.stream()
+                                .map(p -> new PlayerID(p.id(), p.name())).toList(),
+                                new ScoringConfig.ScoringConfigBuilder().build()))
+                        .playerTimeoutInSeconds(config.refereeConfig().playerTimeoutInSeconds())
+                        .build());
+      } catch (Exception e) {
+        //Somehow the game has crashed when playing the game. What do I do here? Should I even handle this case?
+        printlnIfLoud(e.toString());
+      }
     } else {
       this.result = GameResult.EMPTY_RESULT;
     }
@@ -228,7 +233,8 @@ public class QGameWebSocketServer extends WebSocketServer {
   @Override
   public void onClose(WebSocket webSocket, int i, String s, boolean b) {
     printlnIfLoud("Socket " + webSocket.toString() + " closed with code " + i);
-    //TODO: Should this remove the webSocket from the connections map?
+    //The connection has been closed, and as such is removed promptly.
+    this.connections.remove(webSocket);
   }
 
   @Override

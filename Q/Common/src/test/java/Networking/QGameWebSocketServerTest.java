@@ -225,7 +225,7 @@ public class QGameWebSocketServerTest {
     //Game is waiting to make sure player4 sends their stuff back.
     assertEquals(Optional.empty(), this.server.getResult());
     //Give the game time to wait for the names to TimeOut (and also for all the sockets to close)
-    Thread.sleep(1 * 1000 + 50);
+    Thread.sleep(1 * 2000 + 50);
     assertEquals(GameResult.EMPTY_RESULT, this.server.getResult().get());
   }
 
@@ -304,6 +304,24 @@ public class QGameWebSocketServerTest {
     errmsg.add("Game has already started.");
     expected.add(errmsg);
     assertEquals(expected, result);
+    assertEquals(GameResult.EMPTY_RESULT, this.server.getResult().get());
+  }
+
+  @Test
+  public void signupDisconnectThenSignup() throws InterruptedException {
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(2)
+            .waitingPeriodLengthInSeconds(1).
+            waitForNameInSeconds(1).quiet(false).build();
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname);
+    es.submit(this.server::run);
+    WebSocket player1 = connectPlayer();
+    player1.sendText("name1", true);
+    player1.abort();
+    Thread.sleep(1000 + 50);
+    WebSocket player2 = connectPlayer();
+    player2.sendText("name2", true);
+    Thread.sleep(1000 + 50);
     assertEquals(GameResult.EMPTY_RESULT, this.server.getResult().get());
   }
 

@@ -28,9 +28,9 @@ public class GameResult {
 	@Override
 	public String toString() {
 		return "[[" +
-						this.winners.stream().reduce((name, result) -> name + ", " + result).orElse("[]") +
+						this.winners.stream().reduce((name, result) -> name + ", " + result).orElse("") +
 						"], [" +
-						this.assholes.stream().reduce((name, result) -> name + ", " + result).orElse("[]") +
+						this.assholes.stream().reduce((name, result) -> name + ", " + result).orElse("") +
 						"]]";
 	}
 

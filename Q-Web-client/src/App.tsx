@@ -4,7 +4,7 @@ import { TurnAnswer, TurnInfo, serializeTurnAnswer } from "./Data";
 import { acknowledgeMethod, parseCall, isTurn} from "./ProxyReferee";
 import Game, { Play, Watch } from "./Game";
 import ErrorMessage from "./ErrorPage"
-import { Backdrop, Box, Button, Container, Fab, Tooltip } from "@mui/material";
+import { Backdrop, Box, Button, ClickAwayListener, Container, Fab, Tooltip } from "@mui/material";
 import InfoIcon from '@mui/icons-material/Info';
 import Paper from '@mui/material/Paper'
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -84,26 +84,26 @@ function Info() : React.JSX.Element {
             </Tooltip>
         </Box>
         <Backdrop open={open} onClick={() => setOpen(b => b)}>
-            <Paper className="info" elevation={4}>
-                <TabList onChange={(_, t) => setTab(t)} aria-label="Q Game information">
-                        <Tab label="How to start" value="0"/>
-                        <Tab label="Your Turn" value="1"/>
-                        <Tab label="Your opponents" value="2"/>
-                        <Tab label="Scoring and Ending" value="3"/>
-                </TabList>
-                <TabPanel value="0">
-                    <HowToStart/>
-                </TabPanel>
-                <TabPanel value="1">
-                    <YourTurn/>
-                </TabPanel>
-                <TabPanel value="2">
-                    <Opponents/>
-                </TabPanel>
-                <TabPanel value="3">
-                    <ScoringEnding/>
-                </TabPanel>
-            </Paper>
+                <Paper className="info" elevation={4}>
+                    <TabList onChange={(_, t) => setTab(t)} aria-label="Q Game information">
+                            <Tab label="How to start" value="0"/>
+                            <Tab label="Your Turn" value="1"/>
+                            <Tab label="Your opponents" value="2"/>
+                            <Tab label="Scoring and Ending" value="3"/>
+                    </TabList>
+                    <TabPanel value="0">
+                        <HowToStart/>
+                    </TabPanel>
+                    <TabPanel value="1">
+                        <YourTurn/>
+                    </TabPanel>
+                    <TabPanel value="2">
+                        <Opponents/>
+                    </TabPanel>
+                    <TabPanel value="3">
+                        <ScoringEnding/>
+                    </TabPanel>
+                </Paper>
         </Backdrop>
     </TabContext>
     )
