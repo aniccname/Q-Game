@@ -28,17 +28,23 @@ export default function StartPage({connector} : {connector : (addr: string, name
     <Container maxWidth="md" className="start-page">   
         <Stack spacing={5} direction="column">
             <Stack spacing={1} direction="column">
+                <Box>
                 <Stack spacing={0.5} direction="row">
-                    <TextField id="server-hostname" label="Hostname" variant="outlined" onChange={handleHostnameChange}/>
-                    <TextField id="server-port" label="Port" variant="outlined" onChange={handlePortChange}/>
+                    <TextField className="hostname-button" id="server-hostname" label="Hostname" variant="outlined" onChange={handleHostnameChange}/>
+                    <TextField className="port-button" id="server-port" label="Port" variant="outlined" onChange={handlePortChange}/>
                 </Stack>
+                </Box>
                 <TextField id="display-name" label="Name" variant="outlined" onChange={handleNameChange}/>
                 <Button id="submit-button" variant="contained" disabled={!submittable} onClick={submitAnswer}>Connect</Button>
             </Stack>
             <img src="images/title.png" alt="Q-Game" className="title"/> 
             <Box alignSelf="center">
                 <Stack spacing={1}>
-                    <p>A Quirkle inspired game. Open up the manual <InfoIcon/> for instructions</p>
+                    <p> 
+                        A Quirkle inspired game. Open up the manual
+                        <InfoIcon fontSize="inherit" className="text-info-button"/>
+                        for instructions
+                    </p>
                     <p>Server developed primarily in Fall 2023 in Software Development.</p>
                     <p>Web client developed primarily in Summer 2024.</p>
                 </Stack>

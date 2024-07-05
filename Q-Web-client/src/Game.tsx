@@ -238,7 +238,7 @@ function MyTurn({isMyTurn} : {isMyTurn : boolean}) : React.JSX.Element {
 // The answer is that it's actually trivially easy. turnInfo would have to be modified to send the names of everyone, but that I don't think would be too much of an issue. 
 /**
  * 
- * @param {turnInfo, submission} turn information to render and interact with.
+ * @param props turn information to render and interact with.
  * @returns 
  */
 export default function Game({turnInfo, submission, isPlaying} : 
@@ -287,7 +287,6 @@ export default function Game({turnInfo, submission, isPlaying} :
       <Stack direction="row" spacing={4}>
         <Container maxWidth="lg">
             <Stack spacing={2}>
-                <b> {"Board has a current size of " + board.size} </b>
                 <Box className="game-board">
                     <GameBoard board={board} placer={clickHandler}/>
                 </Box> 
@@ -313,16 +312,10 @@ export default function Game({turnInfo, submission, isPlaying} :
     );
 }
 
-export function Play({turnInfo, submission, turnNum} : {turnInfo : TurnInfo, submission : Submission, turnNum : number}) {
+export function Play({turnInfo, submission} : {turnInfo : TurnInfo, submission : Submission}) {
     return <Game turnInfo={turnInfo} submission={submission} isPlaying={true}/>
 }
 
-export function Watch({turnInfo, turnNum} : {turnInfo : TurnInfo, turnNum : number}) {
+export function Watch({turnInfo} : {turnInfo : TurnInfo}) {
     return <Game turnInfo={turnInfo} submission={(ans : TurnAnswer) => ans} isPlaying={false}/>
-}
-
-export function makeWatch(turnInfo : TurnInfo) {
-    return function(turnNum : number) {
-        return <Watch turnInfo={turnInfo} turnNum={turnNum}/>
-    }
 }

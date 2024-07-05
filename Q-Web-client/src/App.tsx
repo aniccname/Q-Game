@@ -37,7 +37,7 @@ const INFO_BOX_WIDTH = "md";
 function renderStatus(status: GameStatus, 
     connector : (addr : string, n : string) => void, 
     replier : (ans : TurnAnswer) => void,
-    myTurn : boolean, turnNum : number) : React.JSX.Element {
+    myTurn : boolean) : React.JSX.Element {
         if (status == "submitting") {
             return <StartPage connector={connector}/>
         } else if (status == "connecting") {
@@ -48,7 +48,7 @@ function renderStatus(status: GameStatus,
             </p>)
         } else if (status == "connected") {
             //TODO: Does this need a waiting screen in a new file/function or not?
-            return <p className="connecting">Connected. waiting for the game to start!</p>
+            return <p className="connecting">Connected. Waiting for the game to start!</p>
         } else if (typeof status == "boolean") {
             //TODO: Create a winning/loss screen. 
             if (status) {
@@ -63,9 +63,9 @@ function renderStatus(status: GameStatus,
             return <ErrorMessage msg={status.message}/>
         } else {
             if (myTurn) {//TODO: Figure out how to make it so that this re-rendered each time a message is sent. Maybe split it into Play and watch?
-                return <Play turnInfo={status} submission={replier} turnNum={turnNum}/>
+                return <Play turnInfo={status} submission={replier}/>
             } else {
-                return <Watch turnInfo={status} turnNum={turnNum}/>
+                return <Watch turnInfo={status}/>
             }
         }
 }
@@ -248,7 +248,6 @@ export default function App() : React.JSX.Element {
     let curStatus : {current : GameStatus} = useRef("submitting");
     let name : {current : string} = useRef("");
     let socket : {current : WebSocket | null} = useRef(null);
-    let [turnNum, setTurnNum] = useState(0);
     
     function setStatus(gs : GameStatus) : void {
         updateStatus(gs);
@@ -282,7 +281,6 @@ export default function App() : React.JSX.Element {
         setStatus(parseCall(ev.data, curStatus.current));
         setMyTurn(isTurn(ev.data));
         acknowledgeMethod(() => (this.send("void")), ev.data);
-        setTurnNum(turn => turn + 1);
     }
     
     function onError(this: WebSocket, ev : Event) {
@@ -307,7 +305,7 @@ export default function App() : React.JSX.Element {
     }
     return (
     <Container className="page">
-        {renderStatus(status, startConnection, sendReply, myTurn, turnNum)}
+        {renderStatus(status, startConnection, sendReply, myTurn)}
         <Info/>
     </Container>)
 

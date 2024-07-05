@@ -59,3 +59,11 @@ text.error-help-message {
 .page-body {
     position: relative;
 }
+
+.hostname-button {
+    width: 50%;
+}
+
+.port-button {
+    width: 50%;
+}

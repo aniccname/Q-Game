@@ -1,11 +1,7 @@
 ### Q Game web client TODO ###
-  * Visual issues:
-    * The InfoIcon on StartPage is about double the size it should be.
-    * The Name and Address on the start page are about half the width they should be. Maybe check any Boxes nearby?
-    * Board size can go. Probably change that to be turn number. 
-    * Consider splitting off Info into it's own self contained file?
-    * Consider using a click away listener for the Paper Prop in Info so that you don't have to click the close button to close out.
-    * Make the QGameWebsocketServerMain program take in a proper config file (and create a config file myself), or add extra parameters.
+  * Consider splitting off Info into it's own self contained file?
+  * Consider using a click away listener for the Paper Prop in Info so that you don't have to click the close button to close out.
+  * Make the QGameWebsocketServerMain program take in a proper config file (and create a config file myself), or add extra parameters.
 
   * new-tiles and watch-turn are not changing the tiles that are being displayed (when clicking replace, even when the new-tiles method is sent, the new tiles are not showing up). 
     * I have no idea how to fix this. I need ot ask about this. 
