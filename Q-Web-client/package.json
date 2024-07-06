@@ -6,6 +6,7 @@
     "@mui/material": "^5.15.21",
     "@types/react": "^18.2.46",
     "cypress": "^13.6.1",
+    "gh-pages": "^6.1.1",
     "react": "^18.2.0"
   },
   "devDependencies": {
@@ -23,6 +24,8 @@
   },
   "scripts": {
     "test": "jest",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
@@ -38,5 +41,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "homepage": "https://myusername.github.io/Q-Game/Q-Web-client"
 }
