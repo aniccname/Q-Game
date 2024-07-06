@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.js": "/static/js/main.1c06da14.js",
-    "index.html": "/index.html",
-    "main.1c06da14.js.map": "/static/js/main.1c06da14.js.map"
+    "main.js": "/Q-Game/static/js/main.1c06da14.js",
+    "index.html": "/Q-Game/index.html",
+    "main.1c06da14.js.map": "/Q-Game/static/js/main.1c06da14.js.map"
   },
   "entrypoints": [
     "static/js/main.1c06da14.js"
