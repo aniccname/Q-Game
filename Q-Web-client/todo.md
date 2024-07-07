@@ -1,8 +1,5 @@
 ### Q Game web client TODO ###
-  * Add maxHeight to paper component in Info to avoid overlapping the buttons for hostname, port, and name. 
-  * Change height and width to relative values for the title QGame box in StartPage.
   * Improve the wording and titles of the TabList in Info.
-  * Add scroll bar to the TabList in info (currently, only the first 3 tabs are visible on mobile.)
   * Figure out if the current manual opening and closing is fine. 
   
 
@@ -13,5 +10,4 @@
       * Was able to create a hack by having new tiles become a differnet node in the tree by just being the string "new-tiles". Need to connect with someone else who knows react to figure out how to fix this.
 
 ### Consideration
-  * Consider splitting off Info into it's own self contained file?
   * See if I can make the background of StartPage into a button that sets info to false? Is that even possible since they are in separate files?
