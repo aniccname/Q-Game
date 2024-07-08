@@ -29,25 +29,31 @@ body {
 
 img.title {
     image-rendering: pixelated;
-    size: 50%;
+    width: 65%;
+    max-width: 480px;
+    height: auto;
     align-self: center;
 }
 
-text.connecting {
+p.connecting {
     align-self: center;
     size:64pt;
 }
 
-text.error-message {
+p.error-message {
     align-self: center;
 }
 
-text.error-help-message {
+p.error-help-message {
     align-self: center;
 }
 
 .info {
     font-family: 'Times New Roman', Times, serif;
+    max-height: 65%;
+    max-width: 85%;
+    overflow: scroll;
+
 }
 
 .info-button {
