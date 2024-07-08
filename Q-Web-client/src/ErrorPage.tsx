@@ -9,11 +9,11 @@ export default function ErrorMessage({msg} : {msg : string}) {
     return (
         <Container maxWidth="md">
             <Stack direction="column" spacing={2}>
-                <text className="error-help-message"> The following error has occured: </text>
-                <text className="error-message">"<i>{msg}</i>"</text>
-                <text className="error-help-message">
+                <p className="error-help-message"> The following error has occured: </p>
+                <p className="error-message">"<i>{msg}</i>"</p>
+                <p className="error-help-message">
                     Your connection to the server has been terminated. Reload the page to try again.
-                </text>
+                </p>
             </Stack>
         </Container>
         )

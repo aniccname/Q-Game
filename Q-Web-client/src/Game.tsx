@@ -296,7 +296,7 @@ export default function Game({turnInfo, submission, isPlaying} :
                     <Replace submission={submittor} disabled={anyPlacements || !isPlaying}/>
                     <Place submission={submittor} placements={placements} isPlaying={isPlaying}/>
                 </Stack>
-                <text>{placementError}</text>
+                <p>{placementError}</p>
             </Stack>
         </Container>
         <Undo resetter={resetter} disabled={!anyPlacements}/>

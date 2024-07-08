@@ -1,7 +1,7 @@
 ### Q Game web client TODO ###
   * Improve the wording and titles of the TabList in Info.
-  * Figure out if the current manual opening and closing is fine. 
-  
+  * Figure out if the current manual opening and closing is clear to users.
+
 
 ### Known Issues
   * new-tiles and watch-turn are not changing the tiles that are being displayed (when clicking replace, even when the new-tiles method is sent, the new tiles are not showing up). 

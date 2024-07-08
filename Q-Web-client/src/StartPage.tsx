@@ -19,7 +19,7 @@ export default function StartPage({connector} : {connector : (addr: string, name
     const handleHostnameChange = (event : HasTargetValue) => (setHostname(event.target.value));
     const handlePortChange = (event : HasTargetValue) => (setPort(event.target.value));
     const handleNameChange = (event : HasTargetValue) => (setName(event.target.value));
-    const submitAnswer = () => (connector("ws://" + hostname + ":" + port, name));
+    const submitAnswer = () => (connector("wss://" + hostname + ":" + port, name));
     const submittable = port != '' && name != '' && hostname != '';
 
     
