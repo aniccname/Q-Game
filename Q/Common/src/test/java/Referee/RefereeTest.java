@@ -13,6 +13,7 @@ import Map.Tile.ITile;
 import Map.Tile.Tile;
 import Player.IPlayer;
 import Player.Player;
+import Player.DawdlingPlayer;
 import Player.Strategy.DagStrategy;
 import Player.Strategy.LdasgStrategy;
 import Serialization.JState;
@@ -82,5 +83,31 @@ public class RefereeTest {
 		new Referee().playGame(players, makeConfig(gamestate));
 
 		assertEquals(0, gamestate.getActivePlayer().getScore());
+	}
+
+	@Test
+	public void testTimeoutThenPlace() {
+		IPlayer dawdler = new DawdlingPlayer("Dawdler", new DagStrategy(), 1500);
+		IPlayer dag = new Player("Dag", new DagStrategy());
+
+		List<IPlayer> players = List.of(dawdler, dag);
+
+		IPlayerState dawdlerState = new PlayerState(new PlayerID(dawdler.id(), "Dawdler"));
+		IPlayerState dagState = new PlayerState(new PlayerID(dag.id(), "Dag"));
+		dagState.acceptTiles(List.of(new Tile(ITile.Shape.Star, ITile.TileColor.Blue),
+						new Tile(ITile.Shape.Circle, ITile.TileColor.Purple)));
+		dawdlerState.acceptTiles(List.of(new Tile(ITile.Shape.Circle, ITile.TileColor.Purple)));
+
+		IMap map = new GameMap(new Tile(ITile.Shape.Clover, ITile.TileColor.Blue));
+
+		IGameState gamestate = new GameState(map, List.of(), List.of(dawdlerState, dagState), defaultConfig);
+
+		var config =  new RefereeConfig.RefereeConfigBuilder()
+						.gameState(gamestate).playerTimeoutInSeconds(1).build();
+		var result = new Referee().playGame(players, config);
+
+		assertEquals(List.of("Dag"), result.winners);
+		assertEquals(List.of("Dawdler"), result.assholes);
+		assertEquals(3, gamestate.getActivePlayer().getScore());
 	}
 }

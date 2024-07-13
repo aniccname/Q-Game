@@ -51,8 +51,7 @@ public class WebsocketProxyPlayer extends AProxyPlayer {
         //I have no idea what to do here.
       }
     }
-    this.lock.lock();
-    //TODO Implement busy waiting
+    this.lock.unlock();
     return JsonParser.parseString(this.inputs.remove());
   }
 
