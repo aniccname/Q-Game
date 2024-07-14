@@ -1,0 +1,2 @@
+#!/bin/sh
+java -jar ../Common/out/artifacts/QWebsocketServer_jar/Common.jar $@

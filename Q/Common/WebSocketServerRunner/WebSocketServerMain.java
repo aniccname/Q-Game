@@ -103,14 +103,21 @@ public class WebSocketServerMain {
     return initializeSSLContext(kmf.get(), tmf.get());
   }
   public static void main(String[] args) throws IOException {
+    if (args.length != 4) {
+      System.out.println("Invalid number of arguments. Please supply the port number, " +
+              "number of waiting periods, length of each waiting period, and turn timeout in seconds.");
+      return;
+    }
+
     int port = Integer.parseInt(args[0]);
     int rounds = Integer.parseInt(args[1]);
-    int playerTimout = Integer.parseInt(args[2]);
-    int nameTimeout = Integer.parseInt(args[3]);
+    int roundLength = Integer.parseInt(args[2]);
+    int playerTimeout = Integer.parseInt(args[3]);
+    int NAME_TIMEOUT = 3;
 
-    var refConfig = new RefereeConfig.RefereeConfigBuilder().playerTimeoutInSeconds(playerTimout).build();
-    var config = new ServerConfig.ServerConfigBuilder().port(port).quiet(false).waitingPeriodLengthInSeconds(60)
-            .numWaitingPeriods(rounds).waitForNameInSeconds(nameTimeout).refereeConfig(refConfig).build();
+    var refConfig = new RefereeConfig.RefereeConfigBuilder().playerTimeoutInSeconds(playerTimeout).build();
+    var config = new ServerConfig.ServerConfigBuilder().port(port).quiet(false).waitingPeriodLengthInSeconds(roundLength)
+            .numWaitingPeriods(rounds).waitForNameInSeconds(NAME_TIMEOUT).refereeConfig(refConfig).build();
 
     QGameWebSocketServer server = new QGameWebSocketServer(new Referee(), config, port,"localhost");
     Scanner scanner = new Scanner(new InputStreamReader(System.in));
