@@ -285,7 +285,7 @@ export default function Game({turnInfo, submission, isPlaying} :
       <div className="game">
       <meta name="viewport" content="initial-scale=0.25, width=device-width" />
       <Stack direction="row" spacing={4}>
-        <Container maxWidth="lg">
+        <Container maxWidth="sm">
             <Stack spacing={2}>
                 <Box className="game-board">
                     <GameBoard board={board} placer={clickHandler}/>
@@ -299,7 +299,7 @@ export default function Game({turnInfo, submission, isPlaying} :
                 <p>{placementError}</p>
             </Stack>
         </Container>
-        <Undo resetter={resetter} disabled={!anyPlacements}/>
+            <Undo resetter={resetter} disabled={!anyPlacements}/>
         <Container maxWidth="sm">
             <Stack direction="column">
                 <TilesRemaining poolSize={turnInfo.global.poolSize}/>

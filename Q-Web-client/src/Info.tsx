@@ -37,20 +37,24 @@ export default function Info() : React.JSX.Element {
                 <Paper  elevation={4}>
                     <TabList onChange={(_, t) => setTab(t)} aria-label="Q Game information" variant="scrollable" scrollButtons="auto">
                             <Tab label="How to start" value="0"/>
-                            <Tab label="Your Turn" value="1"/>
-                            <Tab label="Your opponents" value="2"/>
-                            <Tab label="How to end" value="3"/>
+                            <Tab label="Troubleshooting" value="1"/>
+                            <Tab label="Your Turn" value="2"/>
+                            <Tab label="Your opponents" value="3"/>
+                            <Tab label="How to end" value="4"/>
                     </TabList>
                     <TabPanel value="0">
                         <HowToStart/>
                     </TabPanel>
                     <TabPanel value="1">
-                        <YourTurn/>
+                        <Troubleshooting/>
                     </TabPanel>
                     <TabPanel value="2">
-                        <Opponents/>
+                        <YourTurn/>
                     </TabPanel>
                     <TabPanel value="3">
+                        <Opponents/>
+                    </TabPanel>
+                    <TabPanel value="4">
                         <ScoringEnding/>
                     </TabPanel>
                 </Paper>
@@ -62,7 +66,6 @@ export default function Info() : React.JSX.Element {
 
 function HowToStart() : React.JSX.Element {
     return (
-        
         <Box maxWidth={INFO_BOX_WIDTH} maxHeight={INFO_BOX_HEIGHT} className="info-element">
             <h2>Connecting</h2>
             <p>
@@ -75,11 +78,46 @@ function HowToStart() : React.JSX.Element {
                 you are connected, and enough players have joined the lobby, 
                 the game will start.
             </p>
+            <p>
+                Additionally, there is the option to disable wss. This should 
+                <i>only</i> be done if this website is being served not through
+                https. <b>disabling wss while https is being used will break the
+                client. Your connection to the server will be blocked.</b>. Only
+                disable wss if the server host tells you to. 
+            </p>
             <h2>Troubleshooting</h2>
             <p>
                 If you encounter the <i>"the socket was unnexpectedly closed by the server" </i> 
-                error, please check if the server is online, and you have entered the 
-                right port and address.
+                error, or if the game is stuck "attempting to connect to the "Attempting to 
+                establish a connection with the server!", please visit the next troubleshooting tab.
+            </p>
+        </Box>
+    )
+}
+
+function Troubleshooting(): React.JSX.Element {
+    return (
+        <Box maxWidth={INFO_BOX_WIDTH} maxHeight={INFO_BOX_HEIGHT}>
+            <h2>Stuck attempting to establish a connection.</h2>
+            <p>
+                If the program is stuck attempting to establish a connection with the server, 
+                that most likely means the client is having trouble authenticating the server.
+            </p>
+            <p>
+                To fix, visit https://<i>hostname</i>:<i>port</i>.
+            </p>
+            <p>
+                If the website takes to long to connect, this means that the server is not 
+                properly configured to support WebSocket Secure, and needs to be reconfigured.
+                Please alert the server host about this issue. <br/>
+            </p>
+            <p>
+                If you receive a "NET::ERR_CERT_AUTHORITY_INVALID", or are warned that your
+                connection is not private, this means that the server is likely using a self
+                signed certificate. To accept the certificate, click "proceed to hostname 
+                (unsafe)". After proceeding, the webpage should read "404 WebSocket Upgrade 
+                Failure". This means your computer as accepted the server's certificate, and
+                you are free to try connecting again.
             </p>
         </Box>
     )

@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Button, Container, Stack, TextField, Box} from "@mui/material"
+import { Button, Container, Stack, TextField, Box, Switch, FormControlLabel, Tooltip} from "@mui/material"
 import InfoIcon from '@mui/icons-material/Info';
 
 
@@ -15,14 +15,14 @@ export default function StartPage({connector} : {connector : (addr: string, name
     let [hostname, setHostname] = useState("");
     let [name, setName] = useState("");
     let [port, setPort] = useState("")
+    let [secure, setSecure] = useState(true);
 
     const handleHostnameChange = (event : HasTargetValue) => (setHostname(event.target.value));
     const handlePortChange = (event : HasTargetValue) => (setPort(event.target.value));
     const handleNameChange = (event : HasTargetValue) => (setName(event.target.value));
-    const submitAnswer = () => (connector("wss://" + hostname + ":" + port, name));
+    const submitAnswer = () => 
+        (connector((secure ? "wss" : "ws") + "://" + hostname + ":" + port, name));
     const submittable = port != '' && name != '' && hostname != '';
-
-    
 
     return(
     <Container maxWidth="md" className="start-page">   
@@ -32,6 +32,11 @@ export default function StartPage({connector} : {connector : (addr: string, name
                 <Stack spacing={0.5} direction="row">
                     <TextField className="hostname-button" id="server-hostname" label="Hostname" variant="outlined" onChange={handleHostnameChange}/>
                     <TextField className="port-button" id="server-port" label="Port" variant="outlined" onChange={handlePortChange}/>
+                    <Tooltip children={<FormControlLabel 
+                                    control={<Switch className="secure-switch" id="force-unsecured-websocket" checked={!secure} onChange={() => setSecure((s) => !s)}/>}
+                                    label="Disable WSS"/>}
+                            title="NOTE: THIS WILL BREAK THE APP IF YOU ARE USING HTTPS. 
+                            PLEASE ONLY SWITCH THIS IF YOU ARE USING HTTP AND THE SERVER HAS NO CERTIFICATE."/>
                 </Stack>
                 </Box>
                 <TextField id="display-name" label="Name" variant="outlined" onChange={handleNameChange}/>

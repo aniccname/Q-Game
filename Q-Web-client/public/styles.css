@@ -67,9 +67,13 @@ p.error-help-message {
 }
 
 .hostname-button {
-    width: 50%;
+    width: 45%;
 }
 
 .port-button {
-    width: 50%;
+    width: 45%;
+}
+
+.secure-switch {
+    width: 10%;
 }
