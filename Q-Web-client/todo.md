@@ -4,6 +4,10 @@
   * On mobile, Game is really zoomed out. How can I make it so that this is better scaled to the appropriate screen size. 
     * It's something to do with teh stack, but I'm having an issue keeping the undo button the same height of the vertical stack of the board and player tiles. Ideally I'd like in mobile to have the undo as wide as the board/player tile container as well, or have it be the same width of the above component's if it's vertical.
   * Actually get SLF4J logging working...
+  * Allow the IP address to be a console parameter (maybe this should be an optional parameter? Where if it's not supplied it's on local host?)
+    * Actually that's just kind of annoying since that would only work for testing.
+    * Probably allow for adjusting min and max players (min must be greater than 2)
+    * And while we're add it add AI? Probably make it ldag. Maybe a boolean flag that determines whether to fill up the remaining slots with AI?
 
 
 ### Known Issues
