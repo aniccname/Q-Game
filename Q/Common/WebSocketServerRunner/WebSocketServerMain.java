@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -12,7 +14,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -114,13 +118,22 @@ public class WebSocketServerMain {
    * @param roundLength the length of each waiting period.
    * @param playerTimeout the maximum time allotted for each player to take a turn.
    */
-  private static void runServer(int port, int rounds, int roundLength, int playerTimeout) {
+  private static void runServer(int port, int rounds, int roundLength, int playerTimeout,
+                                int minPlayers, int maxPlayers, boolean fill) {
     int NAME_TIMEOUT = 3;
     var refConfig = new RefereeConfig.RefereeConfigBuilder().playerTimeoutInSeconds(playerTimeout).build();
     var config = new ServerConfig.ServerConfigBuilder().port(port).quiet(false).waitingPeriodLengthInSeconds(roundLength)
             .numWaitingPeriods(rounds).waitForNameInSeconds(NAME_TIMEOUT).refereeConfig(refConfig).build();
+    String hostAddress;
+    try {
+       hostAddress = InetAddress.getLocalHost().getHostAddress();
+    } catch (UnknownHostException e) {
+      System.out.println("Unable to get local address. Defaulting to localhost.");
+      hostAddress = "localhost";
+    }
 
-    QGameWebSocketServer server = new QGameWebSocketServer(new Referee(), config, port,"192.168.1.162");
+    QGameWebSocketServer server = new QGameWebSocketServer(new Referee(), config, port, hostAddress,
+            minPlayers, maxPlayers, fill);
     Scanner scanner = new Scanner(new InputStreamReader(System.in));
     System.out.println("Please input the path to the keystore:");
     String STOREPATH = scanner.nextLine();
@@ -142,7 +155,9 @@ public class WebSocketServerMain {
             || "-help".equalsIgnoreCase(arg);
   }
   private static void printHelp() {
-    System.out.println("usage: server [port] [num-rounds] [round-length] [max-turn-length]");
+    System.out.println("usage: server [-f] [port] [num-rounds] [round-length] [max-turn-length] " +
+            "[min-players] [max-players]");
+    System.out.println("The -f flag fills up all open slots up to max-players with computer players.");
     System.out.println("port is the port the server will be hosted on.");
     System.out.println("num-rounds is the number of waiting periods the server will try before " +
             "ending the game.");
@@ -154,16 +169,28 @@ public class WebSocketServerMain {
             "seconds.");
     System.out.println("A player will be disconnected from the game if they do not finish their " +
             "turn within this allotted time. ");
+    System.out.println("min-players is the minimum amount of human players required for the game to " +
+            "start at the end of a waiting period.");
+    System.out.println("If -f/-fill is present, min-players must be at least 1. Otherwise, " +
+            "min-players must be at least 2. ");
+    System.out.println("max-players is the maximum amount of players able to join the game. " +
+            "max-players must be greater than or equal to 2 or min-players, whichever is larger.");
   }
   public static void main(String[] args) throws IOException {
     if (Arrays.stream(args).anyMatch(WebSocketServerMain::isHelpArg)) {
       printHelp();
       return;
     }
-    if (args.length != 4) {
+    //Remove the flags from the argument list.
+    List<String> argList = new ArrayList<>(Arrays.stream(args).toList());
+    boolean fillWithAi = argList.contains("-f") || argList.contains("-fill");
+    argList.remove("-f"); argList.remove("-fill");
+    if (argList.size() != 6) {
       System.out.println("Invalid number of arguments. For instructions please use the -h argument.");
       return;
     }
-    runServer(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+    var argVals = argList.stream().map(Integer::parseInt).toList();
+    runServer(argVals.get(0), argVals.get(1), argVals.get(2),
+            argVals.get(3), argVals.get(4), argVals.get(5), fillWithAi);
   }
 }

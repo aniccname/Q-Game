@@ -3,6 +3,8 @@ package Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -252,5 +254,12 @@ public class GameMapTest {
     gm3.placeTileByOther(new Coord(0, 2), new Tile(Shape.EightStar, TileColor.Green));
     assertFalse(gm3.validSpots(new Tile(Shape.Star, TileColor.Green)).contains(new Coord(0, 3)));
 
+  }
+
+  @Test
+  public void neighborsMatchLineDoesnt() {
+    GameMap map = new GameMap(new Tile(Shape.Clover, TileColor.Green));
+    map.placeTileByOther(new Coord(0, 1), new Tile(Shape.Clover, TileColor.Purple));
+    assertFalse(map.validSpots(new Tile(Shape.Star, TileColor.Purple)).contains(new Coord(0, 2)));
   }
 }

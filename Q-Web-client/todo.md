@@ -4,11 +4,9 @@
   * On mobile, Game is really zoomed out. How can I make it so that this is better scaled to the appropriate screen size. 
     * It's something to do with teh stack, but I'm having an issue keeping the undo button the same height of the vertical stack of the board and player tiles. Ideally I'd like in mobile to have the undo as wide as the board/player tile container as well, or have it be the same width of the above component's if it's vertical.
   * Actually get SLF4J logging working...
-  * Allow the IP address to be a console parameter (maybe this should be an optional parameter? Where if it's not supplied it's on local host?)
-    * Actually that's just kind of annoying since that would only work for testing.
-    * Probably allow for adjusting min and max players (min must be greater than 2)
-    * And while we're add it add AI? Probably make it ldag. Maybe a boolean flag that determines whether to fill up the remaining slots with AI?
-
+    * It's working but do I need to change the settings to have it actually be useful.
+  * AI DOESN'T FUCKING WORK :))))
+  * And now I can't connect to the server!?
 
 ### Known Issues
   * new-tiles and watch-turn are not changing the tiles that are being displayed (when clicking replace, even when the new-tiles method is sent, the new tiles are not showing up). 
@@ -21,3 +19,4 @@
   * See if I can make the background of StartPage into a button that sets info to false? Is that even possible since they are in separate files?
   * Change the Server to deal with name timeouts in a better way.
     * Maybe try passing in a Timer that will remove the player from the server's list of connections, and have the first name that is sent cancel that timer. 
+  * IP address now automaticaly defaults to the local network. Is this good enoguh or shoudl there be a way to force a different IP address? (and if so what? The public one?).

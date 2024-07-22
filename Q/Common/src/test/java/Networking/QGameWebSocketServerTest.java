@@ -325,6 +325,168 @@ public class QGameWebSocketServerTest {
     assertEquals(GameResult.EMPTY_RESULT, this.server.getResult().get());
   }
 
+  @Test
+  public void maxPlayer3() throws InterruptedException {
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(2)
+            .waitingPeriodLengthInSeconds(1).
+            waitForNameInSeconds(1).quiet(false).build();
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 2, 3, false);
+    es.submit(this.server::run);
+    WebSocket player1 = connectPlayer();
+    player1.sendText("name1", true);
+    WebSocket player2 = connectPlayer();
+    player2.sendText("name2", true);
+    WebSocket player3 = connectPlayer();
+    player3.sendText("name3", true);
+    Thread.sleep(1000 + 50);
+    var result = this.server.getResult().get();
+    assertEquals(3, result.winners.size());
+    assertTrue(result.winners.contains("name1"));
+    assertTrue(result.winners.contains("name2"));
+    assertTrue(result.winners.contains("name3"));
+  }
+
+  @Test
+  public void testMinPlayer3() throws InterruptedException {
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(3)
+            .waitingPeriodLengthInSeconds(1).
+            waitForNameInSeconds(1).quiet(false).build();
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 3, 10, false);
+    es.submit(this.server::run);
+    WebSocket player1 = connectPlayer();
+    player1.sendText("name1", true);
+    Thread.sleep(1000 + 50);
+    WebSocket player2 = connectPlayer();
+    player2.sendText("name2", true);
+    assertTrue(this.server.getResult().isEmpty());
+    Thread.sleep(1000 + 50);
+    WebSocket player3 = connectPlayer();
+    player3.sendText("name3", true);
+    Thread.sleep(1000 + 50);
+    var result = this.server.getResult().get();
+    assertEquals(3, result.winners.size());
+    assertTrue(result.winners.contains("name1"));
+    assertTrue(result.winners.contains("name2"));
+    assertTrue(result.winners.contains("name3"));
+  }
+
+  @Test
+  public void testEqualMinMax() throws InterruptedException {
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(3)
+            .waitingPeriodLengthInSeconds(2).
+            waitForNameInSeconds(1).quiet(false).build();
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 2, 2, false);
+    es.submit(this.server::run);
+    WebSocket player1 = connectPlayer();
+    player1.sendText("name1", true);
+    Thread.sleep(2000 + 50);
+    assertTrue(this.server.getResult().isEmpty());
+    WebSocket player2 = connectPlayer();
+    player2.sendText("name2", true);
+    Thread.sleep(1000 + 100);
+    var result = this.server.getResult().get();
+    assertEquals(2, result.winners.size());
+    assertTrue(result.winners.contains("name1"));
+    assertTrue(result.winners.contains("name2"));
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void minLargerThanMax() {
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(3)
+            .waitingPeriodLengthInSeconds(1).
+            waitForNameInSeconds(1).quiet(false).build();
+    //The below is here so that the cleanup method doesn't throw a null pointer exception.
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 3, 3, false);
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 3, 2, false);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void minSmallerThan2() {
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(1)
+            .waitingPeriodLengthInSeconds(1).
+            waitForNameInSeconds(1).quiet(false).build();
+    //The below is here so that the cleanup method doesn't throw a null pointer exception.
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 2, 2, false);
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 1, 2, false);
+  }
+
+  @Test
+  public void fillOnGameFull() throws InterruptedException {
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(3)
+            .waitingPeriodLengthInSeconds(2).
+            waitForNameInSeconds(1).quiet(false).build();
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 2, 2, true);
+    es.submit(this.server::run);
+    WebSocket player1 = connectPlayer();
+    player1.sendText("name1", true);
+    Thread.sleep(2000 + 50);
+    assertTrue(this.server.getResult().isEmpty());
+    WebSocket player2 = connectPlayer();
+    player2.sendText("name2", true);
+    Thread.sleep(1000 + 100);
+    assertEquals(2, this.server.getResult().get().winners.size());
+  }
+
+  @Test
+  public void fillOne() throws InterruptedException {
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(3)
+            .waitingPeriodLengthInSeconds(2).
+            waitForNameInSeconds(1).quiet(false).build();
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 2, 3, true);
+    es.submit(this.server::run);
+    WebSocket player1 = connectPlayer();
+    player1.sendText("name1", true);
+    Thread.sleep(2000 + 50);
+    assertTrue(this.server.getResult().isEmpty());
+    WebSocket player2 = connectPlayer();
+    player2.sendText("name2", true);
+    Thread.sleep(2000 + 100);
+    assertEquals(3, this.server.getResult().get().winners.size());
+    assertTrue(this.server.getResult().get().winners.contains("Player3"));
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void test0MinPlayersFill() {
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(1)
+            .waitingPeriodLengthInSeconds(1).
+            waitForNameInSeconds(1).quiet(false).build();
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 1, 2, true);
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 0, 2, true);
+  }
+
+  @Test (expected = IllegalArgumentException.class)
+  public void test1MaxPlayersFill() {
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(1)
+            .waitingPeriodLengthInSeconds(1).
+            waitForNameInSeconds(1).quiet(false).build();
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 1, 2, true);
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 1, 1, true);
+  }
+
+  @Test
+  public void testOnePlayerManyAI() throws InterruptedException{
+    ServerConfig config = new ServerConfig.ServerConfigBuilder().port(7788)
+            .numWaitingPeriods(3)
+            .waitingPeriodLengthInSeconds(2).
+            waitForNameInSeconds(1).quiet(false).build();
+    this.server = new QGameWebSocketServer(new MockReferee(), config, hostname, 1, 4, true);
+    es.submit(this.server::run);
+    WebSocket player1 = connectPlayer();
+    player1.sendText("name1", true);
+    Thread.sleep(2000 + 1000 + 50);
+    assertEquals(4, this.server.getResult().get().winners.size());
+  }
+
+
   @After
   public void cleanup() throws InterruptedException {
     this.server.stop(1000);

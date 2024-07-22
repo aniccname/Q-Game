@@ -10,6 +10,7 @@ import org.java_websocket.server.WebSocketServer;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +26,8 @@ import Config.ScoringConfig;
 import Config.ServerConfig;
 import Player.IPlayer;
 
+import Player.Player;
+import Player.Strategy.LdasgStrategy;
 import Referee.GameResult;
 import Referee.GameState;
 import Referee.IReferee;
@@ -49,8 +52,9 @@ public class QGameWebSocketServer extends WebSocketServer {
   private GameResult result;
   private int waitingPeriod = 1;
   private volatile boolean gameStarted = false;
-  private static final int MIN_PLAYERS = 2;
-  private static final int MAX_PLAYERS = 4;
+  private final int MIN_PLAYERS;
+  private final int MAX_PLAYERS;
+  private final boolean FILL_WITH_AI;
   private static final String ERROR = "ERROR";
   /** Lock for result (since it's getting assigned) */
   private final Lock lock;
@@ -93,6 +97,51 @@ public class QGameWebSocketServer extends WebSocketServer {
   }
 
   /**
+   * Throws an error if the given min and max player values are invalid. Does nothing otherwise.
+   * @param minPlayers The minimum number of human players required to start the game.
+   * @param maxPlayers The maximum number of players (both computer and human) that are present in
+   *                   the game.
+   * @param fill Whether to fill the remaining spaces in the game with AI players.
+   */
+  private static void assertPlayerCountValidity(int minPlayers, int maxPlayers, boolean fill) {
+    if (!fill && minPlayers < 2) {
+      throw new IllegalArgumentException("The minimum number of players has to at " +
+              "least be at least 2.");
+    }
+    if (fill && minPlayers < 1) {
+      throw new IllegalArgumentException("The minimum number of human players required has to be " +
+              "at least 1.");
+    }
+    if (minPlayers > maxPlayers) {
+      throw new IllegalArgumentException("The minimum number of players cannot be larger than the " +
+              "maximum number of players.");
+    }
+    if (maxPlayers < 2) {
+      throw new IllegalArgumentException("The maximum number of players must be larger than 2.");
+    }
+  }
+
+  public QGameWebSocketServer(IReferee referee, ServerConfig config, int port, String hostname,
+                              int minPlayers, int maxPlayers, boolean fill) {
+    super(new InetSocketAddress(hostname, port));
+    assertPlayerCountValidity(minPlayers, maxPlayers, fill);
+    this.config = config;
+    this.referee = referee;
+    this.es = Executors.newCachedThreadPool();
+    this.t = new Timer();
+    this.lock = new ReentrantLock();
+    this.MIN_PLAYERS = minPlayers;
+    this.MAX_PLAYERS = maxPlayers;
+    this.FILL_WITH_AI = fill;
+    printlnIfLoud("Server created at " + hostname + ":" +port);
+  }
+
+  public QGameWebSocketServer(IReferee referee, ServerConfig config, String hostname,
+                              int minPlayers, int maxPlayers, boolean fill) {
+    this(referee, config, config.port(), hostname, minPlayers, maxPlayers, fill);
+  }
+
+  /**
    * Creates a new QGameWebSocketServer at the given hostname and port (from the config). Uses the
    * referee to play with the minimum to maximum amount of players.
    * @param referee The referee to play the game with.
@@ -100,13 +149,7 @@ public class QGameWebSocketServer extends WebSocketServer {
    * @param hostname The hostname this server will run on.
    */
   public QGameWebSocketServer(IReferee referee, ServerConfig config, int port, String hostname) {
-    super(new InetSocketAddress(hostname, port));
-    this.config = config;
-    this.referee = referee;
-    this.es = Executors.newCachedThreadPool();
-    this.t = new Timer();
-    this.lock = new ReentrantLock();
-    printlnIfLoud("Server created at " + hostname + ":" + config.port());
+    this(referee, config, port, hostname, 2, 4, false);
   }
 
   public QGameWebSocketServer(IReferee referee, String hostname) {
@@ -134,19 +177,40 @@ public class QGameWebSocketServer extends WebSocketServer {
       System.out.println(s);
     }
   }
+
+  public List<IPlayer> addAIPlayers(List<IPlayer> humanPlayers) {
+    List<IPlayer> players = new LinkedList<>(humanPlayers);
+    for (int i = players.size(); i < this.MAX_PLAYERS; i += 1) {
+      players.add(new Player("Player" + (i + 1), new LdasgStrategy()));
+    }
+    return players;
+  }
+
+  /**
+   * Creates a new gamestate with the given human players.
+   * if FILL_WITH_AI is true, additionally adds however many AI players are needed to bring the
+   * number of human and AI players up to the maximum number of players.
+   * @param players the remote human players who are confirmed to be playing.
+   */
+  private GameState initializeGameState(List<IPlayer> players) {
+    return new GameState(players.stream()
+            .map(p -> new PlayerID(p.id(), p.name())).toList(),
+            new ScoringConfig.ScoringConfigBuilder().build());
+  }
+
   /**
    * Plays the game and updates the result, waiting for any pending connections to resolve.
    */
   private void playGame() {
     this.lock.lock();
     this.gameStarted = true;
-    List<IPlayer> players = new ArrayList<>(this.connections.values());
+    List<IPlayer> humanPlayers = new ArrayList<>(this.connections.values());
     //Wait for
-    if (players.stream().anyMatch((p) -> p.name() == null)) {
+    if (humanPlayers.stream().anyMatch((p) -> p.name() == null)) {
       try {
         Thread.sleep(1000L * config.waitForNameInSeconds());
         //This gives enough time for the getPlayer() method to remove the ProxyPlayer if the remote user hasn't responded.
-        players = new ArrayList<>(this.connections.values());
+        humanPlayers = new ArrayList<>(this.connections.values());
       } catch (InterruptedException e) {
         //I don't know what to do here.
       }
@@ -154,11 +218,11 @@ public class QGameWebSocketServer extends WebSocketServer {
     if (this.connections.size() >= MIN_PLAYERS) {
       printlnIfLoud("Starting game");
       try {
-        this.result = referee.playGame(players,
+        List<IPlayer> allPlayers = this.FILL_WITH_AI ? addAIPlayers(humanPlayers) : humanPlayers;
+        GameState state = initializeGameState(allPlayers);
+        this.result = referee.playGame(allPlayers,
                 new RefereeConfig.RefereeConfigBuilder()
-                        .gameState(new GameState(players.stream()
-                                .map(p -> new PlayerID(p.id(), p.name())).toList(),
-                                new ScoringConfig.ScoringConfigBuilder().build()))
+                        .gameState(state)
                         .playerTimeoutInSeconds(config.refereeConfig().playerTimeoutInSeconds())
                         .build());
       } catch (Exception e) {

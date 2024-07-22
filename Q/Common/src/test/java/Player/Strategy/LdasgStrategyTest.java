@@ -56,6 +56,27 @@ public class LdasgStrategyTest {
 		}
 
 		@Test
+		public void testPlacement2() {
+		IMap map = new GameMap(Map.of(
+						new Coord(0, 0), new Tile(ITile.Shape.Clover, ITile.TileColor.Green),
+						new Coord(0,1), new Tile(ITile.Shape.Clover, ITile.TileColor.Purple)
+		));
+
+		var gs = new GameState(map, List.of(), List.of(new PlayerState("Test Player")), new ScoringConfig(10, 8));
+		List<ITile> hand = List.of(
+						new Tile(ITile.Shape.Square, ITile.TileColor.Green)
+		);
+
+		IAction action = new LdasgStrategy().takeTurn(gs, hand);
+		assertTrue(action instanceof PlaceAction);
+		PlaceAction placeAction = (PlaceAction) action;
+
+		assertEquals(placeAction.getPlacements(), List.of(
+						new AbstractMap.SimpleEntry<>(new Coord(-1, 0), hand.get(0))
+		));
+	}
+
+		@Test
 		public void testExchange() {
 			List<ITile> hand = List.of(new Tile(ITile.Shape.Square, ITile.TileColor.Green));
 

@@ -2,9 +2,13 @@ package Map;
 
 import java.awt.Color;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -14,6 +18,7 @@ import javax.swing.JPanel;
 
 import Map.Tile.EmptyTile;
 import Map.Tile.ITile;
+import Map.Tile.Tile;
 
 /**
  * An instance of a map of the Q game. The map is represented by a Hashmap that places the tile
@@ -89,6 +94,7 @@ public class GameMap implements IMap {
    * 1. finding potential neighbors for the tile
    * 2. filtering the potential neighbors for spots that are empty
    * 3. checking neighboring tiles to see that the colors and shapes match in row and column
+   * 4. checking that the tiles all match in a line.
    *
    * @param tile tile to find valid spots
    * @return a set representing the valid coordinates where the tile can be placed
@@ -125,9 +131,35 @@ public class GameMap implements IMap {
       throw new IllegalArgumentException("Coordinate must not be null");
     }
     Coord[] neighbors = coord.getCardinalNeighbors();
+    Function<Coord, Coord> down = (c) -> (new Coord(c.getX(), c.getY() + 1));
+    Function<Coord, Coord> up = (c) -> (new Coord(c.getX(), c.getY() - 1));
+    Function<Coord, Coord> left = (c) -> (new Coord(c.getX() - 1, c.getY()));
+    Function<Coord, Coord> right = (c) -> (new Coord(c.getX() + 1, c.getY()));
 
-    return tile.validNeighbors(getTile(neighbors[Coord.UP]), getTile(neighbors[Coord.DOWN]))
-        && tile.validNeighbors(getTile(neighbors[Coord.LEFT]), getTile(neighbors[Coord.RIGHT]));
+    return directionsAllMatch(down, up, coord, tile) &&
+            directionsAllMatch(left, right, coord, tile);
+  }
+
+  /**
+   * Determines whether all of the tiles extending in the given directions from the start coordinate matches eachother.
+   */
+  private boolean directionsAllMatch(Function<Coord, Coord> dir1, Function<Coord, Coord> dir2, Coord start, ITile tile) {
+    Set<ITile> dir1Tiles = getTilesInRay(dir1, start);
+    Set<ITile> dir2Tiles = getTilesInRay(dir2, start);
+    //TODO: Figure out how to un-quadratic this.
+    return dir1Tiles.stream().allMatch(t1 -> tile.validNeighbors(t1, t1)) &&
+            dir2Tiles.stream().allMatch(t2 -> tile.validNeighbors(t2, t2))  &&
+            dir1Tiles.stream().allMatch(t1 -> dir2Tiles.stream().allMatch(t2 -> tile.validNeighbors(t1, t2)));
+  }
+
+  private Set<ITile> getTilesInRay(Function<Coord, Coord> mover, Coord start) {
+    Set<ITile> tiles = new HashSet<>();
+    Coord current = mover.apply(start);
+    while (!this.getTile(current).isEmpty()) {
+      tiles.add(this.getTile(current));
+      current = mover.apply(current);
+    }
+    return tiles;
   }
 
   @Override
